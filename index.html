@@ -1,0 +1,2657 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>LV26 · AWS re:Invent 2026 Wallet</title>
+  <meta name="description" content="AWS re:Invent 2026 ラスベガス滞在用 iPhone オフラインガイドアプリ。">
+  <meta name="theme-color" content="#0E0E10">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="LV26 Guide">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="apple-touch-icon" sizes="180x180" href="./icons/icon-180.png">
+  <style>
+    /* ==========================================================================
+       DESERT WALLET — iPhone 15 Offline Travel Companion
+       Palette: Asphalt Black + Mojave Vermilion + Vegas Marigold + Ticket Cream
+       ========================================================================== */
+    :root {
+      --bg: #0E0E10;
+      --surface: #18181C;
+      --surface-2: #232329;
+      --ink: #F5F2EC;
+      --muted: #A9A49B;
+
+      /* Physical Pass Stocks */
+      --paper: #F4EFE6;
+      --paper-2: #E7E0D3;
+      --paper-ink: #141416;
+      --paper-muted: #545049;
+
+      --vermilion: #FF4D1C;
+      --vermilion-dark: #D9380C;
+      --gold: #F6C324;
+      --mint: #2ED590;
+      --mint-dark: #166544;
+
+      --font-cond: 'Barlow Condensed', 'DIN Condensed', 'DINAlternate-Bold', 'Arial Narrow', -apple-system, sans-serif;
+      --font-body: 'Zen Kaku Gothic New', 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', -apple-system, BlinkMacSystemFont, sans-serif;
+
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --dock-h: 68px;
+      --ease-spring: cubic-bezier(0.22, 1, 0.36, 1);
+      --ease-press: cubic-bezier(0.2, 0, 0, 1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html {
+      background: var(--bg);
+      color: var(--ink);
+      -webkit-text-size-adjust: 100%;
+      -webkit-tap-highlight-color: transparent;
+    }
+    body {
+      margin: 0;
+      font-family: var(--font-body);
+      font-size: 16px;
+      line-height: 1.55;
+      background: var(--bg);
+      color: var(--ink);
+      min-height: 100dvh;
+      overflow-x: clip;
+      -webkit-font-smoothing: antialiased;
+    }
+    figure { margin: 0; }
+    h1, h2, h3, h4, p { margin: 0; }
+    a { color: inherit; text-underline-offset: 0.2em; }
+    button, input { font: inherit; color: inherit; }
+    button {
+      cursor: pointer;
+      touch-action: manipulation;
+      border: 0;
+      background: none;
+    }
+    button:active {
+      transform: scale(0.97);
+      transition: transform 90ms var(--ease-press);
+    }
+    :focus-visible {
+      outline: 2px solid var(--gold);
+      outline-offset: 2px;
+    }
+    ::selection {
+      background: var(--vermilion);
+      color: #ffffff;
+    }
+    .num { font-variant-numeric: tabular-nums; }
+    .cond {
+      font-family: var(--font-cond);
+      letter-spacing: 0.01em;
+      text-transform: uppercase;
+    }
+    [hidden] { display: none !important; }
+    .sr-only {
+      position: absolute; width: 1px; height: 1px; margin: -1px;
+      overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+    }
+
+    /* Privacy Mask (JS swaps textContent cleanly without multiline overlay bugs) */
+    body.privacy-masked [data-private] {
+      background: rgba(255, 77, 28, 0.16);
+      color: var(--vermilion);
+      padding: 0 5px;
+      border-radius: 4px;
+      letter-spacing: 0.06em;
+      user-select: none;
+    }
+    body.privacy-masked .pass-card [data-private] {
+      background: rgba(20, 20, 22, 0.14);
+      color: var(--paper-ink);
+    }
+
+    /* ==========================================================================
+       APP SHELL (iPhone 15 Edge-to-Edge + Clean Centered Companion on Desktop)
+       ========================================================================== */
+    .app-shell {
+      width: 100%;
+      max-width: 540px;
+      margin-inline: auto;
+      min-height: 100dvh;
+      padding-top: calc(var(--safe-top) + 60px);
+      padding-bottom: calc(var(--dock-h) + var(--safe-bottom) + 28px);
+      position: relative;
+    }
+    @media (min-width: 820px) {
+      .app-shell {
+        max-width: 780px;
+      }
+    }
+
+    /* Top Sticky Telemetry Bar */
+    .top-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 40;
+      background: rgba(14, 14, 16, 0.94);
+      padding-top: var(--safe-top);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .top-bar-inner {
+      max-width: 780px;
+      margin-inline: auto;
+      height: 54px;
+      padding-inline: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .brand-mark {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .brand-badge {
+      background: var(--vermilion);
+      color: #0E0E10;
+      font-family: var(--font-cond);
+      font-weight: 800;
+      font-size: 20px;
+      line-height: 1;
+      padding: 4px 8px;
+      border-radius: 4px;
+    }
+    .brand-clock {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.15;
+    }
+    .brand-clock-main {
+      font-family: var(--font-cond);
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--ink);
+    }
+    .brand-clock-sub {
+      font-size: 11px;
+      color: var(--muted);
+    }
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .pill-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 7px 11px;
+      min-height: 36px;
+      border-radius: 999px;
+      background: var(--surface-2);
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 700;
+      transition: background-color 150ms ease, color 150ms ease;
+    }
+    .pill-btn[aria-pressed="true"] {
+      background: var(--vermilion);
+      color: #0E0E10;
+    }
+
+    /* Tab Panels */
+    .tab-view {
+      display: none;
+      padding: 12px 16px 20px;
+      animation: viewIn 260ms var(--ease-spring) both;
+    }
+    .tab-view.is-active {
+      display: block;
+    }
+    @keyframes viewIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Bottom iPhone 15 Thumb Dock */
+    .bottom-dock {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 50;
+      background: rgba(20, 20, 24, 0.96);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: var(--safe-bottom);
+    }
+    .dock-inner {
+      max-width: 780px;
+      margin-inline: auto;
+      height: var(--dock-h);
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      padding-inline: 4px;
+    }
+    .dock-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+      position: relative;
+      transition: color 140ms ease;
+    }
+    .dock-btn svg {
+      width: 22px;
+      height: 22px;
+    }
+    .dock-btn.is-active {
+      color: var(--vermilion);
+    }
+    .dock-btn.is-active::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      width: 28px;
+      height: 3px;
+      border-radius: 0 0 3px 3px;
+      background: var(--vermilion);
+    }
+
+    /* Section Headings inside App */
+    .view-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .view-title {
+      font-family: var(--font-cond);
+      font-size: 36px;
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: 0.01em;
+      color: var(--ink);
+    }
+    .view-sub {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    /* ==========================================================================
+       TAB 1: NOW — LIVE RADAR + PHYSICAL APPLE-WALLET PASS STACK
+       ========================================================================== */
+    .radar-card {
+      background: var(--surface);
+      border-radius: 18px;
+      padding: 18px;
+      margin-bottom: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .radar-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .radar-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-cond);
+      font-weight: 800;
+      font-size: 15px;
+      letter-spacing: 0.06em;
+      color: var(--gold);
+    }
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--mint);
+      display: inline-block;
+    }
+    .radar-big {
+      font-family: var(--font-cond);
+      font-size: clamp(40px, 11vw, 56px);
+      font-weight: 800;
+      line-height: 0.98;
+      color: var(--ink);
+      margin-bottom: 8px;
+    }
+    .radar-mission {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 4px;
+    }
+    .radar-meta {
+      font-size: 14px;
+      color: var(--muted);
+    }
+    .sim-strip {
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px dashed rgba(255, 255, 255, 0.14);
+    }
+    .sim-label {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 8px;
+      display: block;
+    }
+    .chip-scroll {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+      scrollbar-width: none;
+    }
+    .chip-scroll::-webkit-scrollbar { display: none; }
+    .chip {
+      flex: 0 0 auto;
+      padding: 7px 12px;
+      min-height: 36px;
+      border-radius: 999px;
+      background: var(--surface-2);
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 700;
+      white-space: nowrap;
+      transition: background-color 140ms ease, color 140ms ease;
+    }
+    .chip.is-active {
+      background: var(--gold);
+      color: #141416;
+    }
+
+    /* Wallet Pass Stack */
+    .wallet-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .pass-card {
+      border-radius: 18px;
+      overflow: hidden;
+      position: relative;
+      transition: transform 280ms var(--ease-spring);
+    }
+    .pass-boarding {
+      background: var(--paper);
+      color: var(--paper-ink);
+    }
+    .pass-hotel {
+      background: var(--vermilion);
+      color: var(--paper-ink);
+    }
+    .pass-badge {
+      background: var(--gold);
+      color: var(--paper-ink);
+    }
+    .pass-trigger {
+      width: 100%;
+      text-align: left;
+      padding: 18px 18px 16px;
+      display: block;
+      color: inherit;
+    }
+    .pass-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .pass-kicker {
+      font-family: var(--font-cond);
+      font-weight: 800;
+      font-size: 15px;
+      letter-spacing: 0.08em;
+      opacity: 0.78;
+    }
+    .pass-toggle-hint {
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(20, 20, 22, 0.12);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .iata-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .iata-code {
+      font-family: var(--font-cond);
+      font-weight: 800;
+      font-size: 46px;
+      line-height: 0.92;
+      letter-spacing: -0.01em;
+    }
+    .iata-arrow {
+      font-family: var(--font-cond);
+      font-weight: 700;
+      font-size: 20px;
+      opacity: 0.65;
+    }
+    .pass-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .pass-field-label {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      opacity: 0.72;
+    }
+    .pass-field-val {
+      display: block;
+      font-family: var(--font-cond);
+      font-weight: 800;
+      font-size: 20px;
+      line-height: 1.15;
+    }
+
+    /* Perforated Tear Line with Physical Edge Cutouts */
+    .tear-line {
+      position: relative;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      padding-inline: 18px;
+    }
+    .tear-line::before,
+    .tear-line::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--bg);
+      transform: translateY(-50%);
+    }
+    .tear-line::before { left: -10px; }
+    .tear-line::after { right: -10px; }
+    .tear-dashes {
+      width: 100%;
+      border-top: 2px dashed rgba(20, 20, 22, 0.25);
+    }
+
+    .pass-card:not(.is-open) .tear-line { display: none; }
+    .pass-drawer {
+      display: none;
+      padding: 4px 18px 18px;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .pass-card.is-open .pass-drawer {
+      display: block;
+      animation: viewIn 220ms var(--ease-spring) both;
+    }
+    .pass-alert {
+      background: #141416;
+      color: var(--paper);
+      padding: 12px 14px;
+      border-radius: 12px;
+      margin-block: 10px;
+      font-size: 14px;
+    }
+    .pass-alert strong {
+      color: var(--gold);
+      display: block;
+      margin-bottom: 3px;
+    }
+    .pass-steps {
+      margin: 8px 0 12px;
+      padding-left: 18px;
+      display: grid;
+      gap: 6px;
+    }
+    .pass-cta {
+      width: 100%;
+      margin-top: 10px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: #141416;
+      color: #F5F2EC;
+      font-weight: 700;
+      font-size: 14px;
+      text-align: center;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    /* Quick Action 3-Button Strip */
+    .quick-strip {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+    .quick-btn {
+      background: var(--surface);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 14px 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+    .quick-btn svg {
+      width: 22px;
+      height: 22px;
+      color: var(--vermilion);
+    }
+
+    /* ==========================================================================
+       TAB 2: TIME — DEPARTURE-BOARD TIMELINE (ZERO FILLER PHOTOS)
+       ========================================================================== */
+    .time-controls {
+      position: sticky;
+      top: calc(var(--safe-top) + 54px);
+      z-index: 20;
+      background: rgba(14, 14, 16, 0.96);
+      padding-block: 10px 12px;
+      margin-inline: -16px;
+      padding-inline: 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      margin-bottom: 14px;
+    }
+    .tz-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .segmented {
+      display: inline-flex;
+      background: var(--surface-2);
+      padding: 3px;
+      border-radius: 10px;
+    }
+    .seg-btn {
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--muted);
+    }
+    .seg-btn.is-active {
+      background: var(--paper);
+      color: var(--paper-ink);
+    }
+
+    .timeline-feed {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .t-card {
+      background: var(--surface);
+      border-radius: 14px;
+      padding: 14px 15px;
+      display: grid;
+      grid-template-columns: 78px 1fr;
+      gap: 12px;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.07);
+    }
+    .t-card::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 5px;
+      background: var(--muted);
+    }
+    .t-card.type-confirmed::before { background: var(--mint); }
+    .t-card.type-event::before { background: var(--gold); }
+    .t-card.type-conflict::before { background: var(--vermilion); }
+    .t-card.is-cancelled { opacity: 0.58; }
+    .t-time {
+      font-family: var(--font-cond);
+      font-weight: 800;
+      font-size: 24px;
+      line-height: 1;
+      color: var(--ink);
+    }
+    .t-time-end {
+      display: block;
+      font-family: var(--font-cond);
+      font-weight: 600;
+      font-size: 15px;
+      color: var(--muted);
+      margin-top: 3px;
+    }
+    .t-date-sub {
+      display: block;
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+    .t-head-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+    .t-title {
+      font-size: 15px;
+      font-weight: 700;
+      line-height: 1.38;
+    }
+    .t-card.is-cancelled .t-title { text-decoration: line-through; }
+    .t-pill {
+      flex-shrink: 0;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: var(--surface-2);
+      color: var(--ink);
+      white-space: nowrap;
+    }
+    .t-pill.p-confirmed { background: rgba(46, 213, 144, 0.18); color: var(--mint); }
+    .t-pill.p-event { background: rgba(246, 195, 36, 0.18); color: var(--gold); }
+    .t-pill.p-conflict { background: var(--vermilion); color: #0E0E10; }
+    .t-venue {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--gold);
+      margin-bottom: 4px;
+    }
+    .t-desc {
+      font-size: 13.5px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    /* Transit Connector between Schedule Items */
+    .transit-link {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 14px 8px 34px;
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--muted);
+      position: relative;
+    }
+    .transit-link::before {
+      content: "";
+      position: absolute;
+      left: 20px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: rgba(255, 255, 255, 0.16);
+    }
+    .transit-link.is-warn {
+      color: var(--vermilion);
+    }
+
+    /* ==========================================================================
+       TAB 3: VEGAS — REAL PHOTOS ONLY WHERE THEY BELONG + YOUTUBE CINEMA
+       ========================================================================== */
+    .vegas-stack {
+      display: grid;
+      gap: 18px;
+    }
+    .photo-card {
+      background: var(--surface);
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .photo-card-hero {
+      position: relative;
+      aspect-ratio: 16 / 9;
+      background: #000;
+      overflow: hidden;
+    }
+    .photo-card-hero img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .photo-card-tag {
+      position: absolute;
+      left: 12px;
+      top: 12px;
+      background: rgba(14, 14, 16, 0.88);
+      color: var(--gold);
+      font-family: var(--font-cond);
+      font-weight: 800;
+      font-size: 14px;
+      letter-spacing: 0.06em;
+      padding: 5px 10px;
+      border-radius: 6px;
+    }
+    .photo-card-body {
+      padding: 16px;
+    }
+    .photo-card-body h3 {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .photo-card-body p {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+    .choice-group {
+      display: grid;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .choice-card {
+      width: 100%;
+      text-align: left;
+      background: var(--surface-2);
+      border: 2px solid transparent;
+      border-radius: 12px;
+      padding: 12px;
+      color: var(--ink);
+      transition: border-color 150ms ease, background-color 150ms ease;
+    }
+    .choice-card.is-picked {
+      border-color: var(--gold);
+      background: rgba(246, 195, 36, 0.1);
+    }
+    .choice-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      font-size: 14.5px;
+      margin-bottom: 4px;
+    }
+    .choice-sub {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    .picked-badge {
+      font-size: 11px;
+      padding: 2px 7px;
+      border-radius: 999px;
+      background: var(--gold);
+      color: #141416;
+      font-weight: 700;
+    }
+
+    /* Venue Map List & Dining */
+    .dark-panel {
+      background: var(--surface);
+      border-radius: 18px;
+      padding: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .dark-panel h3 {
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+    .venue-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      padding-block: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    }
+    .venue-row:last-child { border-bottom: 0; }
+    .venue-name {
+      font-weight: 700;
+      font-size: 15px;
+      display: block;
+    }
+    .venue-note {
+      font-size: 12.5px;
+      color: var(--muted);
+    }
+    .venue-time {
+      font-family: var(--font-cond);
+      font-weight: 800;
+      font-size: 18px;
+      color: var(--gold);
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    /* YouTube Cards with Offline 3-Line Takeaways */
+    .yt-list {
+      display: grid;
+      gap: 14px;
+    }
+    @media (min-width: 700px) {
+      .yt-list { grid-template-columns: repeat(2, 1fr); }
+    }
+    .yt-item {
+      background: var(--surface);
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      flex-direction: column;
+    }
+    .yt-thumb-trigger {
+      position: relative;
+      aspect-ratio: 16 / 9;
+      width: 100%;
+      padding: 0;
+      background: #000;
+      overflow: hidden;
+      display: block;
+    }
+    .yt-thumb-trigger img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .yt-badge {
+      position: absolute;
+      left: 10px;
+      bottom: 10px;
+      background: rgba(14, 14, 16, 0.9);
+      color: var(--ink);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 9px;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .yt-info {
+      padding: 13px 14px 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex: 1;
+    }
+    .yt-ch { font-size: 12px; color: var(--muted); }
+    .yt-t { font-size: 15px; font-weight: 700; line-height: 1.38; }
+    .yt-bullets {
+      margin: 4px 0 8px;
+      padding-left: 16px;
+      font-size: 13px;
+      color: var(--muted);
+      display: grid;
+      gap: 3px;
+    }
+    .yt-open-link {
+      margin-top: auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--vermilion);
+      text-decoration: none;
+    }
+
+    /* ==========================================================================
+       TAB 4: GEAR — ENGLISH SHOW CARDS + TIP SLIDER + PHRASEBOOK + SOS
+       ========================================================================== */
+    .showcard-grid {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+    .showcard-btn {
+      width: 100%;
+      text-align: left;
+      background: var(--paper);
+      color: var(--paper-ink);
+      border-radius: 14px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .showcard-btn.is-accent {
+      background: var(--vermilion);
+      color: #0E0E10;
+    }
+    .showcard-btn-title {
+      font-weight: 700;
+      font-size: 15px;
+      display: block;
+    }
+    .showcard-btn-sub {
+      font-size: 12.5px;
+      opacity: 0.78;
+    }
+    .showcard-arrow {
+      font-family: var(--font-cond);
+      font-weight: 800;
+      font-size: 14px;
+      padding: 5px 10px;
+      border-radius: 8px;
+      background: rgba(20, 20, 22, 0.12);
+      white-space: nowrap;
+    }
+
+    /* Tip & FX Calculator */
+    .calc-box {
+      background: var(--surface);
+      border-radius: 18px;
+      padding: 18px;
+      margin-bottom: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .calc-readout {
+      background: var(--bg);
+      border-radius: 14px;
+      padding: 14px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      text-align: center;
+      margin-bottom: 14px;
+    }
+    .calc-readout-lbl {
+      display: block;
+      font-size: 11px;
+      color: var(--muted);
+    }
+    .calc-readout-val {
+      font-family: var(--font-cond);
+      font-weight: 800;
+      font-size: 28px;
+      line-height: 1.1;
+      color: var(--gold);
+    }
+    .calc-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .inp-label {
+      display: block;
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+    .dark-input {
+      width: 100%;
+      min-height: 44px;
+      padding: 8px 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      background: var(--bg);
+      color: var(--ink);
+      font-size: 16px;
+      font-variant-numeric: tabular-nums;
+    }
+    .tip-slider {
+      width: 100%;
+      accent-color: var(--vermilion);
+      height: 32px;
+      margin-block: 4px 10px;
+    }
+    .bill-stack {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-block: 10px;
+    }
+    .bill-chip {
+      background: var(--paper);
+      color: var(--paper-ink);
+      border-radius: 10px;
+      padding: 8px 6px;
+      text-align: center;
+    }
+    .bill-chip strong {
+      display: block;
+      font-family: var(--font-cond);
+      font-size: 24px;
+      line-height: 1;
+    }
+    .bill-chip span { font-size: 12px; font-weight: 700; }
+
+    /* Emergency SOS & Phrasebook */
+    .sos-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .sos-btn {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      padding: 13px 14px;
+      border-radius: 14px;
+      background: var(--surface-2);
+      text-decoration: none;
+    }
+    .sos-btn.is-911 {
+      background: var(--vermilion);
+      color: #0E0E10;
+    }
+    .sos-btn strong { font-size: 15px; }
+    .sos-btn span { font-family: var(--font-cond); font-size: 18px; font-weight: 700; }
+
+    /* ==========================================================================
+       TAB 5: PACK — CHECKLISTS, SUITCASE & IPHONE 15 OFFLINE STATUS
+       ========================================================================== */
+    .meter-card {
+      background: var(--surface);
+      border-radius: 18px;
+      padding: 16px;
+      margin-bottom: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .meter-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 8px;
+    }
+    .meter-bar {
+      width: 100%;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--surface-2);
+      overflow: hidden;
+    }
+    .meter-fill {
+      height: 100%;
+      background: var(--mint);
+      width: 0%;
+      transition: width 260ms var(--ease-spring);
+    }
+
+    /* Native <details> Accordions (modern-web-guidance compliant) */
+    .acc-group {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .acc-group details {
+      background: var(--surface);
+      border-radius: 16px;
+      padding: 12px 14px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .acc-group summary {
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 15px;
+      cursor: pointer;
+      min-height: 40px;
+    }
+    .acc-group summary::-webkit-details-marker { display: none; }
+    .acc-group summary::before {
+      content: "";
+      inline-size: 14px;
+      block-size: 14px;
+      flex-shrink: 0;
+      background-color: var(--gold);
+      -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 6l5 5 5-5' fill='none' stroke='%23000' stroke-width='2.2'/%3E%3C/svg%3E") no-repeat center / contain;
+      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 6l5 5 5-5' fill='none' stroke='%23000' stroke-width='2.2'/%3E%3C/svg%3E") no-repeat center / contain;
+      rotate: -90deg;
+    }
+    .acc-group details[open] > summary::before { rotate: 0deg; }
+    @media (prefers-reduced-motion: no-preference) {
+      .acc-group summary::before { transition: rotate 180ms ease; }
+      .acc-group details::details-content {
+        transition: block-size 260ms var(--ease-spring), content-visibility 260ms ease, display 260ms ease;
+        transition-behavior: allow-discrete;
+      }
+    }
+    .acc-group details::details-content {
+      interpolate-size: allow-keywords;
+      overflow: clip;
+      contain: layout;
+    }
+    .acc-group details:not([open])::details-content { block-size: 0; }
+
+    .chk-ul {
+      list-style: none;
+      margin: 10px 0 0;
+      padding: 0;
+      display: grid;
+      gap: 6px;
+    }
+    .chk-li label {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 9px 10px;
+      border-radius: 10px;
+      background: var(--bg);
+      cursor: pointer;
+      min-height: 44px;
+      font-size: 14px;
+    }
+    .chk-li input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      margin-top: 1px;
+      flex-shrink: 0;
+      accent-color: var(--mint);
+    }
+    .chk-li.is-done span {
+      text-decoration: line-through;
+      color: var(--muted);
+    }
+
+    /* ==========================================================================
+       NATIVE <dialog closedby="any"> MODALS (SHOW CARD + VIDEO PREVIEW)
+       ========================================================================== */
+    dialog.app-dialog {
+      width: min(500px, calc(100vw - 24px));
+      max-height: calc(100dvh - 32px);
+      padding: 0;
+      border: 0;
+      border-radius: 22px;
+      background: var(--paper);
+      color: var(--paper-ink);
+      overflow: auto;
+    }
+    dialog.app-dialog::backdrop {
+      background: rgba(8, 8, 10, 0.84);
+    }
+    .showcard-modal-body {
+      padding: 24px 20px;
+    }
+    .showcard-modal-jp {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--vermilion-dark);
+      margin-bottom: 10px;
+    }
+    .showcard-modal-en {
+      font-family: var(--font-cond);
+      font-weight: 800;
+      font-size: clamp(32px, 9vw, 48px);
+      line-height: 1.06;
+      color: var(--paper-ink);
+      margin-bottom: 16px;
+      word-break: break-word;
+    }
+    .showcard-modal-sub {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--paper-muted);
+      padding-top: 14px;
+      border-top: 2px dashed rgba(20, 20, 22, 0.2);
+      margin-bottom: 18px;
+    }
+    .modal-close-btn {
+      width: 100%;
+      padding: 13px;
+      border-radius: 12px;
+      background: #141416;
+      color: #F5F2EC;
+      font-weight: 700;
+      font-size: 15px;
+    }
+
+    dialog.video-modal {
+      width: min(560px, calc(100vw - 24px));
+      padding: 0;
+      border: 0;
+      border-radius: 20px;
+      background: var(--surface);
+      color: var(--ink);
+    }
+    dialog.video-modal::backdrop {
+      background: rgba(8, 8, 10, 0.84);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .tab-view, .pass-drawer { animation: none; }
+      button:active { transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <!-- TOP TELEMETRY BAR -->
+  <header class="top-bar">
+    <div class="top-bar-inner">
+      <div class="brand-mark">
+        <span class="brand-badge">LV26</span>
+        <div class="brand-clock">
+          <span class="brand-clock-main num" id="topClockPst">LAS --:--</span>
+          <span class="brand-clock-sub num" id="topClockJst">TYO --:--</span>
+        </div>
+      </div>
+      <div class="top-actions">
+        <span class="pill-btn" id="offlinePill" style="background: rgba(46, 213, 144, 0.14); color: var(--mint); pointer-events: none; font-size: 12px;" title="オフライン動作状態">OFFLINE</span>
+        <button type="button" class="pill-btn" id="vaultBtn" aria-pressed="false" aria-label="個人情報のロック解除・再ロック" style="background: var(--vermilion); color: #0E0E10;">
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="7" width="10" height="7" rx="1.5"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
+          <span id="vaultBtnText">ロック解除</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="app-shell" id="appShell">
+    <!-- ======================================================================
+         TAB 1: NOW (LIVE RADAR + APPLE WALLET PASS STACK)
+         ====================================================================== -->
+    <section class="tab-view is-active" id="view-now" aria-labelledby="now-title">
+      <h1 id="now-title" class="sr-only">LV26 ラスベガス トラベルウォレット</h1>
+
+      <!-- Live Mission Radar + Time Travel Demo -->
+      <div class="radar-card">
+        <div class="radar-top">
+          <span class="radar-status"><span class="pulse-dot" aria-hidden="true"></span><span id="radarBadge">COUNTDOWN</span></span>
+          <span class="num" style="font-size: 13px; color: var(--muted);" id="radarClockLabel">現在時刻</span>
+        </div>
+        <div class="radar-big num" id="radarBig">あと 6日</div>
+        <div class="radar-mission" id="radarMission">11/29 20:25 JST 羽田T3発（AA176）</div>
+        <p class="radar-meta" id="radarMeta">まずは未完了の手続き（COM325-Rキャンセル・JPN101・re:Play RSVP・フーバーダム予約・現金$150）を片付けます。</p>
+
+        <div class="sim-strip">
+          <span class="sim-label">タイムトラベル体験（現地モードを事前チェック）：</span>
+          <div class="chip-scroll" id="simChips" role="group" aria-label="日時シミュレーター">
+            <button type="button" class="chip is-active" data-sim="real">現在（リアル）</button>
+            <button type="button" class="chip" data-sim="2026-11-29T21:30:00-08:00">11/29 到着夜</button>
+            <button type="button" class="chip" data-sim="2026-11-30T11:20:00-08:00">11/30 初日昼</button>
+            <button type="button" class="chip" data-sim="2026-12-01T13:20:00-08:00">12/01 GameDay前</button>
+            <button type="button" class="chip" data-sim="2026-12-02T14:40:00-08:00">12/02 ショー検討</button>
+            <button type="button" class="chip" data-sim="2026-12-03T14:10:00-08:00">12/03 JPN101前</button>
+            <button type="button" class="chip" data-sim="2026-12-04T15:15:00-08:00">12/04 ダム帰着後</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Apple Wallet Style Physical Pass Stack -->
+      <div class="wallet-stack" id="walletStack">
+        <!-- PASS 1: BOARDING PASS -->
+        <article class="pass-card pass-boarding" data-pass="flight">
+          <button type="button" class="pass-trigger" aria-expanded="false">
+            <div class="pass-head">
+              <span class="pass-kicker">AMERICAN AIRLINES · BOARDING PASS</span>
+              <span class="pass-toggle-hint">DFW入国 ▾</span>
+            </div>
+            <div class="iata-row">
+              <span class="iata-code">HND</span>
+              <span class="iata-arrow">→ DFW →</span>
+              <span class="iata-code">LAS</span>
+            </div>
+            <div class="pass-grid">
+              <div>
+                <span class="pass-field-label">CONF CODE</span>
+                <span class="pass-field-val" data-vault="aa_conf" data-mask="••••••">••••••</span>
+              </div>
+              <div>
+                <span class="pass-field-label">SEAT (往路)</span>
+                <span class="pass-field-val" data-vault="seat_out" data-mask="•••/•••">•••/•••</span>
+              </div>
+              <div>
+                <span class="pass-field-label">ARR LAS T1</span>
+                <span class="pass-field-val num">21:25 PST</span>
+              </div>
+            </div>
+          </button>
+          <div class="tear-line" aria-hidden="true"><div class="tear-dashes"></div></div>
+          <div class="pass-drawer">
+            <p><strong>往路 11/29（日）：</strong><span data-vault="home_out" data-mask="自宅最寄り → 羽田T3（要ロック解除）">自宅最寄り → 羽田T3（要ロック解除）</span><br>
+            AA176 HND 20:25 JST → DFW 17:20 CST（B777-200・11h55m）<br>
+            AA1797 DFW 20:18 CST → LAS T1 21:25 PST（A321・乗継 2h58m）</p>
+
+            <div class="pass-alert">
+              <strong>CBP公式ルール確認：初回渡米は MPC 対象外</strong>
+              Mobile Passport Control（MPC）は「ESTA再渡航者」限定のため、今回は通常の <strong>Visitors / ESTA レーン</strong>へ進みます。滞在先を聞かれたら「The LINQ Hotel, 3535 Las Vegas Blvd South」と答えます。
+            </div>
+
+            <ol class="pass-steps">
+              <li>DFW ターミナルDで入国審査（通常レーン）</li>
+              <li>税関ホールで預け荷物を一度受取（LASタグ付きでも必須）</li>
+              <li>税関出口の Connecting Bags へ再預け → 保安検査</li>
+              <li>Skylink で出発ターミナルへ移動</li>
+            </ol>
+
+            <p><strong>復路 12/04（金）〜12/06（日）：</strong><br>
+            AA651 LAS T1 19:32 → LAX 20:53（席 <strong data-vault="seat_lax" data-mask="•••">•••</strong>・荷物羽田スルー）<br>
+            AA169 LAX 12/05 00:10 → HND T3 12/06 05:05 JST（席 <strong data-vault="seat_ret" data-mask="•••">•••</strong>・<span data-vault="home_ret" data-mask="06:15発→帰宅（要ロック解除）">06:15発→帰宅（要ロック解除）</span>）</p>
+            <button type="button" class="pass-cta" data-showcard="immigration">DFW入国審査でそのまま見せる英語カード</button>
+          </div>
+        </article>
+
+        <!-- PASS 2: HOTEL KEYCARD -->
+        <article class="pass-card pass-hotel" data-pass="hotel">
+          <button type="button" class="pass-trigger" aria-expanded="false">
+            <div class="pass-head">
+              <span class="pass-kicker">HOTEL KEYCARD · CENTRAL STRIP</span>
+              <span class="pass-toggle-hint">タップで詳細</span>
+            </div>
+            <div class="iata-row">
+              <span class="iata-code" style="font-size: 40px;">THE LINQ</span>
+              <span class="iata-arrow">NOV 29–DEC 4</span>
+            </div>
+            <div class="pass-grid">
+              <div>
+                <span class="pass-field-label">ACK NUMBER</span>
+                <span class="pass-field-val" data-vault="hotel_conf" data-mask="••••••••">••••••••</span>
+              </div>
+              <div>
+                <span class="pass-field-label">ADDRESS</span>
+                <span class="pass-field-val" style="font-size: 16px;">3535 LV BLVD S</span>
+              </div>
+              <div>
+                <span class="pass-field-label">CHECK-OUT</span>
+                <span class="pass-field-val num">12/04 FRI</span>
+              </div>
+            </div>
+          </button>
+          <div class="tear-line" aria-hidden="true"><div class="tear-dashes"></div></div>
+          <div class="pass-drawer">
+            <p><strong>電話：</strong>+1-702-731-3311 ／ 部屋タイプは到着時割当。<br>
+            <strong>LAS空港からの移動：</strong>タクシー定額 Zone 3 $30.25目安（カード +$3、税・チップ別・10〜20分）または配車アプリ $15〜35。</p>
+            <p style="margin-top: 8px;"><strong>ここからの距離目安：</strong>Caesars Forum 徒歩7分 ／ Caesars Palace 徒歩8–10分 ／ Venetian 徒歩10–12分 ／ MGM Grand モノレール15–20分 ／ Wynn 車10分。</p>
+            <button type="button" class="pass-cta" data-showcard="taxi">タクシー運転手に見せる英語住所カード</button>
+          </div>
+        </article>
+
+        <!-- PASS 3: RE:INVENT BADGE & ESTA -->
+        <article class="pass-card pass-badge" data-pass="badge">
+          <button type="button" class="pass-trigger" aria-expanded="false">
+            <div class="pass-head">
+              <span class="pass-kicker">AWS RE:INVENT 2026 · PASS &amp; ESTA</span>
+              <span class="pass-toggle-hint">タップで詳細</span>
+            </div>
+            <div class="iata-row">
+              <span class="iata-code" style="font-size: 38px;">BADGE 23:59</span>
+              <span class="iata-arrow">LAS T1 SUN</span>
+            </div>
+            <div class="pass-grid">
+              <div>
+                <span class="pass-field-label">PASSPORT</span>
+                <span class="pass-field-val" data-vault="passport" data-mask="••••">••••</span>
+              </div>
+              <div>
+                <span class="pass-field-label">ESTA VALID</span>
+                <span class="pass-field-val num">2028-11-03</span>
+              </div>
+              <div>
+                <span class="pass-field-label">JAPAN DESK</span>
+                <span class="pass-field-val">L1 607</span>
+              </div>
+            </div>
+          </button>
+          <div class="tear-line" aria-hidden="true"><div class="tear-dashes"></div></div>
+          <div class="pass-drawer">
+            <p><strong>11/29 到着夜の最優先：</strong>LAS T1 のバッジ受取は 23:59 まで。21:25 着で当日受取できます（必要物：パスポート＋受取コード／顔写真事前登録推奨）。</p>
+            <p style="margin-top: 8px;"><strong>11/30 09:00〜 必須ミッション：</strong>The Venetian Level 1（Casanova 607）の Japan Support Desk で招待メールを提示し、<strong>12/01 Japan Night の参加チケット（先着順）</strong>を受け取ります。</p>
+            <p style="margin-top: 8px;"><strong>パーティ夜のID注意：</strong>普段パスポート原本はホテル金庫ですが、11/30 の Sony Happy Hour / APJC Party（21+）など飲酒の場は原本携帯が必須です。</p>
+            <button type="button" class="pass-cta" data-showcard="badge">空港バッジ受取・Japan Desk 英語確認カード</button>
+          </div>
+        </article>
+      </div>
+
+      <!-- 3 Quick Actions -->
+      <div class="quick-strip">
+        <button type="button" class="quick-btn" data-showcard="usd">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+          ドル建て提示
+        </button>
+        <button type="button" class="quick-btn" data-jump="gear">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          チップ計算
+        </button>
+        <button type="button" class="quick-btn" data-showcard="sos">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          緊急 911
+        </button>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         TAB 2: TIME — PHOTO-FREE HIGH-DENSITY TIMELINE WITH TRANSIT CONNECTORS
+         ====================================================================== -->
+    <section class="tab-view" id="view-time" aria-labelledby="time-title">
+      <div class="view-head">
+        <div>
+          <h2 id="time-title" class="view-title">TIMELINE</h2>
+          <p class="view-sub">写真なし・移動時間コネクタ付きの発着案内ビュー</p>
+        </div>
+      </div>
+
+      <div class="time-controls">
+        <div class="tz-row">
+          <div class="segmented" role="group" aria-label="タイムゾーン切替">
+            <button type="button" class="seg-btn is-active" data-tz="PST" aria-pressed="true">現地 PST</button>
+            <button type="button" class="seg-btn" data-tz="JST" aria-pressed="false">日本 JST</button>
+          </div>
+          <div class="chip-scroll" id="timeFilters" role="group" aria-label="種別フィルタ">
+            <button type="button" class="chip is-active" data-tfilter="all">全部</button>
+            <button type="button" class="chip" data-tfilter="confirmed">確定</button>
+            <button type="button" class="chip" data-tfilter="event">Sony/JP</button>
+            <button type="button" class="chip" data-tfilter="optional">候補/当日</button>
+          </div>
+        </div>
+        <div class="chip-scroll" id="dayPills" role="tablist" aria-label="日付選択"></div>
+      </div>
+
+      <div class="timeline-feed" id="timelineFeed" aria-live="polite"></div>
+
+      <div class="dark-panel" style="margin-top: 16px;">
+        <p style="font-size: 13px; color: var(--muted);">
+          <strong>補足：</strong>満席（Full）17件は当てにしない方針のため一覧から除外済み。12/03 15:00 は <strong>JPN101（Venetian）優先・COM325-R 不参加</strong>で決定済みです（ポータル上のキャンセル完了は未確認）。
+        </p>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         TAB 3: VEGAS — REAL PHOTOS (ONLY WHERE THEY MATTER) + YOUTUBE CINEMA
+         ====================================================================== -->
+    <section class="tab-view" id="view-vegas" aria-labelledby="vegas-title">
+      <div class="view-head">
+        <div>
+          <h2 id="vegas-title" class="view-title">VEGAS &amp; VIDEO</h2>
+          <p class="view-sub">未決プランの判断・LINQ周辺の食・厳選YouTube 12本</p>
+        </div>
+      </div>
+
+      <div class="chip-scroll" id="vegasSubTabs" style="margin-bottom: 16px;" role="group" aria-label="Vegasサブカテゴリ">
+        <button type="button" class="chip is-active" data-vtab="decisions">未決の2大プラン</button>
+        <button type="button" class="chip" data-vtab="videos">予習 YouTube (12)</button>
+        <button type="button" class="chip" data-vtab="food">LINQ グルメ・土産</button>
+        <button type="button" class="chip" data-vtab="venues">会場距離マップ</button>
+      </div>
+
+      <!-- Sub-panel: Decisions (Sphere/KA + Hoover Dam) -->
+      <div class="vegas-stack" id="vpanel-decisions">
+        <article class="photo-card">
+          <div class="photo-card-hero">
+            <img src="./media/sphere.jpg" alt="夜空に輝くラスベガスの Sphere" loading="lazy">
+            <span class="photo-card-tag">UNDECIDED · SHOWS</span>
+          </div>
+          <div class="photo-card-body">
+            <h3>Sphere『オズの魔法使い』＆『KÀ』</h3>
+            <p>最優先は <strong>Sphere</strong>（セッションより優先可・日中可）。Japan Night（12/01夜）と re:Play（12/03夜）があるため2案に絞られています（未購入）。タップで仮メモを残せます。</p>
+            <div class="choice-group" data-decision="show">
+              <button type="button" class="choice-card" data-choice="plan1">
+                <div class="choice-title"><span>案1（推奨）：12/02（水）同日はしご</span><span class="picked-badge" hidden>選択中</span></div>
+                <div class="choice-sub">Sphere 17:00（75分・開場45分前・遅刻不可・$104〜／中央200番台 $139〜）＋ MGM Grand『KÀ』20:30（90分・$87.88〜・約7割売済）。代償：COM324-R（15:00–16:00）の欠席または早退。</div>
+              </button>
+              <button type="button" class="choice-card" data-choice="plan3">
+                <div class="choice-title"><span>案3：12/04（金）日中回 Sphere 11:00</span><span class="picked-badge" hidden>選択中</span></div>
+                <div class="choice-sub">最終日午前に Sphere へ行く案。代償：同日のフーバーダム6名ツアー不参加。別候補の『Mystère』（Treasure Island・18:30/21:00）は在庫豊富。</div>
+              </button>
+            </div>
+            <p style="font-size: 12px; margin-bottom: 0;">※価格は11/17–20確認・Ticketmaster 1枚手数料込・税別目安。購入前に総額を再確認。</p>
+          </div>
+        </article>
+
+        <article class="photo-card">
+          <div class="photo-card-hero">
+            <img src="./media/hoover.jpg" alt="メモリアルブリッジから望むフーバーダムとコロラド川" loading="lazy">
+            <span class="photo-card-tag">DEC 4 · 6 PEOPLE · IN PROGRESS</span>
+          </div>
+          <div class="photo-card-body">
+            <h3>最終日 12/04 フーバーダム（6名確定）</h3>
+            <p>11/23に保留解除・予約進行方針（<strong>送信・請求はまだ未実行</strong>）。AA651（19:32発・荷物締切18:32）のため、ホテル17:15発を守る前提です。</p>
+            <div class="choice-group" data-decision="hoover">
+              <button type="button" class="choice-card" data-choice="grayline">
+                <div class="choice-title"><span>進行中：Gray Line 発電所ツアー込み（6名）</span><span class="picked-badge" hidden>選択中</span></div>
+                <div class="choice-sub"><strong>6名合計 ¥82,866（1人あたり ¥13,811・税・手数料込）</strong>。12/02請求・12/03 09:00まで無料キャンセル。8:00〜8:15頃お迎え→レビュー実態の帰着は <strong>14:30〜15:00</strong>。残確認：代表電話番号・The LINQ 送迎可否・成立後72時間前（12/01頃）リコンファーム必須。</div>
+              </button>
+              <button type="button" class="choice-card" data-choice="mini">
+                <div class="choice-title"><span>代替A：Viator ミニツアー（発電所なし）</span><span class="picked-badge" hidden>選択中</span></div>
+                <div class="choice-sub">1人あたり $76目安。発電所・ビジターセンターなしだが 11:00 頃帰着で時間に余裕。</div>
+              </button>
+              <button type="button" class="choice-card" data-choice="car">
+                <div class="choice-title"><span>代替B：Alamo レンタカー＋公式発電所</span><span class="picked-badge" hidden>選択中</span></div>
+                <div class="choice-sub">7–8人乗り 車両単位 $97.70〜$105.71（税・手数料込）＋駐車 $10＋USBR公式発電所 1人 $25。国際運転免許証が必要。</div>
+              </button>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <!-- Sub-panel: YouTube 12 Videos (with Offline 3-Line Takeaways!) -->
+      <div id="vpanel-videos" hidden>
+        <div class="chip-scroll" id="ytCatPills" style="margin-bottom: 14px;" role="group" aria-label="動画カテゴリ">
+          <button type="button" class="chip is-active" data-ytcat="all">すべて (12)</button>
+          <button type="button" class="chip" data-ytcat="transit">DFW・空港・移動</button>
+          <button type="button" class="chip" data-ytcat="reinvent">re:Invent 攻略</button>
+          <button type="button" class="chip" data-ytcat="shows">ショー・フーバーダム</button>
+          <button type="button" class="chip" data-ytcat="linq">LINQ・グルメ</button>
+        </div>
+        <div class="yt-list" id="ytList"></div>
+      </div>
+
+      <!-- Sub-panel: Food & Souvenirs -->
+      <div class="vegas-stack" id="vpanel-food" hidden>
+        <article class="photo-card">
+          <div class="photo-card-hero">
+            <img src="./media/linq.jpg" alt="夜の LINQ Promenade と High Roller" loading="lazy">
+            <span class="photo-card-tag">STEP OUTSIDE THE LINQ</span>
+          </div>
+          <div class="photo-card-body">
+            <h3>LINQ 目の前の朝・昼・夜グルメ</h3>
+            <div class="venue-row">
+              <div><span class="venue-name">Nook Express（LINQ館内・24h）</span><span class="venue-note">早朝のコーヒー・朝食サンドを秒で買える拠点ショップ</span></div>
+              <span class="venue-time">0m</span>
+            </div>
+            <div class="venue-row">
+              <div><span class="venue-name">In-N-Out Burger（Promenade）</span><span class="venue-note">西海岸名物バーガー。並んでも回転が速く手頃</span></div>
+              <span class="venue-time">2m</span>
+            </div>
+            <div class="venue-row">
+              <div><span class="venue-name">Gordon Ramsay Fish &amp; Chips</span><span class="venue-note">カウンター形式で揚げたて。短時間の昼食に最適</span></div>
+              <span class="venue-time">2m</span>
+            </div>
+            <div class="venue-row">
+              <div><span class="venue-name">Favorite Bistro / Maxie's</span><span class="venue-note">しっかり座って食べる朝・ブランチの定番2軒</span></div>
+              <span class="venue-time">3m</span>
+            </div>
+            <div class="venue-row">
+              <div><span class="venue-name">Flour &amp; Barley / Yard House</span><span class="venue-note">窯焼きピザ＆クラフトビール。セッション帰りの1杯に</span></div>
+              <span class="venue-time">4m</span>
+            </div>
+            <div class="venue-row">
+              <div><span class="venue-name">Urth Caffé / Grand Lux Cafe（Venetian）</span><span class="venue-note">12/01・12/03のVenetian滞在日に便利なカフェ＆大箱</span></div>
+              <span class="venue-time">10m</span>
+            </div>
+            <div class="venue-row">
+              <div><span class="venue-name">Café Americano（Caesars Palace・24h）</span><span class="venue-note">GameDay後や夜遅めの食事でも開いているダイナー</span></div>
+              <span class="venue-time">8m</span>
+            </div>
+          </div>
+        </article>
+
+        <div class="dark-panel">
+          <h3>お土産ミッション（12/03夜・12/04朝・空港が安全）</h3>
+          <div class="venue-row">
+            <div><span class="venue-name">会社向け（大人数・小分け個包装）</span><span class="venue-note">カジノチップ型チョコ、「Welcome to Fabulous Las Vegas」小物</span></div>
+            <span class="venue-time">配り用</span>
+          </div>
+          <div class="venue-row">
+            <div><span class="venue-name">家族・目上向け：Ethel M Chocolates</span><span class="venue-note">ラスベガス地元の老舗。LAS空港内にも店舗あり</span></div>
+            <span class="venue-time">定番</span>
+          </div>
+          <div class="venue-row">
+            <div><span class="venue-name">友人向け：M&amp;M's World / Trader Joe's</span><span class="venue-note">限定チョコやアメリカらしいスナック類</span></div>
+            <span class="venue-time">手軽</span>
+          </div>
+          <p style="font-size: 13px; color: var(--muted); margin-top: 10px;">※免税目安：個人使用品合計20万円以下・酒3本（760ml=1本）・たばこ200本。高額品レシート保管。往路スーツケースは2〜3割空きを残します。</p>
+        </div>
+      </div>
+
+      <!-- Sub-panel: Venues Map -->
+      <div class="vegas-stack" id="vpanel-venues" hidden>
+        <article class="photo-card">
+          <div class="photo-card-hero">
+            <img src="./media/strip.jpg" alt="Resorts World から望む夜のラスベガス・ストリップ" loading="lazy">
+            <span class="photo-card-tag">BASE: THE LINQ (3535 LV BLVD S)</span>
+          </div>
+          <div class="photo-card-body">
+            <h3>The LINQ からの会場アクセス一覧</h3>
+            <div id="venueMapList"></div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         TAB 4: GEAR — ENGLISH SHOW CARDS + TIP SLIDER + PHRASES + SOS
+         ====================================================================== -->
+    <section class="tab-view" id="view-gear" aria-labelledby="gear-title">
+      <div class="view-head">
+        <div>
+          <h2 id="gear-title" class="view-title">FIELD GEAR</h2>
+          <p class="view-sub">相手に見せる英語カード・チップ計算・緊急連絡</p>
+        </div>
+      </div>
+
+      <!-- 1-Tap Fullscreen Show Cards -->
+      <div class="showcard-grid">
+        <button type="button" class="showcard-btn is-accent" data-showcard="taxi">
+          <div>
+            <span class="showcard-btn-title">タクシー・配車用：The LINQ 住所</span>
+            <span class="showcard-btn-sub">3535 Las Vegas Blvd South を大画面表示</span>
+          </div>
+          <span class="showcard-arrow">SHOW</span>
+        </button>
+        <button type="button" class="showcard-btn" data-showcard="immigration">
+          <div>
+            <span class="showcard-btn-title">DFW入国審査用：滞在先・目的・勤務先</span>
+            <span class="showcard-btn-sub">AWS re:Invent / SIE / The LINQ（11/29–12/04）</span>
+          </div>
+          <span class="showcard-arrow">SHOW</span>
+        </button>
+        <button type="button" class="showcard-btn" data-showcard="usd">
+          <div>
+            <span class="showcard-btn-title">カード決済・ATM用：ドル建て指定（DCC拒否）</span>
+            <span class="showcard-btn-sub">「円建てではなく USD で払います」を即提示</span>
+          </div>
+          <span class="showcard-arrow">SHOW</span>
+        </button>
+        <button type="button" class="showcard-btn" data-showcard="badge">
+          <div>
+            <span class="showcard-btn-title">バッジ受取・Japan Support Desk 場所確認</span>
+            <span class="showcard-btn-sub">LAS T1 / The Venetian Level 1, Casanova 607</span>
+          </div>
+          <span class="showcard-arrow">SHOW</span>
+        </button>
+      </div>
+
+      <!-- Tactile Tip & USD/JPY Calculator -->
+      <div class="calc-box">
+        <div class="view-head" style="margin-bottom: 10px;">
+          <h3 style="font-size: 18px;">チップ計算 ＆ ドル円換算</h3>
+          <span class="cond num" style="font-size: 20px; color: var(--vermilion);" id="tipPctDisplay">18%</span>
+        </div>
+
+        <div class="calc-readout" aria-live="polite">
+          <div>
+            <span class="calc-readout-lbl">TIP</span>
+            <span class="calc-readout-val num" id="gTip">$8.10</span>
+          </div>
+          <div>
+            <span class="calc-readout-lbl">TOTAL USD</span>
+            <span class="calc-readout-val num" id="gTotal">$53.10</span>
+          </div>
+          <div>
+            <span class="calc-readout-lbl">約 日本円</span>
+            <span class="calc-readout-val num" style="color: var(--ink);" id="gJpy">¥8,443</span>
+          </div>
+        </div>
+
+        <div class="chip-scroll" style="margin-bottom: 12px;" role="group" aria-label="よく使う金額">
+          <button type="button" class="chip" data-amt="15">$15</button>
+          <button type="button" class="chip" data-amt="30">$30</button>
+          <button type="button" class="chip is-active" data-amt="45">$45</button>
+          <button type="button" class="chip" data-amt="75">$75</button>
+          <button type="button" class="chip" data-amt="120">$120</button>
+        </div>
+
+        <div class="calc-row">
+          <div>
+            <label for="gUsd" class="inp-label">税引前金額（USD）</label>
+            <input id="gUsd" class="dark-input" type="number" min="0" step="1" value="45" inputmode="decimal">
+          </div>
+          <div>
+            <label for="gFx" class="inp-label">レート（円 / $1）</label>
+            <input id="gFx" class="dark-input" type="number" min="80" max="300" step="0.5" value="159" inputmode="decimal">
+          </div>
+        </div>
+
+        <label for="gTipRange" class="inp-label">チップ率スライダー（0%〜25%）</label>
+        <input id="gTipRange" class="tip-slider" type="range" min="0" max="25" step="1" value="18">
+        <div class="chip-scroll" role="group" aria-label="チップ率ショートカット">
+          <button type="button" class="chip" data-gtip="0">0% カウンター</button>
+          <button type="button" class="chip" data-gtip="15">15% 配車/タクシー</button>
+          <button type="button" class="chip is-active" data-gtip="18">18% レストラン標準</button>
+          <button type="button" class="chip" data-gtip="20">20% 良い接客</button>
+        </div>
+
+        <div style="margin-top: 14px; padding-top: 12px; border-top: 1px dashed rgba(255,255,255,0.14);">
+          <strong style="font-size: 14px;">現金 $150（約¥23,900）小札プラン</strong>
+          <div class="bill-stack num">
+            <div class="bill-chip"><strong>$1</strong><span>×30枚</span></div>
+            <div class="bill-chip"><strong>$5</strong><span>×8枚</span></div>
+            <div class="bill-chip"><strong>$10</strong><span>×3枚</span></div>
+            <div class="bill-chip"><strong>$20</strong><span>×2枚</span></div>
+          </div>
+          <p style="font-size: 12.5px; color: var(--muted);">清掃 $2–5/毎朝・バー $1–2/杯・ベル $1–2/個・ガイド $5–10。両替はオンライン宅配4社が小札指定不可のため、<strong>店頭カウンター事前電話確認（推奨・約¥24,000〜24,300）</strong>か Travelex オンライン（送料¥990・現地崩し）の2択（決定待ち）。</p>
+        </div>
+      </div>
+
+      <!-- Mini English Phrasebook + Emergency SOS -->
+      <div class="dark-panel" style="margin-bottom: 16px;">
+        <h3>緊急連絡先（1タップ発信）</h3>
+        <div class="sos-grid">
+          <a class="sos-btn is-911" href="tel:911"><strong>警察・救急・消防</strong><span>911</span></a>
+          <a class="sos-btn" href="tel:+17027313311"><strong>The LINQ フロント</strong><span>+1-702-731-3311</span></a>
+          <a class="sos-btn" href="tel:18004337300"><strong>American Airlines</strong><span>1-800-433-7300</span></a>
+          <a class="sos-btn" href="tel:+14157806000"><strong>在SF日本国総領事館</strong><span>+1-415-780-6000</span></a>
+        </div>
+        <div class="calc-row" style="margin-bottom: 0;">
+          <div>
+            <label for="memoIns" class="inp-label">海外旅行保険（未登録・端末保存）</label>
+            <input id="memoIns" class="dark-input" type="text" placeholder="証券番号・緊急連絡先を入力">
+          </div>
+          <div>
+            <label for="memoComp" class="inp-label">会社の緊急連絡先（未登録・端末保存）</label>
+            <input id="memoComp" class="dark-input" type="text" placeholder="SIE 緊急連絡先を入力">
+          </div>
+        </div>
+      </div>
+
+      <div class="acc-group">
+        <details>
+          <summary>現地ですぐ使えるミニ英語フレーズ</summary>
+          <div style="margin-top: 10px; display: grid; gap: 10px; font-size: 14px;">
+            <div><strong>入国審査（目的）：</strong><br><span style="color: var(--gold);">"I'm here for AWS re:Invent, a business conference, for 5 days."</span></div>
+            <div><strong>ホテルチェックイン：</strong><br><span style="color: var(--gold);"><span data-vault="checkin_phrase" data-mask="ロック解除で氏名入りフレーズを表示">ロック解除で氏名入りフレーズを表示</span></span></div>
+            <div><strong>配車アプリの本人確認：</strong><br><span style="color: var(--gold);"><span data-vault="rideshare_phrase" data-mask="ロック解除で氏名入りフレーズを表示">ロック解除で氏名入りフレーズを表示</span></span>（ナンバー一致も確認）</div>
+            <div><strong>レストラン会計：</strong><br><span style="color: var(--gold);">"Could I get the check, please?" / "In US dollars, please."</span></div>
+            <div><strong>ホテルで荷物預け（12/04朝）：</strong><br><span style="color: var(--gold);">"Could I leave my luggage here until 5 PM?"</span></div>
+          </div>
+        </details>
+
+        <details>
+          <summary>防犯・パスポート保管・通信（ahamo）のルール</summary>
+          <div style="margin-top: 10px; display: grid; gap: 8px; font-size: 13.5px; color: var(--muted);">
+            <p><strong style="color: var(--ink);">パスポート：</strong>普段はホテル金庫＋スマホ写真＆コピー。飲酒・21+イベントの夜（11/30）だけ服の下のセキュリティポーチで原本携帯。</p>
+            <p><strong style="color: var(--ink);">分散と防犯：</strong>カード別ブランド2枚と現金を財布・ポーチ・金庫に分散。深夜は配車/タクシーを使い、飲み物を置いたまま離れない。ATMはホテル/銀行内のみ。</p>
+            <p><strong style="color: var(--ink);">通信：</strong>ahamo 米国ローミング込みで十分（11月残量約20GB→12/01に40GBへ増量・15日制限対象外・追加eSIM不要）。</p>
+            <p><strong style="color: var(--ink);">紛失時手順：</strong>①カード停止 → ②警察でポリスレポート取得＆在SF総領事館で渡航書 → ③海外旅行保険へ連絡。</p>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         TAB 5: PACK — TASKS + 60L SUITCASE + IPHONE 15 OFFLINE STATUS
+         ====================================================================== -->
+    <section class="tab-view" id="view-pack" aria-labelledby="pack-title">
+      <div class="view-head">
+        <div>
+          <h2 id="pack-title" class="view-title">PREP &amp; PACK</h2>
+          <p class="view-sub">60Lスーツケース（暗証番号 <strong data-vault="suitcase_lock" data-mask="•••">•••</strong>）・残タスク</p>
+        </div>
+      </div>
+
+      <div class="meter-card">
+        <div class="meter-top">
+          <strong style="font-size: 15px;">出発準備の進捗（端末内に自動保存）</strong>
+          <span class="cond num" style="font-size: 24px; color: var(--mint);" id="packProgressTxt">0 / 0</span>
+        </div>
+        <div class="meter-bar" aria-hidden="true"><div class="meter-fill" id="packProgressBar"></div></div>
+      </div>
+
+      <div class="acc-group" id="packAccordions"></div>
+
+      <div class="dark-panel" style="margin-top: 14px;">
+        <h3>iPhone 15 オフラインアプリ状態</h3>
+        <p style="font-size: 13.5px; color: var(--muted); margin-bottom: 10px;" id="offlineStatusMsg">チェック中…</p>
+        <p style="font-size: 13px; color: var(--muted);">
+          <strong>ホーム画面に追加する手順（PWA版）：</strong>Safari で HTTPS の公開URLを開き、下部中央の「共有（□↑）」→「ホーム画面に追加」をタップ。1回開くと Service Worker が写真・YouTubeサムネ・全データを iPhone 15 内にキャッシュし、機内モードでもそのまま起動できます。
+        </p>
+        <div style="margin-top: 12px; display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap;">
+          <button type="button" class="pill-btn" id="refreshCacheBtn">オフライン保存を再確認</button>
+          <button type="button" class="pill-btn" id="resetPackBtn">チェック状態を初期化</button>
+          <button type="button" class="pill-btn" id="showCreditsBtn">写真クレジットを見る</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- BOTTOM IPHONE 15 THUMB DOCK -->
+  <nav class="bottom-dock" aria-label="アプリメニュー">
+    <div class="dock-inner">
+      <button type="button" class="dock-btn is-active" data-tab="now" aria-current="page">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        NOW
+      </button>
+      <button type="button" class="dock-btn" data-tab="time">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/></svg>
+        TIME
+      </button>
+      <button type="button" class="dock-btn" data-tab="vegas">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        VEGAS
+      </button>
+      <button type="button" class="dock-btn" data-tab="gear">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        GEAR
+      </button>
+      <button type="button" class="dock-btn" data-tab="pack">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        PACK
+      </button>
+    </div>
+  </nav>
+
+  <!-- NATIVE FULLSCREEN ENGLISH SHOW CARD DIALOG (closedby="any" + Safari fallback) -->
+  <dialog id="showCardDialog" class="app-dialog" closedby="any" aria-labelledby="scTitle">
+    <div class="showcard-modal-body">
+      <div class="showcard-modal-jp" id="scTitle">相手に見せる英語カード</div>
+      <div class="showcard-modal-en" id="scEn"></div>
+      <div class="showcard-modal-sub" id="scSub"></div>
+      <form method="dialog">
+        <button type="submit" class="modal-close-btn">閉じる</button>
+      </form>
+    </div>
+  </dialog>
+
+  <!-- NATIVE VIDEO / CREDITS DIALOG -->
+  <dialog id="videoDialog" class="video-modal" closedby="any" aria-labelledby="vdTitle">
+    <div style="padding: 18px;">
+      <p style="font-size: 12px; color: var(--muted); margin-bottom: 4px;" id="vdChannel"></p>
+      <h3 id="vdTitle" style="font-size: 18px; line-height: 1.35; margin-bottom: 12px;"></h3>
+      <div id="vdMediaWrap" style="aspect-ratio: 16/9; background: #000; border-radius: 12px; overflow: hidden; margin-bottom: 12px;">
+        <img id="vdImg" src="" alt="" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+      </div>
+      <div id="vdBody" style="font-size: 14px; color: var(--muted); margin-bottom: 16px;"></div>
+      <div style="display: grid; gap: 8px;">
+        <a id="vdOpen" href="#" target="_blank" rel="noopener" style="display: block; text-align: center; padding: 13px; border-radius: 12px; background: var(--vermilion); color: #0E0E10; font-weight: 800; text-decoration: none;">YouTube で動画を観る</a>
+        <form method="dialog">
+          <button type="submit" style="width: 100%; padding: 12px; border-radius: 12px; background: var(--surface-2); color: var(--ink); font-weight: 700;">閉じる</button>
+        </form>
+      </div>
+    </div>
+  </dialog>
+
+
+  <!-- NATIVE VAULT UNLOCK DIALOG (AES-256-GCM PBKDF2) -->
+  <dialog id="vaultDialog" class="video-modal" closedby="any" aria-labelledby="vaultDlgTitle">
+    <div style="padding: 22px 20px;">
+      <p class="cond" style="font-size: 13px; font-weight: 800; color: var(--gold); letter-spacing: 0.08em; margin-bottom: 4px;">AES-256-GCM LOCAL VAULT</p>
+      <h3 id="vaultDlgTitle" style="font-size: 20px; margin-bottom: 8px;">個人情報のロック解除</h3>
+      <p style="font-size: 13.5px; color: var(--muted); margin-bottom: 14px;">確認番号・座席・旅券末尾・暗証番号・最寄り駅は暗号化されています。パスコードを入力すると、この端末の中だけで復号されます（外部送信なし）。</p>
+      <form id="vaultForm" style="display: grid; gap: 10px;">
+        <input id="vaultPassInput" class="dark-input" type="password" autocomplete="current-password" placeholder="パスコードを入力" required>
+        <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); cursor: pointer;">
+          <input id="vaultRemember" type="checkbox" checked style="width: 18px; height: 18px; accent-color: var(--mint);">
+          この端末（iPhone）に復号状態を保存する（機内モードでも維持）
+        </label>
+        <p id="vaultErr" style="font-size: 13px; color: var(--vermilion); margin: 0;" hidden>パスコードが違います。もう一度確認してください。</p>
+        <button type="submit" style="padding: 13px; border-radius: 12px; background: var(--vermilion); color: #0E0E10; font-weight: 800; font-size: 15px;">復号して表示する</button>
+      </form>
+      <form method="dialog" style="margin-top: 8px;">
+        <button type="submit" style="width: 100%; padding: 11px; border-radius: 12px; background: var(--surface-2); color: var(--ink); font-weight: 700;">ロックのまま閉じる</button>
+      </form>
+    </div>
+  </dialog>
+
+  <script>
+    (() => {
+      /* ======================================================================
+         0. NON-BLOCKING OPTIONAL FONTS + SERVICE WORKER OFFLINE VERIFICATION
+         ====================================================================== */
+      // Load optional web fonts ONLY when online, never blocking offline/airplane startup
+      if (navigator.onLine) {
+        const fl = document.createElement('link');
+        fl.rel = 'stylesheet';
+        fl.href = 'https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap';
+        document.head.appendChild(fl);
+      }
+
+      const offlineMsg = document.getElementById('offlineStatusMsg');
+      const offlinePill = document.getElementById('offlinePill');
+      const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+
+      async function checkOfflineCache() {
+        if ('caches' in window && location.protocol.startsWith('http')) {
+          try {
+            const keys = await caches.keys();
+            const lvKey = keys.find((k) => k.startsWith('lv26-desert-wallet'));
+            if (lvKey) {
+              const cache = await caches.open(lvKey);
+              const items = await cache.keys();
+              offlinePill.textContent = navigator.onLine ? 'OFFLINE READY' : 'OFFLINE MODE';
+              offlineMsg.textContent = `${isStandalone ? 'ホーム画面アプリ起動中・' : ''}端末キャッシュ完了（${items.length}ファイル保存済み）。このまま機内モードでも全画面・写真・サムネ・計算機・チェックリストが動作します。`;
+              return;
+            }
+          } catch (_) {}
+        }
+        if (location.protocol === 'file:' || !location.protocol.startsWith('http')) {
+          offlinePill.textContent = 'STANDALONE';
+          offlineMsg.textContent = '単一HTMLスタンドアロン版（写真4点・YouTubeサムネ12点・全データ内蔵）。オフライン環境でそのまま動作します。';
+        } else {
+          offlinePill.textContent = 'CACHING...';
+          offlineMsg.textContent = 'オフライン用キャッシュを準備中です。数秒後に「オフライン保存を再確認」を押してください。';
+        }
+      }
+
+      if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+        navigator.serviceWorker.register('./sw.js').then((reg) => {
+          reg.addEventListener('updatefound', () => setTimeout(checkOfflineCache, 1200));
+          return navigator.serviceWorker.ready;
+        }).then(() => checkOfflineCache()).catch(() => checkOfflineCache());
+      } else {
+        checkOfflineCache();
+      }
+      window.addEventListener('online', checkOfflineCache);
+      window.addEventListener('offline', checkOfflineCache);
+      document.getElementById('refreshCacheBtn').addEventListener('click', checkOfflineCache);
+
+      /* ======================================================================
+         1. TAB NAVIGATION (5-TAB IPHONE DOCK)
+         ====================================================================== */
+      const dockBtns = Array.from(document.querySelectorAll('.dock-btn'));
+      const tabViews = Array.from(document.querySelectorAll('.tab-view'));
+      function switchTab(tabId) {
+        dockBtns.forEach((b) => {
+          const on = b.dataset.tab === tabId;
+          b.classList.toggle('is-active', on);
+          if (on) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current');
+        });
+        tabViews.forEach((v) => v.classList.toggle('is-active', v.id === `view-${tabId}`));
+        window.scrollTo({ top: 0, behavior: 'instant' });
+      }
+      dockBtns.forEach((b) => b.addEventListener('click', () => switchTab(b.dataset.tab)));
+      document.querySelectorAll('[data-jump]').forEach((b) => {
+        b.addEventListener('click', () => switchTab(b.dataset.jump));
+      });
+
+      /* ======================================================================
+         2. WALLET PASS ACCORDION STACK
+         ====================================================================== */
+      document.querySelectorAll('.pass-card .pass-trigger').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const card = btn.closest('.pass-card');
+          const willOpen = !card.classList.contains('is-open');
+          document.querySelectorAll('.pass-card').forEach((c) => {
+            c.classList.remove('is-open');
+            c.querySelector('.pass-trigger').setAttribute('aria-expanded', 'false');
+          });
+          if (willOpen) {
+            card.classList.add('is-open');
+            btn.setAttribute('aria-expanded', 'true');
+          }
+        });
+      });
+
+      /* ======================================================================
+         3. AES-256-GCM ENCRYPTED PERSONAL VAULT (PBKDF2 310,000 ITERATIONS)
+         ====================================================================== */
+      const ENCRYPTED_VAULT = {"v":1,"iter":310000,"salt":"bzFtcwLT2OhFsVxuhNC69w==","iv":"tsQQDlI4iHskH7sI","ct":"J8dd4CPqN2SRtAlkYHSvvBUHj7rzNcDt788L9QzSnbvsI3MSLn5ZvO6/F6hFuHFY/doGhFEf/8EKRxy1itpk8OPM4fDtOEG5VBm5KbXx1motv583yGQTcpPPcObSjH/G4YGU/UmujUsrmu6Rq36sTTUeRUi5Jbt20QZDxdGDNwcc/NfzqEpsvyytwI8HmwSJjTRaDmWA/gH0z/nsnxUQ2GEPnmhmXGtwY5rQBJ0Q0+wK3HzlWFUM+j+OtQg7vhb8fbEN2h6BKgc/jjuHUbJwGOCklrdF2NfIhjCOg9ACGlJcRf5eazfVwxsAh5j8Oswhn/BblU6lAUta3HllX6QICrbgQspeGJYik4uhkBBHOMJdOPreAYJzPyloe8ue93d1Of+NqBYFaUCQHx/Estg1ZWgPTRkapivBTsvoXvsCFiJhuaKHBk/K5J52Bla/SWSTATvLLs3fECrw5FzegC3B8AMO7us/6O9UzveTaRtyDbFd89JTLCismzjD8MtY/Tg0zmSSnrfvLcBHZ88KUzH40o4MLoQu+baata3FpbyLfJZC/PDEB+W+J9hSGfCO/AsBptO3/tnS3LKpuOoO7WUQrDKPiXjrkcYh8ixgf5LTVru3hl4F7ogwN9VsohnxjYaZHlUHxjGPhnUCl8oCeFApaE5rkjylR9K/LZQUgrcFWU5rpFuNSieZ5F0shUzmDyc54EokDeVqdlm5bzfGtwc8l9hQ3sX2IcHJql4oTmhKXLxnKp/tyVhKlaWOxHPRW0L47rgCD2/wiM9rHQldT0reAA/biTKdD+65tu8nCrafShM9haPvBgYLZfSnMsoIjhwBwlT/AE70XeVAGAAkly7McRk23m+bGjICyZa8a/WV0Cf0LtHCIU4NZChTxeDn0ElfDXi6ulxdISLJhk+K"};
+      const VAULT_STORE_KEY = 'lv26_unlocked_vault_v1';
+      let unlockedData = null;
+
+      const vaultBtn = document.getElementById('vaultBtn');
+      const vaultBtnText = document.getElementById('vaultBtnText');
+      const vaultDialog = document.getElementById('vaultDialog');
+      const vaultForm = document.getElementById('vaultForm');
+      const vaultPassInput = document.getElementById('vaultPassInput');
+      const vaultRemember = document.getElementById('vaultRemember');
+      const vaultErr = document.getElementById('vaultErr');
+
+      function b64ToBytes(b64) {
+        const bin = atob(b64);
+        const out = new Uint8Array(bin.length);
+        for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+        return out;
+      }
+
+      async function decryptVault(pass) {
+        const enc = new TextEncoder();
+        const salt = b64ToBytes(ENCRYPTED_VAULT.salt);
+        const iv = b64ToBytes(ENCRYPTED_VAULT.iv);
+        const ct = b64ToBytes(ENCRYPTED_VAULT.ct);
+        const keyMat = await crypto.subtle.importKey('raw', enc.encode(pass.trim()), 'PBKDF2', false, ['deriveKey']);
+        const aesKey = await crypto.subtle.deriveKey(
+          { name: 'PBKDF2', salt, iterations: ENCRYPTED_VAULT.iter, hash: 'SHA-256' },
+          keyMat,
+          { name: 'AES-GCM', length: 256 },
+          false,
+          ['decrypt']
+        );
+        const plain = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, aesKey, ct);
+        return JSON.parse(new TextDecoder().decode(plain));
+      }
+
+      function applyVaultToDom() {
+        const unlocked = !!unlockedData;
+        document.body.classList.toggle('privacy-masked', !unlocked);
+        vaultBtn.setAttribute('aria-pressed', String(unlocked));
+        vaultBtn.style.background = unlocked ? 'var(--surface-2)' : 'var(--vermilion)';
+        vaultBtn.style.color = unlocked ? 'var(--ink)' : '#0E0E10';
+        vaultBtnText.textContent = unlocked ? 'ロックする' : 'ロック解除';
+        document.querySelectorAll('[data-vault]').forEach((el) => {
+          const k = el.dataset.vault;
+          el.textContent = unlocked && unlockedData[k] ? unlockedData[k] : (el.dataset.mask || '••••');
+        });
+      }
+
+      try {
+        const cached = localStorage.getItem(VAULT_STORE_KEY);
+        if (cached) unlockedData = JSON.parse(cached);
+      } catch (_) {}
+
+      vaultBtn.addEventListener('click', () => {
+        if (unlockedData) {
+          unlockedData = null;
+          try { localStorage.removeItem(VAULT_STORE_KEY); } catch (_) {}
+          applyVaultToDom();
+        } else {
+          vaultErr.hidden = true;
+          vaultPassInput.value = '';
+          vaultDialog.showModal();
+        }
+      });
+
+      vaultForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        vaultErr.hidden = true;
+        try {
+          unlockedData = await decryptVault(vaultPassInput.value);
+          if (vaultRemember.checked) {
+            try { localStorage.setItem(VAULT_STORE_KEY, JSON.stringify(unlockedData)); } catch (_) {}
+          }
+          applyVaultToDom();
+          vaultDialog.close();
+        } catch (_) {
+          vaultErr.hidden = false;
+          vaultPassInput.select();
+        }
+      });
+
+      // Safari fallback for vaultDialog closedby="any"
+      if (!('closedBy' in HTMLDialogElement.prototype)) {
+        vaultDialog.addEventListener('click', (event) => {
+          if (event.target !== vaultDialog) return;
+          const rect = vaultDialog.getBoundingClientRect();
+          const inside = rect.top <= event.clientY && event.clientY <= rect.top + rect.height &&
+                         rect.left <= event.clientX && event.clientX <= rect.left + rect.width;
+          if (!inside) vaultDialog.close();
+        });
+      }
+
+      /* ======================================================================
+         4. SCHEDULE DATA WITH REAL TRANSIT CONNECTORS
+         ====================================================================== */
+      const DAYS = [
+        { id: '11-29', label: '11/29 日' },
+        { id: '11-30', label: '11/30 月' },
+        { id: '12-01', label: '12/01 火' },
+        { id: '12-02', label: '12/02 水' },
+        { id: '12-03', label: '12/03 木' },
+        { id: '12-04', label: '12/04 金' },
+        { id: '12-06', label: '12/06 日' }
+      ];
+
+      const SCHEDULE = [
+        // 11/29
+        { day: '11-29', start: '2026-11-29T16:30:00+09:00', end: '2026-11-29T17:30:00+09:00', title: '自宅出発 → 羽田空港 T3', venue: '<span data-vault="home_route_out" data-mask="自宅最寄り → 羽田T3">自宅最寄り → 羽田T3</span>', type: 'confirmed', tag: '移動', desc: '電車 ¥370（40〜55分）。タクシー代替は16:50発 約¥4,000。', nextMove: '国際線チェックイン・保安検査（AAオンラインチェックインは前日20:25〜）' },
+        { day: '11-29', start: '2026-11-29T20:25:00+09:00', end: '2026-11-29T17:20:00-06:00', title: 'AA176 羽田 T3 → ダラス（DFW）', venue: 'B777-200 / <span data-vault="seat_hnd" data-mask="Seat •••">Seat •••</span>', type: 'confirmed', tag: 'フライト', desc: '11時間55分。DFW ターミナルD着。初回ESTAのため通常レーンで入国審査。', nextMove: 'DFW乗継 2h58m：入国審査→荷物受取→税関→再預け→保安検査→Skylink' },
+        { day: '11-29', start: '2026-11-29T20:18:00-06:00', end: '2026-11-29T21:25:00-08:00', title: 'AA1797 ダラス → ラスベガス T1', venue: 'A321 / <span data-vault="seat_las" data-mask="Seat •••">Seat •••</span>', type: 'confirmed', tag: 'フライト', desc: '3時間7分。LAS T1 到着後すぐバッジ窓口へ。', nextMove: '最優先：空港内で re:Invent バッジを受け取ってからタクシーへ' },
+        { day: '11-29', start: '2026-11-29T21:40:00-08:00', end: '2026-11-29T23:00:00-08:00', title: 'LAS T1 バッジ受取（23:59締切）→ The LINQ', venue: 'LAS T1 → 3535 Las Vegas Blvd S', type: 'conflict', tag: '到着夜最優先', desc: 'パスポート＋受取コード必須。タクシー定額 Zone 3 $30.25目安または配車 $15〜35（22:30頃ホテル着見込み）。' },
+
+        // 11/30
+        { day: '11-30', start: '2026-11-30T09:00:00-08:00', end: '2026-11-30T10:00:00-08:00', title: 'Japan Night 参加チケット受取（先着順）', venue: 'The Venetian L1, Casanova 607（Japan Desk）', type: 'event', tag: '必須前提', desc: '招待メールを提示して12/01夜のチケットを入手。LINQ から徒歩10〜12分。', nextMove: 'Venetian → Caesars Forum：徒歩約10〜15分（昼食も確保）' },
+        { day: '11-30', start: '2026-11-30T12:00:00-08:00', end: '2026-11-30T13:00:00-08:00', title: 'AIM301-R｜Application Archeology with Kiro', venue: 'Caesars Forum', type: 'confirmed', tag: '予約済', desc: '初日1本目の確定枠。終了直後の13:00 MGM Grand（DVT214-S）は開始に間に合わず見送り推奨。', nextMove: 'Forum → Wynn / Encore：車約10分・シャトルまたは徒歩20〜25分' },
+        { day: '11-30', start: '2026-11-30T14:30:00-08:00', end: '2026-11-30T15:00:00-08:00', title: 'AIM288-S｜How to run parallel coding agents（前半のみ）', venue: 'Wynn / Encore', type: 'optional', tag: '当日枠', desc: '次の15:00予約と同会場のため前半30分だけ様子見が可能。', nextMove: '同会場（Wynn / Encore）内で移動' },
+        { day: '11-30', start: '2026-11-30T15:00:00-08:00', end: '2026-11-30T16:00:00-08:00', title: 'ARC310-R｜Well-Architected in your AI coding agent', venue: 'Wynn / Encore', type: 'confirmed', tag: '予約済', desc: 'Wynn での予約枠。終了後は北隣の Resorts World へすぐ動けます。', nextMove: 'Wynn → Resorts World：北へ車5〜10分（パスポート原本携帯確認！）' },
+        { day: '11-30', start: '2026-11-30T16:00:00-08:00', end: '2026-11-30T18:00:00-08:00', title: 'AWS & Sony Happy Hour（推奨） vs AIM289-S', venue: 'Eight Cigar Lounge（Resorts World）', type: 'conflict', tag: '二択・推奨', desc: 'ソニーグループ社員対象。同時刻の Venetian 当日枠 AIM289-S との二択は未決（Happy Hour推奨）。きれいめ服＋パスポート原本携帯。', nextMove: 'Resorts World → Vanderpump：南下して車約10分（LINQ近く）' },
+        { day: '11-30', start: '2026-11-30T18:30:00-08:00', end: '2026-11-30T23:00:00-08:00', title: 'APJC Kick Off Party', venue: 'Soleia Rooftop Nightclub（The Vanderpump Hotel）', type: 'event', tag: 'RSVP済', desc: '21歳以上・バッジ必須・パスポート原本携帯。LINQ すぐ近くのため帰りも楽。' },
+
+        // 12/01
+        { day: '12-01', start: '2026-12-01T06:30:00-08:00', end: '2026-12-01T08:00:00-08:00', title: 're:Invent 5K（ACT053）', venue: 'Allegiant Stadium', type: 'optional', tag: '見送り寄り', desc: '月曜夜パーティ翌朝のため見送り寄り（未決定）。', nextMove: 'LINQ → The Venetian：徒歩10〜12分' },
+        { day: '12-01', start: '2026-12-01T11:00:00-08:00', end: '2026-12-01T11:20:00-08:00', title: 'BIZ111-S｜Build the Agentic Workplace: Slack', venue: 'The Venetian', type: 'optional', tag: '当日枠', desc: '20分の短時間枠。同会場の日本語EXPOツアーとスムーズに接続。', nextMove: '同会場（The Venetian）内で EXPO ツアー集合へ' },
+        { day: '12-01', start: '2026-12-01T11:30:00-08:00', end: '2026-12-01T12:30:00-08:00', title: '日本人向け EXPO パートナーツアー（候補）', venue: 'The Venetian（11:00〜／14:00〜 15分間隔）', type: 'event', tag: '要申込', desc: '約50〜60分・先着15名・リストバンド必須。12/01 11時台が最も組みやすい枠。', nextMove: 'Venetian → Caesars Palace：徒歩約12〜15分（昼食挟む）' },
+        { day: '12-01', start: '2026-12-01T14:00:00-08:00', end: '2026-12-01T17:00:00-08:00', title: 'GHJ301-S｜AWS GameDay（Agentic AI & New Relic）', venue: 'Caesars Palace', type: 'confirmed', tag: '予約済・3h', desc: '3時間のチームハンズオン。終了後LINQで一息入れて Wynn へ。', nextMove: 'LINQ → Wynn Event Pavilion：車約10分（Japan Night チケット持参！）' },
+        { day: '12-01', start: '2026-12-01T19:00:00-08:00', end: '2026-12-01T21:00:00-08:00', title: 'Japan Night（18:30開場）', venue: 'Wynn Event Pavilion', type: 'event', tag: '参加決定済', desc: '11/30 に Japan Support Desk で受け取ったチケットを忘れずに。' },
+
+        // 12/02
+        { day: '12-02', start: '2026-12-02T08:30:00-08:00', end: '2026-12-02T09:30:00-08:00', title: 'DVT340｜Build on top of large codebases', venue: 'Caesars Forum（LINQ徒歩7分）', type: 'confirmed', tag: '予約済', desc: '朝一番の予約枠。', nextMove: 'Forum → Caesars Palace：徒歩約10分（30分バッファあり）' },
+        { day: '12-02', start: '2026-12-02T10:00:00-08:00', end: '2026-12-02T11:30:00-08:00', title: 'TNC333-R1｜Developing Apps from Specs with Kiro', venue: 'Caesars Palace', type: 'confirmed', tag: '予約済', desc: '90分の Kiro 仕様駆動セッション。', nextMove: 'Harrah’s & LINQ駅 → MGM Grand駅：モノレール約15〜20分' },
+        { day: '12-02', start: '2026-12-02T13:00:00-08:00', end: '2026-12-02T14:00:00-08:00', title: 'DAT453｜[NEW LAUNCH] Coming soon!', venue: 'MGM Grand', type: 'optional', tag: '当日枠', desc: '昼の移動枠で参加可。15:00 の Forum 予約に間に合います。', nextMove: 'MGM Grand駅 → LINQ駅：モノレール＋徒歩で約20〜25分' },
+        { day: '12-02', start: '2026-12-02T15:00:00-08:00', end: '2026-12-02T16:00:00-08:00', title: 'COM324-R｜Pit Crew AI: Multi-Agent Cloud Ops', venue: 'Caesars Forum', type: 'conflict', tag: 'ショー次第で調整', desc: '予約済だが、ショー案1（Sphere 17:00・開場45分前・遅刻不可）を選ぶ場合は欠席または早退を検討。', nextMove: 'Sphere（Venetian東側）→ 終演後 MGM Grand へ移動', warnMove: true },
+        { day: '12-02', start: '2026-12-02T17:00:00-08:00', end: '2026-12-02T22:00:00-08:00', title: 'ショー案1（未決・推奨）：Sphere 17:00 ＋ KÀ 20:30', venue: 'Sphere → MGM Grand', type: 'optional', tag: '未購入', desc: 'Sphere『オズの魔法使い』（75分）の後、MGM Grand で『KÀ』（90分）をはしごする推奨プラン。' },
+
+        // 12/03
+        { day: '12-03', start: '2026-12-03T09:00:00-08:00', end: '2026-12-03T12:00:00-08:00', title: 'GHJ312｜DevOps and Modernization Jam（候補）', venue: '会場未確認（未予約）', type: 'optional', tag: '唯一の非競合JAM', desc: '既存予約と重ならない唯一のJAM枠。見送る場合は11:00台の Venetian 日本語EXPOツアー＋昼食が無理ない動線。', nextMove: 'Venetian 内で昼食 → 14:30 開場の Theatre へ移動なし' },
+        { day: '12-03', start: '2026-12-03T15:00:00-08:00', end: '2026-12-03T17:00:00-08:00', title: 'JPN101｜日本語ラップアップセッション（14:30開場）', venue: 'Theatre at The Venetian', type: 'event', tag: '参加決定済', desc: '帰国後の社内共有に役立つまとめ。ポータルでハート登録済みか要確認。', nextMove: '同時刻 COM325-R は不参加決定（下記）' },
+        { day: '12-03', start: '2026-12-03T15:00:00-08:00', end: '2026-12-03T16:00:00-08:00', title: 'COM325-R｜The agent orchestration spectrum', venue: 'Caesars Forum', type: 'conflict', tag: '不参加・キャンセル要確認', cancelled: true, desc: 'JPN101優先のため不参加決定済み。ポータルでのキャンセル完了を確認します。', nextMove: 'Venetian → Allegiant Stadium：公式専用シャトル（18:15頃〜）' },
+        { day: '12-03', start: '2026-12-03T18:30:00-08:00', end: '2026-12-03T23:00:00-08:00', title: 're:Play 公式クロージングパーティー', venue: 'Allegiant Stadium', type: 'conflict', tag: '要RSVP・時刻要確認', desc: 'フルパス込・要RSVP。開始時刻は公式ブログ20:00／ガイド18:30〜22:30で割れているため RSVP 画面で確定させます。' },
+
+        // 12/04
+        { day: '12-04', start: '2026-12-04T08:00:00-08:00', end: '2026-12-04T15:00:00-08:00', title: 'フーバーダム 6名ツアー（Gray Line 予約進行中）', venue: 'Hoover Dam（LINQ送迎要確認）', type: 'optional', tag: '6名・予約進行中', desc: '6名合計 ¥82,866（1人 ¥13,811）。朝チェックアウト＆荷物預けを済ませて出発。帰着は14:30〜15:00見込み。', nextMove: '重要：14:30〜15:00帰着 → 17:15 ホテル発（荷物締切 18:32）', warnMove: true },
+        { day: '12-04', start: '2026-12-04T17:15:00-08:00', end: '2026-12-04T18:32:00-08:00', title: 'The LINQ 出発 → LAS T1 チェックイン', venue: 'The LINQ → LAS T1', type: 'conflict', tag: '荷物締切 18:32', desc: '荷物預け締切は出発60分前（18:32）。余裕をもって17:15にホテルを出ます。', nextMove: 'LAS T1 保安検査 → 搭乗ゲートへ' },
+        { day: '12-04', start: '2026-12-04T19:32:00-08:00', end: '2026-12-04T20:53:00-08:00', title: 'AA651 ラスベガス T1 → ロサンゼルス（LAX）', venue: 'A321 / Seat <span data-vault="seat_lax" data-mask="•••">•••</span>', type: 'confirmed', tag: 'フライト', desc: '1時間21分。荷物は羽田までスルー預け。', nextMove: 'LAX 乗継 3時間17分（荷物受取不要）' },
+        { day: '12-04', start: '2026-12-05T00:10:00-08:00', end: '2026-12-06T05:05:00+09:00', title: 'AA169 ロサンゼルス → 羽田 T3（12/06 朝着）', venue: 'B787 / Seat <span data-vault="seat_ret" data-mask="•••">•••</span>', type: 'confirmed', tag: 'フライト', desc: '11時間55分。Visit Japan Web のQRコードを準備しておきます。' },
+
+        // 12/06
+        { day: '12-06', start: '2026-12-06T05:05:00+09:00', end: '2026-12-06T07:00:00+09:00', title: '羽田 T3 到着 → 帰宅', venue: '<span data-vault="home_route_ret" data-mask="羽田 T3 → 自宅最寄り">羽田 T3 → 自宅最寄り</span>', type: 'confirmed', tag: '帰国', desc: '<span data-vault="home_ret_desc" data-mask="Visit Japan Web 通過後、06:15羽田発が目安です。">Visit Japan Web 通過後、06:15羽田発が目安です。</span>' }
+      ];
+
+      /* ======================================================================
+         5. LIVE CLOCKS + MISSION RADAR + TIME-TRAVEL SIMULATOR
+         ====================================================================== */
+      const topClockPst = document.getElementById('topClockPst');
+      const topClockJst = document.getElementById('topClockJst');
+      const radarBadge = document.getElementById('radarBadge');
+      const radarClockLabel = document.getElementById('radarClockLabel');
+      const radarBig = document.getElementById('radarBig');
+      const radarMission = document.getElementById('radarMission');
+      const radarMeta = document.getElementById('radarMeta');
+      const departMs = Date.parse('2026-11-29T20:25:00+09:00');
+      const fmtPst = new Intl.DateTimeFormat('ja-JP', { timeZone: 'America/Los_Angeles', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false });
+      const fmtJst = new Intl.DateTimeFormat('ja-JP', { timeZone: 'Asia/Tokyo', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false });
+      const fmtTimePst = new Intl.DateTimeFormat('ja-JP', { timeZone: 'America/Los_Angeles', hour: '2-digit', minute: '2-digit', hour12: false });
+
+      let simIso = 'real';
+
+      function updateRadar() {
+        const now = simIso === 'real' ? new Date() : new Date(simIso);
+        const nowMs = now.getTime();
+        topClockPst.textContent = `LAS ${fmtPst.format(now)}`;
+        topClockJst.textContent = `TYO ${fmtJst.format(now)}`;
+        radarClockLabel.textContent = simIso === 'real' ? '現在時刻（リアル）' : `仮想日時 ${fmtPst.format(now)} PST`;
+
+        if (nowMs < departMs - 6 * 3600000) {
+          const diff = departMs - nowMs;
+          const d = Math.floor(diff / 86400000);
+          const h = Math.floor((diff % 86400000) / 3600000);
+          radarBadge.textContent = 'PRE-FLIGHT COUNTDOWN';
+          radarBig.textContent = `あと ${d}日 ${h}時間`;
+          radarMission.textContent = '11/29 20:25 JST 羽田T3発（AA176）→ ダラス経由ラスベガス';
+          radarMeta.textContent = '出発前の残件：COM325-Rキャンセル確認・JPN101・re:Play RSVP・フーバーダム6名予約・現金$150両替。';
+          return;
+        }
+
+        const activeEvents = SCHEDULE.filter((e) => !e.cancelled);
+        const current = activeEvents.find((e) => nowMs >= Date.parse(e.start) && nowMs <= Date.parse(e.end));
+        const upcoming = activeEvents.find((e) => Date.parse(e.start) > nowMs);
+
+        if (current) {
+          const leftMin = Math.max(1, Math.round((Date.parse(current.end) - nowMs) / 60000));
+          radarBadge.textContent = 'NOW HAPPENING';
+          radarBig.textContent = `残り ${leftMin >= 60 ? `${Math.floor(leftMin/60)}h ${leftMin%60}m` : `${leftMin}分`}`;
+          radarMission.textContent = current.title;
+          radarMeta.textContent = `${current.venue}${upcoming ? ` ／ 次：${fmtTimePst.format(new Date(upcoming.start))} ${upcoming.title}` : ''}`;
+        } else if (upcoming) {
+          const waitMin = Math.max(1, Math.round((Date.parse(upcoming.start) - nowMs) / 60000));
+          radarBadge.textContent = 'NEXT MISSION';
+          radarBig.textContent = waitMin >= 60 ? `${Math.floor(waitMin/60)}時間 ${waitMin%60}分後` : `あと ${waitMin}分`;
+          radarMission.textContent = `${fmtTimePst.format(new Date(upcoming.start))}｜${upcoming.title}`;
+          radarMeta.textContent = `${upcoming.venue} — ${upcoming.desc}`;
+        } else {
+          radarBadge.textContent = 'TRIP COMPLETE';
+          radarBig.textContent = 'おかえりなさい';
+          radarMission.textContent = 'AWS re:Invent 2026 初アメリカ出張完了';
+          radarMeta.textContent = 'JPN101 の振り返りと領収書精算を整理しましょう。';
+        }
+      }
+
+      document.getElementById('simChips').addEventListener('click', (e) => {
+        const btn = e.target.closest('[data-sim]');
+        if (!btn) return;
+        simIso = btn.dataset.sim;
+        document.querySelectorAll('#simChips [data-sim]').forEach((b) => b.classList.toggle('is-active', b.dataset.sim === simIso));
+        updateRadar();
+      });
+      updateRadar();
+      setInterval(updateRadar, 30000);
+
+      /* ======================================================================
+         6. TIMELINE RENDERING (PST <-> JST + TRANSIT CONNECTORS)
+         ====================================================================== */
+      let activeDay = '11-30';
+      let activeTz = 'PST';
+      let activeFilter = 'all';
+      const dayPillsEl = document.getElementById('dayPills');
+      const timelineFeedEl = document.getElementById('timelineFeed');
+
+      function fmtRange(sIso, eIso, tzMode) {
+        const tz = tzMode === 'PST' ? 'America/Los_Angeles' : 'Asia/Tokyo';
+        const tf = new Intl.DateTimeFormat('ja-JP', { timeZone: tz, hour: '2-digit', minute: '2-digit', hour12: false });
+        const df = new Intl.DateTimeFormat('ja-JP', { timeZone: tz, month: 'numeric', day: 'numeric' });
+        const s = new Date(sIso), e = new Date(eIso);
+        return { start: tf.format(s), end: tf.format(e), date: `${df.format(s)} ${tzMode}` };
+      }
+
+      function renderDays() {
+        dayPillsEl.innerHTML = DAYS.map((d) => `
+          <button type="button" role="tab" class="chip ${d.id === activeDay ? 'is-active' : ''}" aria-selected="${d.id === activeDay}" data-day="${d.id}">${d.label}</button>
+        `).join('');
+      }
+
+      function renderTimeline() {
+        const list = SCHEDULE.filter((it) => {
+          if (it.day !== activeDay) return false;
+          if (activeFilter === 'all') return true;
+          if (activeFilter === 'confirmed') return it.type === 'confirmed' || it.type === 'conflict';
+          return it.type === activeFilter;
+        });
+        if (!list.length) {
+          timelineFeedEl.innerHTML = `<div class="dark-panel"><p style="color: var(--muted);">この条件に一致する予定はありません。「全部」に戻すと表示されます。</p></div>`;
+          return;
+        }
+        timelineFeedEl.innerHTML = list.map((it, idx) => {
+          const r = fmtRange(it.start, it.end, activeTz);
+          const pillCls = it.type === 'confirmed' ? 'p-confirmed' : it.type === 'event' ? 'p-event' : it.type === 'conflict' ? 'p-conflict' : '';
+          const connector = it.nextMove && idx < list.length - 1
+            ? `<div class="transit-link ${it.warnMove ? 'is-warn' : ''}">↓ ${it.nextMove}</div>`
+            : `<div style="height: 10px;"></div>`;
+          return `
+            <article class="t-card type-${it.type} ${it.cancelled ? 'is-cancelled' : ''}">
+              <div>
+                <span class="t-time num">${r.start}</span>
+                <span class="t-time-end num">– ${r.end}</span>
+                <span class="t-date-sub">${r.date}</span>
+              </div>
+              <div>
+                <div class="t-head-row">
+                  <div class="t-title">${it.title}</div>
+                  <span class="t-pill ${pillCls}">${it.tag}</span>
+                </div>
+                <div class="t-venue">${it.venue}</div>
+                <p class="t-desc">${it.desc}</p>
+              </div>
+            </article>
+            ${connector}
+          `;
+        }).join('');
+      }
+
+      dayPillsEl.addEventListener('click', (e) => {
+        const b = e.target.closest('[data-day]');
+        if (!b) return;
+        activeDay = b.dataset.day;
+        renderDays();
+        renderTimeline();
+      applyVaultToDom();
+      });
+      document.querySelectorAll('[data-tz]').forEach((b) => {
+        b.addEventListener('click', () => {
+          activeTz = b.dataset.tz;
+          document.querySelectorAll('[data-tz]').forEach((x) => {
+            const on = x.dataset.tz === activeTz;
+            x.classList.toggle('is-active', on);
+            x.setAttribute('aria-pressed', String(on));
+          });
+          renderTimeline();
+          applyVaultToDom();
+        });
+      });
+      document.getElementById('timeFilters').addEventListener('click', (e) => {
+        const b = e.target.closest('[data-tfilter]');
+        if (!b) return;
+        activeFilter = b.dataset.tfilter;
+        document.querySelectorAll('#timeFilters [data-tfilter]').forEach((x) => x.classList.toggle('is-active', x.dataset.tfilter === activeFilter));
+        renderTimeline();
+        applyVaultToDom();
+      });
+      renderDays();
+      renderTimeline();
+      applyVaultToDom();
+
+      /* ======================================================================
+         7. VEGAS TAB — SUB-TABS, DECISION MEMORY, VENUES, YOUTUBE 12 VIDEOS
+         ====================================================================== */
+      document.getElementById('vegasSubTabs').addEventListener('click', (e) => {
+        const b = e.target.closest('[data-vtab]');
+        if (!b) return;
+        const target = b.dataset.vtab;
+        document.querySelectorAll('#vegasSubTabs [data-vtab]').forEach((x) => x.classList.toggle('is-active', x.dataset.vtab === target));
+        ['decisions', 'videos', 'food', 'venues'].forEach((id) => {
+          document.getElementById(`vpanel-${id}`).hidden = id !== target;
+        });
+      });
+
+      // Decision Pin Memory (localStorage)
+      let savedDecisions = {};
+      try { savedDecisions = JSON.parse(localStorage.getItem('lv26_decisions') || '{}'); } catch (_) {}
+      function syncDecisions() {
+        document.querySelectorAll('[data-decision]').forEach((grp) => {
+          const key = grp.dataset.decision;
+          const picked = savedDecisions[key];
+          grp.querySelectorAll('[data-choice]').forEach((card) => {
+            const on = card.dataset.choice === picked;
+            card.classList.toggle('is-picked', on);
+            card.querySelector('.picked-badge').hidden = !on;
+          });
+        });
+      }
+      document.querySelectorAll('[data-decision]').forEach((grp) => {
+        grp.addEventListener('click', (e) => {
+          const card = e.target.closest('[data-choice]');
+          if (!card) return;
+          const key = grp.dataset.decision;
+          savedDecisions[key] = savedDecisions[key] === card.dataset.choice ? null : card.dataset.choice;
+          try { localStorage.setItem('lv26_decisions', JSON.stringify(savedDecisions)); } catch (_) {}
+          syncDecisions();
+        });
+      });
+      syncDecisions();
+
+      // Venue Map List
+      const VENUES = [
+        { name: 'Caesars Forum', time: '徒歩 7分', note: '11/30 AIM301-R、12/02 DVT340・COM324-R', q: 'Caesars+Forum+Las+Vegas' },
+        { name: 'The Vanderpump Hotel', time: '徒歩 5–8分', note: '11/30 18:30 APJC Kick Off Party（RSVP済）', q: 'The+Vanderpump+Hotel+Las+Vegas' },
+        { name: 'Caesars Palace', time: '徒歩 8–10分', note: '12/01 GameDay 3h、12/02 TNC333-R1', q: 'Caesars+Palace+Las+Vegas' },
+        { name: 'The Venetian', time: '徒歩 10–12分', note: 'Japan Desk (L1 607)・EXPO・12/03 JPN101', q: 'The+Venetian+Las+Vegas' },
+        { name: 'MGM Grand', time: 'モノレール 15–20分', note: '12/02 DAT453、ショー『KÀ』候補', q: 'MGM+Grand+Las+Vegas' },
+        { name: 'Wynn / Encore', time: '車 10分', note: '11/30 ARC310-R、12/01 Japan Night（徒歩20–25分）', q: 'Wynn+Las+Vegas' },
+        { name: 'Resorts World', time: '車 10分', note: '11/30 16:00 AWS & Sony Happy Hour', q: 'Resorts+World+Las+Vegas' },
+        { name: 'Allegiant Stadium', time: 'シャトル 15–20分', note: '12/03 夜 re:Play（公式クロージング）', q: 'Allegiant+Stadium+Las+Vegas' }
+      ];
+      document.getElementById('venueMapList').innerHTML = VENUES.map((v) => `
+        <div class="venue-row">
+          <div>
+            <a class="venue-name" href="https://maps.google.com/?q=${v.q}" target="_blank" rel="noopener">${v.name} ↗</a>
+            <span class="venue-note">${v.note}</span>
+          </div>
+          <span class="venue-time">${v.time}</span>
+        </div>
+      `).join('');
+
+      // 12 Verified YouTube Videos + Offline 3-Line Takeaways
+      const YT_THUMBS = {"-yBb9gMtSUU":"./media/yt_-yBb9gMtSUU.jpg","jkn02rqkF90":"./media/yt_jkn02rqkF90.jpg","wPlOaAKHco0":"./media/yt_wPlOaAKHco0.jpg","Vz70ZUoDSy4":"./media/yt_Vz70ZUoDSy4.jpg","01DJCxLuzAQ":"./media/yt_01DJCxLuzAQ.jpg","_OVGi0rLzAc":"./media/yt__OVGi0rLzAc.jpg","zcNR6cDJeHU":"./media/yt_zcNR6cDJeHU.jpg","U0s144AKnaU":"./media/yt_U0s144AKnaU.jpg","Y0n7IMd3mWM":"./media/yt_Y0n7IMd3mWM.jpg","05THTK74xb0":"./media/yt_05THTK74xb0.jpg","LKG6KZxP9JU":"./media/yt_LKG6KZxP9JU.jpg","P87lXNx2ycI":"./media/yt_P87lXNx2ycI.jpg"};
+      const VIDEOS = [
+        { id: '-yBb9gMtSUU', cat: 'transit', lang: '日本語', ch: "M's Travel & Recreation", title: 'ダラス国際空港到着から入国審査と乗り継ぎ便ゲートまでの移動', pts: ['AA国際線はターミナルD着、案内表示は「Connecting Flights」へ', '税関で一度スーツケースを拾い、直後のConnecting Bagsへ再預け', '保安検査を抜けて高架列車 Skylink で出発ターミナルへ移動'] },
+        { id: 'jkn02rqkF90', cat: 'transit', lang: '日本語', ch: 'Far West Life / アメリカガイドMasa', title: 'ラスベガス空港で旅行者が注意すべきこと（タクシー・Uber・T1）', pts: ['タクシーはゾーン定額制（LINQはZone 3・$30.25目安＋税チップ）', '配車アプリ（Uber/Lyft）乗り場は駐車場側へ少し歩く導線', '到着夜にバッジ受取窓口（T1・23:59まで）を先に済ませると効率的'] },
+        { id: 'wPlOaAKHco0', cat: 'transit', lang: '日本語', ch: 'Far West Life / アメリカガイドMasa', title: 'ラスベガスのモノレールの乗り方と注意すべき点', pts: ['ホテル裏手（東側）に駅があるため、カジノ奥まで少し歩く', 'Harrah’s & The LINQ 駅から MGM Grand 駅まで渋滞なしで直通', 'スマホのデジタル乗車券を買っておくと改札がスムーズ'] },
+
+        { id: 'Vz70ZUoDSy4', cat: 'reinvent', lang: '英語', ch: 'Dash0', title: 'AWS re:Invent 2026 Survival Guide: Tips from Two AWS Heroes', pts: ['1日2万歩ペースになるため、最も履き慣れた靴が最優先', '会場間移動は最低30〜45分見積もり、詰め込みすぎない', 'Breakoutは後日YouTube公開されるため体験型・交流を優先'] },
+        { id: '01DJCxLuzAQ', cat: 'reinvent', lang: '英語', ch: 'AWS Made Easy Livestream', title: 'AWS re:Invent — Top tips for first-timers', pts: ['空港で日曜夜にバッジを受け取ると月曜朝の行列を回避できる', '会場内は冷房が強く乾燥するため、重ね着と水筒が必須', 'セッション間の廊下（Hallway Track）やパーティ交流が価値大'] },
+        { id: '_OVGi0rLzAc', cat: 'reinvent', lang: '日本語', ch: 'クラメソチャンネル', title: 'AWS re:Invent 現地レポート（展示・セッション・新サービス）', pts: ['Venetian の巨大 EXPO 会場の熱量と規模感を事前に把握', '日本語サポートデスクや日本人向けツアーの使いどころがわかる', '帰国後の社内共有に向けてキーノート・JPN101の聞き方を整理'] },
+
+        { id: 'zcNR6cDJeHU', cat: 'shows', lang: '英語', ch: 'Yellow Productions', title: 'Wizard of Oz Las Vegas Sphere Experience: REVIEW & FULL WALKTHROUGH', pts: ['開場45分前からアトリウム体験あり、開演後の遅刻入場は不可', '風・香り・振動など4D演出と18K巨大ドーム映像の没入感', '200〜300番台中央が見やすく、400番台は傾斜がかなり急'] },
+        { id: 'U0s144AKnaU', cat: 'shows', lang: '英語', ch: 'Jared Owen', title: "What's inside of the Sphere? (Las Vegas)", pts: ['世界最大の球体LEDと16万個超のビームフォーミング音響を3D解剖', '座席ごとのハプティック（振動）と環境制御の仕組みがわかる', 'エンジニア視点で観る前に知っておくと興奮が倍増する1本'] },
+        { id: 'Y0n7IMd3mWM', cat: 'shows', lang: '公式映像', ch: 'Cirque du Soleil', title: 'KÀ Official Trailer | Cirque du Soleil', pts: ['MGM Grand 専用劇場で90分休憩なしのバトルアクション', '垂直に立ち上がり回転する巨大油圧ステージが最大の見どころ', '最前列は見上げ続けるため、中央やや後方が全体を見渡せる'] },
+        { id: '05THTK74xb0', cat: 'shows', lang: '英語', ch: 'Bret', title: 'Hoover Dam Power Plant Tour | Full Walkthrough from Las Vegas', pts: ['エレベーターで岩盤の下へ降り、巨大発電機ホールを見学', 'メモリアルブリッジからのダム正面パノラマが圧巻の撮影点', 'ラスベガスから往復＆見学でドアツードア6時間前後の体感'] },
+
+        { id: 'LKG6KZxP9JU', cat: 'linq', lang: '英語', ch: 'Gear Horizon', title: 'THE LINQ Promenade Las Vegas 2026 | FULL Walkthrough', pts: ['ホテル出てすぐの歩行者天国にある全飲食店・ショップを一周', '観覧車 High Roller とジップラインまでの位置関係が一目瞭然', '夜のライトアップの雰囲気と入りやすい店を事前に下見できる'] },
+        { id: 'P87lXNx2ycI', cat: 'linq', lang: '英語', ch: 'Nu Yawk', title: 'Restaurant Guide For Visitors To The LINQ & LINQ Promenade', pts: ['In-N-Out や Fish & Chips などコスパ良くすぐ食べられる店を比較', 'Favorite Bistro・Maxie’s など朝昼の着席レストランの特徴', '混みやすい時間帯とテイクアウトの使い分けがわかる'] }
+      ];
+
+      let activeYtCat = 'all';
+      const ytListEl = document.getElementById('ytList');
+      const videoDialog = document.getElementById('videoDialog');
+
+      function renderYt() {
+        const items = VIDEOS.filter((v) => activeYtCat === 'all' || v.cat === activeYtCat);
+        ytListEl.innerHTML = items.map((v) => `
+          <article class="yt-item">
+            <button type="button" class="yt-thumb-trigger" data-vid="${v.id}" aria-label="${v.title} の詳細を開く">
+              <img src="${YT_THUMBS[v.id]}" width="480" height="270" loading="lazy" alt="${v.title} サムネイル">
+              <span class="yt-badge">▶ ${v.lang}</span>
+            </button>
+            <div class="yt-info">
+              <span class="yt-ch">${v.ch}</span>
+              <h4 class="yt-t">${v.title}</h4>
+              <ul class="yt-bullets">${v.pts.map((p) => `<li>${p}</li>`).join('')}</ul>
+              <a class="yt-open-link" href="https://www.youtube.com/watch?v=${v.id}" target="_blank" rel="noopener">YouTube で観る ↗</a>
+            </div>
+          </article>
+        `).join('');
+      }
+      document.getElementById('ytCatPills').addEventListener('click', (e) => {
+        const b = e.target.closest('[data-ytcat]');
+        if (!b) return;
+        activeYtCat = b.dataset.ytcat;
+        document.querySelectorAll('#ytCatPills [data-ytcat]').forEach((x) => x.classList.toggle('is-active', x.dataset.ytcat === activeYtCat));
+        renderYt();
+      });
+      ytListEl.addEventListener('click', (e) => {
+        const tr = e.target.closest('[data-vid]');
+        if (!tr) return;
+        const v = VIDEOS.find((x) => x.id === tr.dataset.vid);
+        if (!v) return;
+        document.getElementById('vdChannel').textContent = `${v.ch}（${v.lang}）`;
+        document.getElementById('vdTitle').textContent = v.title;
+        document.getElementById('vdMediaWrap').hidden = false;
+        document.getElementById('vdImg').src = YT_THUMBS[v.id];
+        document.getElementById('vdImg').alt = v.title;
+        document.getElementById('vdBody').innerHTML = `<ul style="margin:0;padding-left:18px;display:grid;gap:6px;">${v.pts.map((p) => `<li>${p}</li>`).join('')}</ul>`;
+        const openBtn = document.getElementById('vdOpen');
+        openBtn.hidden = false;
+        openBtn.href = `https://www.youtube.com/watch?v=${v.id}`;
+        videoDialog.showModal();
+      });
+      renderYt();
+
+      /* ======================================================================
+         8. FULLSCREEN ENGLISH SHOW CARDS (1-TAP PRESENTATION)
+         ====================================================================== */
+      const SHOWCARDS = {
+        taxi: {
+          jp: 'タクシー・配車運転手に見せる住所カード',
+          en: 'THE LINQ HOTEL + CASINO\n3535 Las Vegas Blvd South',
+          sub: 'Las Vegas, NV 89109 · Central Strip (East side, next to Flamingo & Harrah’s)'
+        },
+        immigration: {
+          jp: 'DFW 入国審査（滞在先・目的提示用）',
+          en: 'AWS re:Invent 2026\nSony Interactive Entertainment',
+          sub: 'Stay: Nov 29 – Dec 4, 2026 (5 nights) · Hotel: The LINQ Hotel + Casino, 3535 Las Vegas Blvd South, Las Vegas, NV 89109 · Return Flight: Dec 4 LAS → LAX → HND'
+        },
+        usd: {
+          jp: 'カード決済・ATM（DCC円建て拒否カード）',
+          en: 'Please charge in US DOLLARS (USD),\nnot Japanese Yen.',
+          sub: 'Thank you! （円建て決済は5〜10%割高になるため、必ずドル建てを選択）'
+        },
+        badge: {
+          jp: 'バッジ受取・Japan Support Desk 確認用',
+          en: 'AWS re:Invent Badge Pickup\nLAS Terminal 1 (Open until 23:59 Sun)',
+          sub: 'Japan Support Desk: The Venetian Level 1, Casanova 607 (Mon–Thu 09:00–17:00, Fri 09:00–12:00)'
+        },
+        sos: {
+          jp: '緊急連絡カード（911 / ホテル / 総領事館）',
+          en: 'EMERGENCY: 911\nTHE LINQ: +1-702-731-3311',
+          sub: 'American Airlines: 1-800-433-7300 · Consulate-General of Japan in San Francisco (covers Nevada): +1-415-780-6000'
+        }
+      };
+
+      const scDialog = document.getElementById('showCardDialog');
+      document.addEventListener('click', (e) => {
+        const trigger = e.target.closest('[data-showcard]');
+        if (!trigger) return;
+        const c = SHOWCARDS[trigger.dataset.showcard];
+        if (!c) return;
+        document.getElementById('scTitle').textContent = c.jp;
+        document.getElementById('scEn').innerText = c.en;
+        document.getElementById('scSub').textContent = c.sub;
+        scDialog.showModal();
+      });
+
+      // Safari fallback for <dialog closedby="any">
+      [scDialog, videoDialog].forEach((dlg) => {
+        if (!('closedBy' in HTMLDialogElement.prototype)) {
+          dlg.addEventListener('click', (event) => {
+            if (event.target !== dlg) return;
+            const rect = dlg.getBoundingClientRect();
+            const inside = rect.top <= event.clientY && event.clientY <= rect.top + rect.height &&
+                           rect.left <= event.clientX && event.clientX <= rect.left + rect.width;
+            if (!inside) dlg.close();
+          });
+        }
+      });
+
+      /* ======================================================================
+         9. TIP SLIDER & FX CALCULATOR + LOCAL EMERGENCY MEMOS
+         ====================================================================== */
+      const gUsd = document.getElementById('gUsd');
+      const gFx = document.getElementById('gFx');
+      const gRange = document.getElementById('gTipRange');
+      const gTip = document.getElementById('gTip');
+      const gTotal = document.getElementById('gTotal');
+      const gJpy = document.getElementById('gJpy');
+      const tipPctDisplay = document.getElementById('tipPctDisplay');
+
+      function calcGear() {
+        const usd = Math.max(0, parseFloat(gUsd.value) || 0);
+        const fx = Math.max(1, parseFloat(gFx.value) || 159);
+        const pct = Number(gRange.value) || 0;
+        const tip = usd * (pct / 100);
+        const total = usd + tip;
+        tipPctDisplay.textContent = `${pct}%`;
+        gTip.textContent = `$${tip.toFixed(2)}`;
+        gTotal.textContent = `$${total.toFixed(2)}`;
+        gJpy.textContent = `¥${Math.round(total * fx).toLocaleString('ja-JP')}`;
+      }
+      [gUsd, gFx, gRange].forEach((el) => el.addEventListener('input', calcGear));
+      document.querySelectorAll('[data-amt]').forEach((b) => {
+        b.addEventListener('click', () => {
+          gUsd.value = b.dataset.amt;
+          document.querySelectorAll('[data-amt]').forEach((x) => x.classList.toggle('is-active', x === b));
+          calcGear();
+        });
+      });
+      document.querySelectorAll('[data-gtip]').forEach((b) => {
+        b.addEventListener('click', () => {
+          gRange.value = b.dataset.gtip;
+          document.querySelectorAll('[data-gtip]').forEach((x) => x.classList.toggle('is-active', x === b));
+          calcGear();
+        });
+      });
+      calcGear();
+
+      // Local editable emergency memo fields
+      ['memoIns', 'memoComp'].forEach((id) => {
+        const el = document.getElementById(id);
+        try { el.value = localStorage.getItem(`lv26_${id}`) || ''; } catch (_) {}
+        el.addEventListener('input', () => {
+          try { localStorage.setItem(`lv26_${id}`, el.value); } catch (_) {}
+        });
+      });
+
+      /* ======================================================================
+         10. PERSISTENT PREP & 60L SUITCASE CHECKLIST
+         ====================================================================== */
+      const PACK_GROUPS = [
+        {
+          title: '最優先の手続き・意思決定（ポータル・予約）',
+          open: true,
+          items: [
+            { id: 't1', txt: 'COM325-R 予約キャンセル完了をポータルで確認' },
+            { id: 't2', txt: 'JPN101（日本語ラップアップ）のハート登録を確認' },
+            { id: 't3', txt: 're:Play の RSVP 実行＆開始時刻を画面で確定' },
+            { id: 't4', txt: 'フーバーダム 6名（Gray Line）：代表電話番号・LINQ送迎確認・最終承認' },
+            { id: 't5', txt: 'Sphere / KÀ の日程決定（案1 12/02 vs 案3 12/04）とチケット購入' },
+            { id: 't6', txt: '11/30 16:00（Sony Happy Hour vs AIM289-S）＆ JAM（GHJ312）判断' },
+            { id: 't7', txt: 'バッジ顔写真事前登録・AAアプリ準備・LinkedIn QR保存' }
+          ]
+        },
+        {
+          title: '11/23〜28 の準備（両替・アプリ・チェックイン）',
+          open: false,
+          items: [
+            { id: 'p1', txt: '現金 $150（小札）両替ルート決定＆実行（〜11/25）' },
+            { id: 'p2', txt: '天気予報再確認（〜11/25）＆服装最終決定' },
+            { id: 'p3', txt: 'Amazon不足品注文（変換プラグ11/24到着確認／残り約¥20,900目安）' },
+            { id: 'p4', txt: 'AWS Events アプリ同期・Googleマップオフライン保存・ahamo残量確認' },
+            { id: 'p5', txt: '海外旅行保険・会社緊急連絡先を GEAR タブ＆紙メモに控える' },
+            { id: 'p6', txt: 'AA オンラインチェックイン（11/28 20:25 JST 開始）＆ Visit Japan Web 登録' }
+          ]
+        },
+        {
+          title: '60L スーツケース：衣類・靴（洗濯なし前提）',
+          open: false,
+          items: [
+            { id: 'c1', txt: '軽量ダウン／中厚ジャケット×1、フリース・パーカー×1' },
+            { id: 'c2', txt: '長袖シャツ・ポロ・軽いニット×4、Tシャツ×2、ボトムス×3' },
+            { id: 'c3', txt: '下着・靴下×6セット、パジャマ、圧縮袋、折りたたみバッグ' },
+            { id: 'c4', txt: '靴2足：歩き慣れたスニーカー（履く）＋きれいめレザースニーカー（持参）' },
+            { id: 'c5', txt: '月曜夜（Sony Happy Hour / APJC Party）用のきれいめ1セット' }
+          ]
+        },
+        {
+          title: '砂漠の乾燥対策・ガジェット・記録済み4点',
+          open: false,
+          items: [
+            { id: 'v1', txt: '【記録済】セキュリティポーチ（黒・RFID・パスポート原本用）', pre: true },
+            { id: 'v2', txt: '【記録済】旅行用財布（黒・二つ折り・ベルト留め）', pre: true },
+            { id: 'v3', txt: '【記録済】折りたたみスリッパ（ダークグレー袋）', pre: true },
+            { id: 'v4', txt: '【記録済】メッシュ小物ポーチ（黒・カラビナ付）', pre: true },
+            { id: 'd1', txt: '乾燥対策：リップ・ハンド/保湿/ボディクリーム・目薬・のど飴・マスク・日焼け止め・サングラス・水筒' },
+            { id: 'd2', txt: '化粧水・乳液（機内持込は100ml以下ルール遵守）' },
+            { id: 'd3', txt: 'モバイルバッテリー（必ず機内持込）・PC充電・Apple Watch充電・変換プラグ（11/24着）' },
+            { id: 'd4', txt: '名刺 約50枚＆名刺入れ（リュック内）・スマホストラップ' }
+          ]
+        }
+      ];
+
+      const PACK_KEY = 'lv26_pack_v1';
+      let packState = {};
+      try { packState = JSON.parse(localStorage.getItem(PACK_KEY) || 'null'); } catch (_) { packState = null; }
+      if (!packState) {
+        packState = {};
+        PACK_GROUPS.forEach((g) => g.items.forEach((it) => { if (it.pre) packState[it.id] = true; }));
+      }
+
+      const packAcc = document.getElementById('packAccordions');
+      const packTxt = document.getElementById('packProgressTxt');
+      const packBar = document.getElementById('packProgressBar');
+
+      function renderPack() {
+        const all = PACK_GROUPS.flatMap((g) => g.items);
+        const done = all.filter((it) => packState[it.id]).length;
+        packTxt.textContent = `${done} / ${all.length}`;
+        packBar.style.width = `${Math.round((done / all.length) * 100)}%`;
+
+        const openStates = Array.from(packAcc.querySelectorAll('details')).map((d) => d.open);
+        packAcc.innerHTML = PACK_GROUPS.map((g, gi) => {
+          const gDone = g.items.filter((i) => packState[i.id]).length;
+          const isOpen = openStates.length ? openStates[gi] : g.open;
+          return `
+            <details ${isOpen ? 'open' : ''}>
+              <summary>${g.title} <span style="margin-left:auto;color:var(--muted);font-size:13px;" class="num">${gDone}/${g.items.length}</span></summary>
+              <ul class="chk-ul">
+                ${g.items.map((it) => {
+                  const ck = !!packState[it.id];
+                  return `<li class="chk-li ${ck ? 'is-done' : ''}"><label><input type="checkbox" data-pid="${it.id}" ${ck ? 'checked' : ''}><span>${it.txt}</span></label></li>`;
+                }).join('')}
+              </ul>
+            </details>
+          `;
+        }).join('');
+      }
+      packAcc.addEventListener('change', (e) => {
+        const cb = e.target.closest('[data-pid]');
+        if (!cb) return;
+        packState[cb.dataset.pid] = cb.checked;
+        try { localStorage.setItem(PACK_KEY, JSON.stringify(packState)); } catch (_) {}
+        renderPack();
+      });
+      document.getElementById('resetPackBtn').addEventListener('click', () => {
+        packState = {};
+        PACK_GROUPS.forEach((g) => g.items.forEach((it) => { if (it.pre) packState[it.id] = true; }));
+        try { localStorage.setItem(PACK_KEY, JSON.stringify(packState)); } catch (_) {}
+        renderPack();
+      });
+      renderPack();
+
+      // Photo Credits Modal
+      document.getElementById('showCreditsBtn').addEventListener('click', () => {
+        document.getElementById('vdChannel').textContent = 'PHOTO ATTRIBUTION · WIKIMEDIA COMMONS';
+        document.getElementById('vdTitle').textContent = '使用写真のライセンス表記';
+        document.getElementById('vdMediaWrap').hidden = true;
+        document.getElementById('vdOpen').hidden = true;
+        document.getElementById('vdBody').innerHTML = `
+          <p style="line-height:1.7;">
+            ・“Las Vegas Strip from Resorts World February 2023 HDR 1” by King of Hearts (CC BY-SA 4.0)<br>
+            ・“Las Vegas, High Roller, 2018.11.22 (01)” by Vahe Martirosyan (CC BY-SA 2.0)<br>
+            ・“Sphere Las Vegas (53473119340)” by Matt Walter (CC BY 2.0)<br>
+            ・“Hoover Dam and Black Canyon seen from the Mike O'Callaghan–Pat Tillman Memorial Bridge” by Christian David (CC BY-SA 4.0)<br>
+            ・YouTube thumbnails belong to their respective creators.
+          </p>`;
+        videoDialog.showModal();
+      });
+    })();
+  </script>
+</body>
+</html>
