@@ -1,4 +1,4 @@
-const CACHE_NAME = 'lv26-desert-wallet-v4';
+const CACHE_NAME = 'lv26-desert-wallet-v5';
 const ASSETS = [
   './',
   './index.html',
