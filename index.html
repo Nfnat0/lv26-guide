@@ -13,27 +13,36 @@
   <link rel="apple-touch-icon" sizes="180x180" href="./icons/icon-180.png">
   <style>
     /* ==========================================================================
-       DESERT WALLET — iPhone 15 Offline Travel Companion
+       DESERT WALLET v2 — High-Readability iPhone 15 Offline Travel Companion
        Palette: Asphalt Black + Mojave Vermilion + Vegas Marigold + Ticket Cream
+       Design Principle: Clean scannable feed -> Tap anything for full detail sheet
        ========================================================================== */
     :root {
       --bg: #0E0E10;
-      --surface: #18181C;
-      --surface-2: #232329;
-      --ink: #F5F2EC;
-      --muted: #A9A49B;
+      --surface: #17171B;
+      --surface-2: #222228;
+      --surface-3: #2B2B33;
+      --line: rgba(255, 255, 255, 0.10);
+      --line-soft: rgba(255, 255, 255, 0.06);
+
+      --ink: #F7F4EE;
+      --muted: #B9B3A9;
+      --subtle: #8E8980;
 
       /* Physical Pass Stocks */
       --paper: #F4EFE6;
       --paper-2: #E7E0D3;
       --paper-ink: #141416;
-      --paper-muted: #545049;
+      --paper-muted: #4C4842;
 
       --vermilion: #FF4D1C;
-      --vermilion-dark: #D9380C;
+      --vermilion-soft: rgba(255, 77, 28, 0.16);
+      --vermilion-dark: #C8320A;
       --gold: #F6C324;
-      --mint: #2ED590;
-      --mint-dark: #166544;
+      --gold-soft: rgba(246, 195, 36, 0.16);
+      --mint: #32DC96;
+      --mint-soft: rgba(50, 220, 150, 0.16);
+      --sky: #6CC2FF;
 
       --font-cond: 'Barlow Condensed', 'DIN Condensed', 'DINAlternate-Bold', 'Arial Narrow', -apple-system, sans-serif;
       --font-body: 'Zen Kaku Gothic New', 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -56,7 +65,7 @@
       margin: 0;
       font-family: var(--font-body);
       font-size: 16px;
-      line-height: 1.55;
+      line-height: 1.62;
       background: var(--bg);
       color: var(--ink);
       min-height: 100dvh;
@@ -74,7 +83,7 @@
       background: none;
     }
     button:active {
-      transform: scale(0.97);
+      transform: scale(0.98);
       transition: transform 90ms var(--ease-press);
     }
     :focus-visible {
@@ -88,7 +97,7 @@
     .num { font-variant-numeric: tabular-nums; }
     .cond {
       font-family: var(--font-cond);
-      letter-spacing: 0.01em;
+      letter-spacing: 0.02em;
       text-transform: uppercase;
     }
     [hidden] { display: none !important; }
@@ -97,36 +106,38 @@
       overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
     }
 
-    /* Privacy Mask (JS swaps textContent cleanly without multiline overlay bugs) */
-    body.privacy-masked [data-private] {
-      background: rgba(255, 77, 28, 0.16);
+    /* Privacy Mask */
+    body.privacy-masked [data-private],
+    body.privacy-masked [data-vault] {
+      background: var(--vermilion-soft);
       color: var(--vermilion);
-      padding: 0 5px;
+      padding: 1px 6px;
       border-radius: 4px;
-      letter-spacing: 0.06em;
+      letter-spacing: 0.04em;
       user-select: none;
+      box-decoration-break: clone;
+      -webkit-box-decoration-break: clone;
     }
-    body.privacy-masked .pass-card [data-private] {
+    body.privacy-masked .pass-card [data-private],
+    body.privacy-masked .pass-card [data-vault] {
       background: rgba(20, 20, 22, 0.14);
       color: var(--paper-ink);
     }
 
     /* ==========================================================================
-       APP SHELL (iPhone 15 Edge-to-Edge + Clean Centered Companion on Desktop)
+       APP SHELL
        ========================================================================== */
     .app-shell {
       width: 100%;
       max-width: 540px;
       margin-inline: auto;
       min-height: 100dvh;
-      padding-top: calc(var(--safe-top) + 60px);
-      padding-bottom: calc(var(--dock-h) + var(--safe-bottom) + 28px);
+      padding-top: calc(var(--safe-top) + 64px);
+      padding-bottom: calc(var(--dock-h) + var(--safe-bottom) + 32px);
       position: relative;
     }
     @media (min-width: 820px) {
-      .app-shell {
-        max-width: 780px;
-      }
+      .app-shell { max-width: 780px; }
     }
 
     /* Top Sticky Telemetry Bar */
@@ -137,13 +148,15 @@
       right: 0;
       z-index: 40;
       background: rgba(14, 14, 16, 0.94);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       padding-top: var(--safe-top);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      border-bottom: 1px solid var(--line);
     }
     .top-bar-inner {
       max-width: 780px;
       margin-inline: auto;
-      height: 54px;
+      height: 58px;
       padding-inline: 16px;
       display: flex;
       align-items: center;
@@ -153,7 +166,8 @@
     .brand-mark {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
+      gap: 9px;
+      min-width: 0;
     }
     .brand-badge {
       background: var(--vermilion);
@@ -162,35 +176,40 @@
       font-weight: 800;
       font-size: 20px;
       line-height: 1;
-      padding: 4px 8px;
-      border-radius: 4px;
+      padding: 5px 8px;
+      border-radius: 5px;
+      flex-shrink: 0;
     }
     .brand-clock {
       display: flex;
       flex-direction: column;
-      line-height: 1.15;
+      line-height: 1.18;
+      min-width: 0;
     }
     .brand-clock-main {
       font-family: var(--font-cond);
       font-weight: 700;
       font-size: 16px;
       color: var(--ink);
+      white-space: nowrap;
     }
     .brand-clock-sub {
       font-size: 11px;
       color: var(--muted);
+      white-space: nowrap;
     }
     .top-actions {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
+      flex-shrink: 0;
     }
     .pill-btn {
       display: inline-flex;
       align-items: center;
-      gap: 4px;
-      padding: 6px 10px;
-      min-height: 34px;
+      gap: 5px;
+      padding: 6px 11px;
+      min-height: 44px;
       border-radius: 999px;
       background: var(--surface-2);
       color: var(--ink);
@@ -200,6 +219,17 @@
       flex-shrink: 0;
       transition: background-color 150ms ease, color 150ms ease;
     }
+    .pill-status {
+      display: inline-flex;
+      align-items: center;
+      padding: 5px 9px;
+      min-height: 30px;
+      border-radius: 999px;
+      font-size: 11.5px;
+      font-weight: 700;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
     .pill-btn[aria-pressed="true"] {
       background: var(--vermilion);
       color: #0E0E10;
@@ -208,14 +238,12 @@
     /* Tab Panels */
     .tab-view {
       display: none;
-      padding: 12px 16px 20px;
-      animation: viewIn 260ms var(--ease-spring) both;
+      padding: 14px 16px 24px;
+      animation: viewIn 240ms var(--ease-spring) both;
     }
-    .tab-view.is-active {
-      display: block;
-    }
+    .tab-view.is-active { display: block; }
     @keyframes viewIn {
-      from { opacity: 0; transform: translateY(10px); }
+      from { opacity: 0; transform: translateY(8px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
@@ -226,8 +254,10 @@
       right: 0;
       bottom: 0;
       z-index: 50;
-      background: rgba(20, 20, 24, 0.96);
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(18, 18, 22, 0.96);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-top: 1px solid var(--line);
       padding-bottom: var(--safe-bottom);
     }
     .dock-inner {
@@ -250,54 +280,78 @@
       position: relative;
       transition: color 140ms ease;
     }
-    .dock-btn svg {
-      width: 22px;
-      height: 22px;
-    }
-    .dock-btn.is-active {
-      color: var(--vermilion);
-    }
+    .dock-btn svg { width: 22px; height: 22px; }
+    .dock-btn.is-active { color: var(--vermilion); }
     .dock-btn.is-active::before {
       content: "";
       position: absolute;
       top: 0;
-      width: 28px;
+      width: 30px;
       height: 3px;
       border-radius: 0 0 3px 3px;
       background: var(--vermilion);
     }
 
-    /* Section Headings inside App */
+    /* Section Headings */
     .view-head {
       display: flex;
-      align-items: baseline;
+      align-items: flex-end;
       justify-content: space-between;
       gap: 12px;
-      margin-bottom: 14px;
+      margin-bottom: 16px;
     }
     .view-title {
       font-family: var(--font-cond);
       font-size: 36px;
       font-weight: 800;
-      line-height: 1;
+      line-height: 0.96;
       letter-spacing: 0.01em;
       color: var(--ink);
     }
     .view-sub {
       font-size: 13px;
       color: var(--muted);
-      margin-top: 4px;
+      margin-top: 5px;
+    }
+    .section-kicker {
+      font-family: var(--font-cond);
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin: 20px 0 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* Shared Tap Affordance Pill */
+    .tap-hint {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--gold);
+      white-space: nowrap;
+    }
+    .chev {
+      color: var(--subtle);
+      font-size: 18px;
+      line-height: 1;
+      flex-shrink: 0;
+      font-weight: 700;
     }
 
     /* ==========================================================================
-       TAB 1: NOW — LIVE RADAR + PHYSICAL APPLE-WALLET PASS STACK
+       TAB 1: NOW — CLEAN RADAR + PHYSICAL APPLE-WALLET PASS STACK
        ========================================================================== */
     .radar-card {
       background: var(--surface);
-      border-radius: 18px;
+      border-radius: 20px;
       padding: 18px;
-      margin-bottom: 18px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      margin-bottom: 16px;
+      border: 1px solid var(--line);
     }
     .radar-top {
       display: flex;
@@ -309,7 +363,7 @@
     .radar-status {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: 7px;
       font-family: var(--font-cond);
       font-weight: 800;
       font-size: 15px;
@@ -325,45 +379,80 @@
     }
     .radar-big {
       font-family: var(--font-cond);
-      font-size: clamp(40px, 11vw, 56px);
+      font-size: clamp(42px, 11.5vw, 56px);
       font-weight: 800;
-      line-height: 0.98;
+      line-height: 0.96;
       color: var(--ink);
-      margin-bottom: 8px;
+      margin-bottom: 10px;
+    }
+    .radar-mission-btn {
+      width: 100%;
+      text-align: left;
+      background: var(--surface-2);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
     }
     .radar-mission {
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 700;
       color: var(--ink);
-      margin-bottom: 4px;
+      line-height: 1.4;
+      margin-bottom: 2px;
     }
     .radar-meta {
-      font-size: 14px;
+      font-size: 13px;
       color: var(--muted);
+      line-height: 1.45;
+    }
+    .sim-toggle-row {
+      margin-top: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .sim-toggle-btn {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--muted);
+      padding: 8px 12px;
+      border-radius: 10px;
+      background: var(--surface-2);
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .sim-toggle-btn[aria-expanded="true"] {
+      color: var(--gold);
     }
     .sim-strip {
-      margin-top: 14px;
-      padding-top: 12px;
+      margin-top: 10px;
+      padding-top: 10px;
       border-top: 1px dashed rgba(255, 255, 255, 0.14);
-    }
-    .sim-label {
-      font-size: 12px;
-      color: var(--muted);
-      margin-bottom: 8px;
-      display: block;
     }
     .chip-scroll {
       display: flex;
-      gap: 6px;
+      gap: 7px;
       overflow-x: auto;
       padding-bottom: 2px;
       scrollbar-width: none;
     }
+    .chip-scroll.has-fade {
+      padding-right: 22px;
+      -webkit-mask-image: linear-gradient(to right, #000 88%, transparent 100%);
+      mask-image: linear-gradient(to right, #000 88%, transparent 100%);
+    }
     .chip-scroll::-webkit-scrollbar { display: none; }
     .chip {
       flex: 0 0 auto;
-      padding: 7px 12px;
-      min-height: 36px;
+      padding: 8px 13px;
+      min-height: 40px;
       border-radius: 999px;
       background: var(--surface-2);
       color: var(--ink);
@@ -382,26 +471,17 @@
       display: flex;
       flex-direction: column;
       gap: 12px;
-      margin-bottom: 18px;
+      margin-bottom: 16px;
     }
     .pass-card {
-      border-radius: 18px;
+      border-radius: 20px;
       overflow: hidden;
       position: relative;
-      transition: transform 280ms var(--ease-spring);
     }
-    .pass-boarding {
-      background: var(--paper);
-      color: var(--paper-ink);
-    }
-    .pass-hotel {
-      background: var(--vermilion);
-      color: var(--paper-ink);
-    }
-    .pass-badge {
-      background: var(--gold);
-      color: var(--paper-ink);
-    }
+    .pass-boarding { background: var(--paper); color: var(--paper-ink); }
+    .pass-hotel { background: var(--vermilion); color: var(--paper-ink); }
+    .pass-badge { background: var(--gold); color: var(--paper-ink); }
+
     .pass-trigger {
       width: 100%;
       text-align: left;
@@ -419,50 +499,54 @@
     .pass-kicker {
       font-family: var(--font-cond);
       font-weight: 800;
-      font-size: 15px;
+      font-size: 14px;
       letter-spacing: 0.08em;
-      opacity: 0.78;
+      opacity: 0.82;
     }
     .pass-toggle-hint {
       font-size: 12px;
       font-weight: 700;
-      padding: 4px 10px;
+      padding: 5px 10px;
       border-radius: 999px;
-      background: rgba(20, 20, 22, 0.12);
+      background: rgba(20, 20, 22, 0.13);
       white-space: nowrap;
       flex-shrink: 0;
+    }
+    .pass-hotel .pass-toggle-hint {
+      background: rgba(255, 255, 255, 0.30);
+      color: #0E0E10;
     }
     .iata-row {
       display: flex;
       align-items: baseline;
       justify-content: space-between;
       gap: 8px;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
     }
     .iata-code {
       font-family: var(--font-cond);
       font-weight: 800;
-      font-size: 46px;
+      font-size: 44px;
       line-height: 0.92;
       letter-spacing: -0.01em;
     }
     .iata-arrow {
       font-family: var(--font-cond);
       font-weight: 700;
-      font-size: 20px;
-      opacity: 0.65;
+      font-size: 19px;
+      opacity: 0.72;
     }
     .pass-grid {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 10px;
-      margin-top: 10px;
     }
     .pass-field-label {
       display: block;
       font-size: 11px;
       font-weight: 700;
       opacity: 0.72;
+      margin-bottom: 1px;
     }
     .pass-field-val {
       display: block;
@@ -472,7 +556,7 @@
       line-height: 1.15;
     }
 
-    /* Perforated Tear Line with Physical Edge Cutouts */
+    /* Perforated Tear Line */
     .tear-line {
       position: relative;
       height: 20px;
@@ -497,13 +581,12 @@
       width: 100%;
       border-top: 2px dashed rgba(20, 20, 22, 0.25);
     }
-
     .pass-card:not(.is-open) .tear-line { display: none; }
     .pass-drawer {
       display: none;
-      padding: 4px 18px 18px;
+      padding: 6px 18px 18px;
       font-size: 14px;
-      line-height: 1.6;
+      line-height: 1.65;
     }
     .pass-card.is-open .pass-drawer {
       display: block;
@@ -512,26 +595,32 @@
     .pass-alert {
       background: #141416;
       color: var(--paper);
-      padding: 12px 14px;
+      padding: 13px 14px;
       border-radius: 12px;
       margin-block: 10px;
-      font-size: 14px;
+      font-size: 13.5px;
+      line-height: 1.6;
     }
     .pass-alert strong {
       color: var(--gold);
       display: block;
-      margin-bottom: 3px;
+      margin-bottom: 4px;
     }
     .pass-steps {
-      margin: 8px 0 12px;
-      padding-left: 18px;
+      margin: 10px 0 12px;
+      padding-left: 20px;
       display: grid;
       gap: 6px;
     }
+    .pass-cta-row {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+    }
     .pass-cta {
       width: 100%;
-      margin-top: 10px;
       padding: 12px 14px;
+      min-height: 44px;
       border-radius: 12px;
       background: #141416;
       color: #F5F2EC;
@@ -552,13 +641,15 @@
     }
     .quick-btn {
       background: var(--surface);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 14px;
-      padding: 14px 10px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px 8px;
+      min-height: 76px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 6px;
+      justify-content: center;
+      gap: 7px;
       text-align: center;
       font-size: 13px;
       font-weight: 700;
@@ -571,38 +662,47 @@
     }
 
     /* ==========================================================================
-       TAB 2: TIME — DEPARTURE-BOARD TIMELINE (ZERO FILLER PHOTOS)
+       TAB 2: TIME — CLEAN SCANNABLE DEPARTURE BOARD -> TAP FOR FULL SHEET
        ========================================================================== */
     .time-controls {
       position: sticky;
-      top: calc(var(--safe-top) + 54px);
+      top: calc(var(--safe-top) + 58px);
       z-index: 20;
       background: rgba(14, 14, 16, 0.96);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
       padding-block: 10px 12px;
       margin-inline: -16px;
       padding-inline: 16px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      margin-bottom: 14px;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 16px;
+      display: grid;
+      gap: 9px;
     }
-    .tz-row {
+    .filter-row {
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      margin-bottom: 10px;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .filter-row .chip {
+      padding: 6px 12px;
+      min-height: 40px;
     }
     .segmented {
       display: inline-flex;
       background: var(--surface-2);
       padding: 3px;
-      border-radius: 10px;
+      border-radius: 11px;
+      flex-shrink: 0;
     }
     .seg-btn {
-      padding: 6px 12px;
+      padding: 6px 11px;
+      min-height: 44px;
       border-radius: 8px;
-      font-size: 13px;
+      font-size: 12.5px;
       font-weight: 700;
       color: var(--muted);
+      white-space: nowrap;
     }
     .seg-btn.is-active {
       background: var(--paper);
@@ -615,16 +715,21 @@
       gap: 0;
     }
     .t-card {
+      width: 100%;
+      text-align: left;
       background: var(--surface);
-      border-radius: 14px;
-      padding: 14px 15px;
+      border-radius: 16px;
+      padding: 14px 14px 14px 17px;
       display: grid;
-      grid-template-columns: 78px 1fr;
+      grid-template-columns: 66px minmax(0, 1fr) auto;
+      align-items: start;
       gap: 12px;
       position: relative;
       overflow: hidden;
-      border: 1px solid rgba(255, 255, 255, 0.07);
+      border: 1px solid var(--line);
+      transition: background-color 140ms ease, border-color 140ms ease;
     }
+    .t-card:hover { border-color: rgba(255, 255, 255, 0.22); }
     .t-card::before {
       content: "";
       position: absolute;
@@ -632,81 +737,128 @@
       top: 0;
       bottom: 0;
       width: 5px;
-      background: var(--muted);
+      background: var(--subtle);
     }
     .t-card.type-confirmed::before { background: var(--mint); }
     .t-card.type-event::before { background: var(--gold); }
     .t-card.type-conflict::before { background: var(--vermilion); }
-    .t-card.is-cancelled { opacity: 0.58; }
+    .t-card.is-cancelled { opacity: 0.62; }
+
+    .t-time-col {
+      display: flex;
+      flex-direction: column;
+      padding-top: 2px;
+    }
     .t-time {
       font-family: var(--font-cond);
       font-weight: 800;
-      font-size: 24px;
-      line-height: 1;
+      font-size: 25px;
+      line-height: 0.98;
       color: var(--ink);
     }
     .t-time-end {
-      display: block;
       font-family: var(--font-cond);
       font-weight: 600;
-      font-size: 15px;
+      font-size: 14px;
       color: var(--muted);
       margin-top: 3px;
     }
-    .t-date-sub {
-      display: block;
+    .t-dur {
+      display: inline-block;
+      margin-top: 6px;
       font-size: 11px;
-      color: var(--muted);
-      margin-top: 4px;
+      font-weight: 700;
+      color: var(--subtle);
     }
-    .t-head-row {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 8px;
+    .t-date-shift {
+      display: inline-block;
       margin-bottom: 4px;
-    }
-    .t-title {
-      font-size: 15px;
+      font-size: 10.5px;
       font-weight: 700;
-      line-height: 1.38;
+      color: var(--gold);
+      background: var(--gold-soft);
+      padding: 1px 5px;
+      border-radius: 4px;
+      width: fit-content;
     }
-    .t-card.is-cancelled .t-title { text-decoration: line-through; }
+
+    .t-main-col { min-width: 0; }
+    .t-meta-top {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 5px;
+    }
+    .t-code {
+      font-family: var(--font-cond);
+      font-weight: 800;
+      font-size: 13px;
+      letter-spacing: 0.05em;
+      color: var(--ink);
+      background: var(--surface-3);
+      padding: 2px 7px;
+      border-radius: 5px;
+    }
     .t-pill {
-      flex-shrink: 0;
       font-size: 11px;
       font-weight: 700;
-      padding: 3px 8px;
+      padding: 2px 8px;
       border-radius: 6px;
       background: var(--surface-2);
-      color: var(--ink);
+      color: var(--muted);
       white-space: nowrap;
     }
-    .t-pill.p-confirmed { background: rgba(46, 213, 144, 0.18); color: var(--mint); }
-    .t-pill.p-event { background: rgba(246, 195, 36, 0.18); color: var(--gold); }
+    .t-pill.p-confirmed { background: var(--mint-soft); color: var(--mint); }
+    .t-pill.p-event { background: var(--gold-soft); color: var(--gold); }
     .t-pill.p-conflict { background: var(--vermilion); color: #0E0E10; }
+    .t-pill.p-flag { background: rgba(108, 194, 255, 0.16); color: var(--sky); }
+
+    .t-title {
+      font-size: 15.5px;
+      font-weight: 700;
+      line-height: 1.4;
+      color: var(--ink);
+      margin-bottom: 5px;
+    }
+    .t-card.is-cancelled .t-title { text-decoration: line-through; }
+
     .t-venue {
       font-size: 13px;
       font-weight: 700;
       color: var(--gold);
+      line-height: 1.4;
       margin-bottom: 4px;
     }
-    .t-desc {
-      font-size: 13.5px;
+    .t-one-liner {
+      font-size: 13px;
       color: var(--muted);
       line-height: 1.5;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .t-chev-col {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      justify-content: center;
+      align-self: center;
+      padding-left: 2px;
     }
 
     /* Transit Connector between Schedule Items */
     .transit-link {
       display: flex;
       align-items: center;
-      gap: 10px;
-      padding: 8px 14px 8px 34px;
+      gap: 8px;
+      padding: 8px 12px 8px 34px;
       font-size: 12.5px;
       font-weight: 700;
       color: var(--muted);
       position: relative;
+      line-height: 1.45;
     }
     .transit-link::before {
       content: "";
@@ -715,24 +867,36 @@
       top: 0;
       bottom: 0;
       width: 2px;
-      background: rgba(255, 255, 255, 0.16);
+      background: rgba(255, 255, 255, 0.15);
     }
-    .transit-link.is-warn {
-      color: var(--vermilion);
+    .transit-link.is-warn { color: var(--vermilion); }
+
+    .sync-banner-btn {
+      margin-top: 16px;
+      width: 100%;
+      text-align: left;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
     }
 
     /* ==========================================================================
-       TAB 3: VEGAS — REAL PHOTOS ONLY WHERE THEY BELONG + YOUTUBE CINEMA
+       TAB 3: VEGAS — CLEAN SCANNABLE CARDS -> TAP FOR FULL GUIDE DIALOGS
        ========================================================================== */
     .vegas-stack {
       display: grid;
-      gap: 18px;
+      gap: 16px;
     }
     .photo-card {
       background: var(--surface);
-      border-radius: 18px;
+      border-radius: 20px;
       overflow: hidden;
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--line);
     }
     .photo-card-hero {
       position: relative;
@@ -750,7 +914,7 @@
       position: absolute;
       left: 12px;
       top: 12px;
-      background: rgba(14, 14, 16, 0.88);
+      background: rgba(14, 14, 16, 0.90);
       color: var(--gold);
       font-family: var(--font-cond);
       font-weight: 800;
@@ -759,22 +923,22 @@
       padding: 5px 10px;
       border-radius: 6px;
     }
-    .photo-card-body {
-      padding: 16px;
-    }
+    .photo-card-body { padding: 16px; }
     .photo-card-body h3 {
-      font-size: 20px;
+      font-size: 19px;
       font-weight: 700;
+      line-height: 1.35;
       margin-bottom: 6px;
     }
-    .photo-card-body p {
+    .photo-card-lead {
       font-size: 14px;
       color: var(--muted);
-      margin-bottom: 12px;
+      margin-bottom: 14px;
+      line-height: 1.6;
     }
     .choice-group {
       display: grid;
-      gap: 8px;
+      gap: 9px;
       margin-bottom: 12px;
     }
     .choice-card {
@@ -782,14 +946,14 @@
       text-align: left;
       background: var(--surface-2);
       border: 2px solid transparent;
-      border-radius: 12px;
-      padding: 12px;
+      border-radius: 14px;
+      padding: 13px 14px;
       color: var(--ink);
       transition: border-color 150ms ease, background-color 150ms ease;
     }
     .choice-card.is-picked {
       border-color: var(--gold);
-      background: rgba(246, 195, 36, 0.1);
+      background: rgba(246, 195, 36, 0.11);
     }
     .choice-title {
       display: flex;
@@ -797,8 +961,14 @@
       align-items: center;
       gap: 8px;
       font-weight: 700;
-      font-size: 14.5px;
+      font-size: 15px;
       margin-bottom: 4px;
+    }
+    .choice-price {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--gold);
+      margin-bottom: 3px;
     }
     .choice-sub {
       font-size: 13px;
@@ -807,77 +977,115 @@
     }
     .picked-badge {
       font-size: 11px;
-      padding: 2px 7px;
+      padding: 3px 8px;
       border-radius: 999px;
       background: var(--gold);
       color: #141416;
       font-weight: 700;
+      flex-shrink: 0;
+    }
+    .detail-open-btn {
+      width: 100%;
+      min-height: 44px;
+      padding: 10px 14px;
+      border-radius: 12px;
+      background: var(--surface-2);
+      border: 1px solid var(--line);
+      color: var(--ink);
+      font-size: 13.5px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
     }
 
-    /* Venue Map List & Dining */
+    /* Interactive Rows for Food, Souvenirs, Venues */
     .dark-panel {
       background: var(--surface);
-      border-radius: 18px;
+      border-radius: 20px;
       padding: 16px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--line);
     }
     .dark-panel h3 {
       font-size: 18px;
       margin-bottom: 10px;
     }
-    .venue-row {
+    .tap-list {
+      display: grid;
+      gap: 0;
+    }
+    .venue-row-btn {
+      width: 100%;
+      text-align: left;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 10px;
-      padding-block: 10px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+      gap: 12px;
+      padding: 12px 4px;
+      min-height: 56px;
+      border-bottom: 1px solid var(--line-soft);
     }
-    .venue-row:last-child { border-bottom: 0; }
+    .venue-row-btn:last-child { border-bottom: 0; padding-bottom: 4px; }
     .venue-name {
       font-weight: 700;
       font-size: 15px;
       display: block;
+      color: var(--ink);
+      line-height: 1.35;
     }
     .venue-note {
-      font-size: 12.5px;
+      font-size: 13px;
       color: var(--muted);
+      display: block;
+      margin-top: 2px;
+      line-height: 1.45;
+    }
+    .venue-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
     }
     .venue-time {
       font-family: var(--font-cond);
       font-weight: 800;
-      font-size: 18px;
+      font-size: 17px;
       color: var(--gold);
       text-align: right;
       white-space: nowrap;
     }
 
-    /* YouTube Cards with Offline 3-Line Takeaways */
+    /* Compact Scannable YouTube List (Uncropped 16:9 Thumbnail) */
     .yt-list {
       display: grid;
-      gap: 14px;
+      gap: 12px;
     }
     @media (min-width: 700px) {
       .yt-list { grid-template-columns: repeat(2, 1fr); }
     }
-    .yt-item {
+    .yt-card-btn {
+      width: 100%;
+      text-align: left;
       background: var(--surface);
       border-radius: 16px;
-      overflow: hidden;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      display: flex;
-      flex-direction: column;
+      border: 1px solid var(--line);
+      display: grid;
+      grid-template-columns: 126px minmax(0, 1fr);
+      align-items: center;
+      gap: 12px;
+      padding: 11px 12px;
     }
-    .yt-thumb-trigger {
+    .yt-thumb-box {
       position: relative;
+      width: 126px;
       aspect-ratio: 16 / 9;
-      width: 100%;
-      padding: 0;
-      background: #000;
+      border-radius: 10px;
       overflow: hidden;
-      display: block;
+      background: #000;
+      flex-shrink: 0;
     }
-    .yt-thumb-trigger img {
+    .yt-thumb-box img {
       width: 100%;
       height: 100%;
       object-fit: cover;
@@ -885,48 +1093,60 @@
     }
     .yt-badge {
       position: absolute;
-      left: 10px;
-      bottom: 10px;
-      background: rgba(14, 14, 16, 0.9);
+      left: 5px;
+      bottom: 5px;
+      background: rgba(14, 14, 16, 0.90);
       color: var(--ink);
-      font-size: 12px;
+      font-size: 10.5px;
       font-weight: 700;
-      padding: 4px 9px;
-      border-radius: 6px;
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
+      padding: 2px 6px;
+      border-radius: 4px;
     }
     .yt-info {
-      padding: 13px 14px 15px;
       display: flex;
       flex-direction: column;
-      gap: 6px;
-      flex: 1;
+      justify-content: space-between;
+      gap: 4px;
+      min-width: 0;
     }
-    .yt-ch { font-size: 12px; color: var(--muted); }
-    .yt-t { font-size: 15px; font-weight: 700; line-height: 1.38; }
-    .yt-bullets {
-      margin: 4px 0 8px;
-      padding-left: 16px;
-      font-size: 13px;
+    .yt-ch {
+      font-size: 11.5px;
       color: var(--muted);
-      display: grid;
-      gap: 3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
-    .yt-open-link {
-      margin-top: auto;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 13px;
+    .yt-t {
+      font-size: 14px;
       font-weight: 700;
-      color: var(--vermilion);
-      text-decoration: none;
+      line-height: 1.38;
+      color: var(--ink);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .yt-hook {
+      font-size: 12.5px;
+      color: var(--muted);
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .yt-foot {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 2px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--gold);
     }
 
     /* ==========================================================================
-       TAB 4: GEAR — ENGLISH SHOW CARDS + TIP SLIDER + PHRASEBOOK + SOS
+       TAB 4: GEAR — ENGLISH SHOW CARDS + TIP SLIDER + SOS + REFERENCE DIALOGS
        ========================================================================== */
     .showcard-grid {
       display: grid;
@@ -938,8 +1158,9 @@
       text-align: left;
       background: var(--paper);
       color: var(--paper-ink);
-      border-radius: 14px;
+      border-radius: 16px;
       padding: 14px 16px;
+      min-height: 62px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -953,49 +1174,55 @@
       font-weight: 700;
       font-size: 15px;
       display: block;
+      line-height: 1.35;
     }
     .showcard-btn-sub {
       font-size: 12.5px;
-      opacity: 0.78;
+      opacity: 0.80;
+      display: block;
+      margin-top: 2px;
     }
     .showcard-arrow {
       font-family: var(--font-cond);
       font-weight: 800;
       font-size: 14px;
-      padding: 5px 10px;
+      padding: 6px 10px;
       border-radius: 8px;
-      background: rgba(20, 20, 22, 0.12);
+      background: rgba(20, 20, 22, 0.14);
       white-space: nowrap;
+      flex-shrink: 0;
     }
 
     /* Tip & FX Calculator */
     .calc-box {
       background: var(--surface);
-      border-radius: 18px;
+      border-radius: 20px;
       padding: 18px;
       margin-bottom: 18px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--line);
     }
     .calc-readout {
       background: var(--bg);
       border-radius: 14px;
-      padding: 14px;
+      padding: 14px 10px;
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 8px;
       text-align: center;
       margin-bottom: 14px;
+      border: 1px solid var(--line-soft);
     }
     .calc-readout-lbl {
       display: block;
       font-size: 11px;
       color: var(--muted);
+      margin-bottom: 2px;
     }
     .calc-readout-val {
       font-family: var(--font-cond);
       font-weight: 800;
-      font-size: 28px;
-      line-height: 1.1;
+      font-size: 27px;
+      line-height: 1.08;
       color: var(--gold);
     }
     .calc-row {
@@ -1004,18 +1231,26 @@
       gap: 10px;
       margin-bottom: 12px;
     }
+    .memo-stack {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+    @media (min-width: 540px) {
+      .memo-stack { grid-template-columns: 1fr 1fr; }
+    }
     .inp-label {
       display: block;
       font-size: 12px;
       color: var(--muted);
-      margin-bottom: 4px;
+      margin-bottom: 5px;
     }
     .dark-input {
       width: 100%;
       min-height: 44px;
       padding: 8px 12px;
       border-radius: 10px;
-      border: 1px solid rgba(255, 255, 255, 0.16);
+      border: 1px solid rgba(255, 255, 255, 0.18);
       background: var(--bg);
       color: var(--ink);
       font-size: 16px;
@@ -1024,8 +1259,8 @@
     .tip-slider {
       width: 100%;
       accent-color: var(--vermilion);
-      height: 32px;
-      margin-block: 4px 10px;
+      height: 44px;
+      margin-block: 2px 8px;
     }
     .bill-stack {
       display: grid;
@@ -1037,7 +1272,7 @@
       background: var(--paper);
       color: var(--paper-ink);
       border-radius: 10px;
-      padding: 8px 6px;
+      padding: 9px 6px;
       text-align: center;
     }
     .bill-chip strong {
@@ -1048,7 +1283,7 @@
     }
     .bill-chip span { font-size: 12px; font-weight: 700; }
 
-    /* Emergency SOS & Phrasebook */
+    /* Emergency SOS */
     .sos-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -1058,8 +1293,9 @@
     .sos-btn {
       display: flex;
       flex-direction: column;
-      gap: 2px;
+      gap: 3px;
       padding: 13px 14px;
+      min-height: 64px;
       border-radius: 14px;
       background: var(--surface-2);
       text-decoration: none;
@@ -1068,7 +1304,7 @@
       background: var(--vermilion);
       color: #0E0E10;
     }
-    .sos-btn strong { font-size: 15px; }
+    .sos-btn strong { font-size: 14.5px; }
     .sos-btn span { font-family: var(--font-cond); font-size: 18px; font-weight: 700; }
 
     /* ==========================================================================
@@ -1076,16 +1312,16 @@
        ========================================================================== */
     .meter-card {
       background: var(--surface);
-      border-radius: 18px;
+      border-radius: 20px;
       padding: 16px;
       margin-bottom: 16px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--line);
     }
     .meter-top {
       display: flex;
       justify-content: space-between;
       align-items: baseline;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
     }
     .meter-bar {
       width: 100%;
@@ -1101,7 +1337,7 @@
       transition: width 260ms var(--ease-spring);
     }
 
-    /* Native <details> Accordions (modern-web-guidance compliant) */
+    /* Native <details> Accordions */
     .acc-group {
       display: grid;
       gap: 10px;
@@ -1111,7 +1347,7 @@
       background: var(--surface);
       border-radius: 16px;
       padding: 12px 14px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--line);
     }
     .acc-group summary {
       list-style: none;
@@ -1121,7 +1357,7 @@
       font-weight: 700;
       font-size: 15px;
       cursor: pointer;
-      min-height: 40px;
+      min-height: 44px;
     }
     .acc-group summary::-webkit-details-marker { display: none; }
     .acc-group summary::before {
@@ -1151,26 +1387,27 @@
 
     .chk-ul {
       list-style: none;
-      margin: 10px 0 0;
+      margin: 8px 0 0;
       padding: 0;
       display: grid;
-      gap: 6px;
+      gap: 7px;
     }
     .chk-li label {
       display: flex;
       align-items: flex-start;
       gap: 10px;
-      padding: 9px 10px;
+      padding: 10px 11px;
       border-radius: 10px;
       background: var(--bg);
       cursor: pointer;
       min-height: 44px;
       font-size: 14px;
+      line-height: 1.5;
     }
     .chk-li input[type="checkbox"] {
       width: 20px;
       height: 20px;
-      margin-top: 1px;
+      margin-top: 2px;
       flex-shrink: 0;
       accent-color: var(--mint);
     }
@@ -1180,7 +1417,9 @@
     }
 
     /* ==========================================================================
-       NATIVE <dialog closedby="any"> MODALS (SHOW CARD + VIDEO PREVIEW)
+       NATIVE <dialog closedby="any"> MODALS
+       1) FULLSCREEN SHOW CARD (PAPER STOCK)
+       2) UNIVERSAL RICH DETAIL BOTTOM-SHEET (SESSIONS / YOUTUBE / VEGAS / GUIDES)
        ========================================================================== */
     dialog.app-dialog {
       width: min(500px, calc(100vw - 24px));
@@ -1192,12 +1431,8 @@
       color: var(--paper-ink);
       overflow: auto;
     }
-    dialog.app-dialog::backdrop {
-      background: rgba(8, 8, 10, 0.84);
-    }
-    .showcard-modal-body {
-      padding: 24px 20px;
-    }
+    dialog.app-dialog::backdrop { background: rgba(6, 6, 8, 0.86); }
+    .showcard-modal-body { padding: 24px 20px; }
     .showcard-modal-jp {
       font-size: 13px;
       font-weight: 700;
@@ -1214,21 +1449,287 @@
       word-break: break-word;
     }
     .showcard-modal-sub {
-      font-size: 16px;
+      font-size: 15.5px;
       font-weight: 700;
       color: var(--paper-muted);
       padding-top: 14px;
-      border-top: 2px dashed rgba(20, 20, 22, 0.2);
+      border-top: 2px dashed rgba(20, 20, 22, 0.22);
       margin-bottom: 18px;
+      line-height: 1.55;
     }
     .modal-close-btn {
       width: 100%;
-      padding: 13px;
+      min-height: 46px;
+      padding: 12px;
       border-radius: 12px;
       background: #141416;
       color: #F5F2EC;
       font-weight: 700;
       font-size: 15px;
+    }
+
+    /* Universal Rich Detail Sheet (Bottom Sheet on iPhone 15, Centered Modal on Desktop) */
+    dialog.detail-sheet {
+      width: 100%;
+      max-width: 100%;
+      max-height: 88dvh;
+      margin: auto 0 0 0;
+      padding: 0;
+      border: 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 24px 24px 0 0;
+      background: var(--surface);
+      color: var(--ink);
+      overflow: hidden;
+      overscroll-behavior: contain;
+    }
+    dialog.detail-sheet[open] {
+      display: flex;
+      flex-direction: column;
+      animation: sheetUp 240ms var(--ease-spring) both;
+    }
+    @keyframes sheetUp {
+      from { opacity: 0; transform: translateY(28px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @media (min-width: 640px) {
+      dialog.detail-sheet {
+        width: min(560px, calc(100vw - 32px));
+        max-width: 560px;
+        max-height: 86dvh;
+        margin: auto;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        border-radius: 22px;
+      }
+    }
+    dialog.detail-sheet::backdrop {
+      background: rgba(6, 6, 8, 0.80);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+    }
+
+    .sheet-head {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      background: var(--surface);
+      padding: 10px 18px 14px;
+      border-bottom: 1px solid var(--line);
+      flex-shrink: 0;
+    }
+    .sheet-grab {
+      width: 40px;
+      height: 4px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.22);
+      margin: 0 auto 10px;
+    }
+    .sheet-head-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .sheet-kicker {
+      font-family: var(--font-cond);
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      color: var(--gold);
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .sheet-title {
+      font-size: 19px;
+      font-weight: 700;
+      line-height: 1.35;
+      color: var(--ink);
+    }
+    .sheet-x {
+      width: 44px;
+      height: 44px;
+      border-radius: 999px;
+      background: var(--surface-2);
+      color: var(--ink);
+      font-size: 22px;
+      line-height: 1;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+    }
+
+    .sheet-scroll {
+      overflow-y: auto;
+      padding: 16px 18px calc(22px + var(--safe-bottom));
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      overscroll-behavior: contain;
+    }
+    .sheet-scroll > * {
+      flex-shrink: 0;
+    }
+    .sheet-media {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      border-radius: 14px;
+      overflow: hidden;
+      background: #000;
+      flex-shrink: 0;
+    }
+    .sheet-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .fact-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 9px;
+    }
+    .fact-box {
+      background: var(--bg);
+      border: 1px solid var(--line-soft);
+      border-radius: 12px;
+      padding: 10px 12px;
+    }
+    .fact-box.is-full { grid-column: 1 / -1; }
+    .fact-lbl {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--muted);
+      margin-bottom: 3px;
+    }
+    .fact-val {
+      display: block;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--ink);
+      line-height: 1.4;
+    }
+    .fact-val.is-gold { color: var(--gold); }
+    .fact-val.is-mint { color: var(--mint); }
+    .fact-val.is-warn { color: var(--vermilion); }
+
+    .sheet-sec-h {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--gold);
+      letter-spacing: 0.03em;
+      margin-bottom: 7px;
+    }
+    .sheet-list {
+      margin: 0;
+      padding-left: 18px;
+      display: grid;
+      gap: 7px;
+      font-size: 14.5px;
+      color: var(--ink);
+      line-height: 1.6;
+    }
+    .sheet-callout {
+      background: var(--bg);
+      border-left: 4px solid var(--gold);
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--ink);
+    }
+    .sheet-callout.is-warn {
+      border-left-color: var(--vermilion);
+      background: rgba(255, 77, 28, 0.10);
+    }
+    .sheet-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .sheet-tag {
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: var(--surface-2);
+      color: var(--ink);
+    }
+    .sheet-abstract {
+      background: var(--bg);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px 13px;
+    }
+    .sheet-abstract summary {
+      list-style: none;
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--muted);
+      cursor: pointer;
+      min-height: 40px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .sheet-abstract summary::-webkit-details-marker { display: none; }
+    .sheet-abstract summary::before {
+      content: "";
+      inline-size: 12px;
+      block-size: 12px;
+      flex-shrink: 0;
+      background-color: var(--gold);
+      -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 6l5 5 5-5' fill='none' stroke='%23000' stroke-width='2.2'/%3E%3C/svg%3E") no-repeat center / contain;
+      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 6l5 5 5-5' fill='none' stroke='%23000' stroke-width='2.2'/%3E%3C/svg%3E") no-repeat center / contain;
+      rotate: -90deg;
+      transition: rotate 160ms ease;
+    }
+    .sheet-abstract[open] > summary::before { rotate: 0deg; }
+    .sheet-abstract p {
+      margin-top: 8px;
+      font-size: 13.5px;
+      line-height: 1.62;
+      color: var(--muted);
+    }
+    .sheet-actions {
+      display: grid;
+      gap: 8px;
+      padding-top: 4px;
+    }
+    .sheet-btn-primary {
+      width: 100%;
+      min-height: 48px;
+      padding: 12px 16px;
+      border-radius: 12px;
+      background: var(--vermilion);
+      color: #0E0E10;
+      font-weight: 800;
+      font-size: 15px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .sheet-btn-secondary {
+      width: 100%;
+      min-height: 46px;
+      padding: 11px 16px;
+      border-radius: 12px;
+      background: var(--surface-2);
+      color: var(--ink);
+      font-weight: 700;
+      font-size: 14.5px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
     }
 
     dialog.video-modal {
@@ -1239,12 +1740,10 @@
       background: var(--surface);
       color: var(--ink);
     }
-    dialog.video-modal::backdrop {
-      background: rgba(8, 8, 10, 0.84);
-    }
+    dialog.video-modal::backdrop { background: rgba(8, 8, 10, 0.84); }
 
     @media (prefers-reduced-motion: reduce) {
-      .tab-view, .pass-drawer { animation: none; }
+      .tab-view, .pass-drawer, dialog.detail-sheet[open] { animation: none; }
       button:active { transform: none; }
     }
   </style>
@@ -1261,7 +1760,7 @@
         </div>
       </div>
       <div class="top-actions">
-        <span class="pill-btn" id="offlinePill" style="background: rgba(46, 213, 144, 0.14); color: var(--mint); pointer-events: none; font-size: 12px;" title="オフライン動作状態">OFFLINE</span>
+        <span class="pill-status" id="offlinePill" style="background: rgba(50, 220, 150, 0.14); color: var(--mint);" title="オフライン動作状態">OFFLINE</span>
         <button type="button" class="pill-btn" id="vaultBtn" aria-pressed="false" aria-label="個人情報のロック解除・再ロック" style="background: var(--vermilion); color: #0E0E10;">
           <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="7" width="10" height="7" rx="1.5"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
           <span id="vaultBtnText">解除</span>
@@ -1277,26 +1776,41 @@
     <section class="tab-view is-active" id="view-now" aria-labelledby="now-title">
       <h1 id="now-title" class="sr-only">LV26 ラスベガス トラベルウォレット</h1>
 
-      <!-- Live Mission Radar + Time Travel Demo -->
+      <!-- Live Mission Radar -->
       <div class="radar-card">
         <div class="radar-top">
           <span class="radar-status"><span class="pulse-dot" aria-hidden="true"></span><span id="radarBadge">COUNTDOWN</span></span>
-          <span class="num" style="font-size: 13px; color: var(--muted);" id="radarClockLabel">現在時刻</span>
+          <span class="num" style="font-size: 12.5px; color: var(--muted);" id="radarClockLabel">現在時刻</span>
         </div>
         <div class="radar-big num" id="radarBig">あと 6日</div>
-        <div class="radar-mission" id="radarMission">11/29 20:25 JST 羽田T3発（AA176）</div>
-        <p class="radar-meta" id="radarMeta">まずは未完了の手続き（COM325-Rキャンセル・JPN101・re:Play RSVP・フーバーダム予約・現金$150）を片付けます。</p>
 
-        <div class="sim-strip">
-          <span class="sim-label">タイムトラベル体験（現地モードを事前チェック）：</span>
-          <div class="chip-scroll" id="simChips" role="group" aria-label="日時シミュレーター">
-            <button type="button" class="chip is-active" data-sim="real">現在（リアル）</button>
-            <button type="button" class="chip" data-sim="2026-11-29T21:30:00-08:00">11/29 到着夜</button>
-            <button type="button" class="chip" data-sim="2026-11-30T11:20:00-08:00">11/30 初日昼</button>
-            <button type="button" class="chip" data-sim="2026-12-01T13:20:00-08:00">12/01 GameDay前</button>
-            <button type="button" class="chip" data-sim="2026-12-02T14:40:00-08:00">12/02 ショー検討</button>
-            <button type="button" class="chip" data-sim="2026-12-03T14:10:00-08:00">12/03 JPN101前</button>
-            <button type="button" class="chip" data-sim="2026-12-04T15:15:00-08:00">12/04 ダム帰着後</button>
+        <button type="button" class="radar-mission-btn" id="radarMissionBtn" aria-label="次の予定の詳細を開く">
+          <div style="min-width: 0;">
+            <div class="radar-mission" id="radarMission">11/29 20:25 JST 羽田T3発（AA176）</div>
+            <p class="radar-meta" id="radarMeta">タップで直近の予定・詳細を確認</p>
+          </div>
+          <span class="chev" aria-hidden="true">›</span>
+        </button>
+
+        <div class="sim-toggle-row">
+          <button type="button" class="sim-toggle-btn" id="simToggleBtn" aria-expanded="false" aria-controls="simStrip">
+            <span>⏱ タイムトラベル切替</span>
+            <span id="simActiveTag" style="color: var(--gold);">現在</span>
+          </button>
+          <button type="button" class="sim-toggle-btn" data-jump="time">
+            <span>全日程を見る ›</span>
+          </button>
+        </div>
+
+        <div class="sim-strip" id="simStrip" hidden>
+          <div class="chip-scroll has-fade" id="simChips" role="group" aria-label="日時シミュレーター">
+            <button type="button" class="chip is-active" data-sim="real" data-sim-label="現在">現在（リアル）</button>
+            <button type="button" class="chip" data-sim="2026-11-29T21:30:00-08:00" data-sim-label="11/29夜">11/29 到着夜</button>
+            <button type="button" class="chip" data-sim="2026-11-30T11:20:00-08:00" data-sim-label="11/30昼">11/30 初日昼</button>
+            <button type="button" class="chip" data-sim="2026-12-01T13:20:00-08:00" data-sim-label="12/01昼">12/01 GameDay前</button>
+            <button type="button" class="chip" data-sim="2026-12-02T14:40:00-08:00" data-sim-label="12/02夕">12/02 ショー検討</button>
+            <button type="button" class="chip" data-sim="2026-12-03T14:10:00-08:00" data-sim-label="12/03昼">12/03 JPN101前</button>
+            <button type="button" class="chip" data-sim="2026-12-04T15:15:00-08:00" data-sim-label="12/04夕">12/04 ダム帰着後</button>
           </div>
         </div>
       </div>
@@ -1332,26 +1846,28 @@
           </button>
           <div class="tear-line" aria-hidden="true"><div class="tear-dashes"></div></div>
           <div class="pass-drawer">
-            <p><strong>往路 11/29（日）：</strong><span data-vault="home_out" data-mask="自宅最寄り → 羽田T3（要ロック解除）">自宅最寄り → 羽田T3（要ロック解除）</span><br>
+            <p><strong>往路 11/29（日）：</strong><span data-vault="home_out" data-mask="最寄り駅 → 羽田T3（要解除）">最寄り駅 → 羽田T3（要解除）</span><br>
             AA176 HND 20:25 JST → DFW 17:20 CST（B777-200・11h55m）<br>
             AA1797 DFW 20:18 CST → LAS T1 21:25 PST（A321・乗継 2h58m）</p>
 
             <div class="pass-alert">
-              <strong>CBP公式ルール確認：初回渡米は MPC 対象外</strong>
-              Mobile Passport Control（MPC）は「ESTA再渡航者」限定のため、今回は通常の <strong>Visitors / ESTA レーン</strong>へ進みます。滞在先を聞かれたら「The LINQ Hotel, 3535 Las Vegas Blvd South」と答えます。
+              <strong>CBP公式ルール：初回渡米は MPC 対象外</strong>
+              Mobile Passport Control（MPC）は「ESTA再渡航者」限定です。今回は通常の <strong>Visitors / ESTA レーン</strong>へ進んでください。滞在先は「The LINQ Hotel, 3535 Las Vegas Blvd South」と答えます。
             </div>
 
             <ol class="pass-steps">
               <li>DFW ターミナルDで入国審査（通常レーン）</li>
               <li>税関ホールで預け荷物を一度受取（LASタグ付きでも必須）</li>
               <li>税関出口の Connecting Bags へ再預け → 保安検査</li>
-              <li>Skylink で出発ターミナルへ移動</li>
+              <li>高架列車 Skylink で出発ターミナルへ移動</li>
             </ol>
 
             <p><strong>復路 12/04（金）〜12/06（日）：</strong><br>
             AA651 LAS T1 19:32 → LAX 20:53（席 <strong data-vault="seat_lax" data-mask="•••">•••</strong>・荷物羽田スルー）<br>
-            AA169 LAX 12/05 00:10 → HND T3 12/06 05:05 JST（席 <strong data-vault="seat_ret" data-mask="•••">•••</strong>・<span data-vault="home_ret" data-mask="06:15発→帰宅（要ロック解除）">06:15発→帰宅（要ロック解除）</span>）</p>
-            <button type="button" class="pass-cta" data-showcard="immigration">DFW入国審査でそのまま見せる英語カード</button>
+            AA169 LAX 12/05 00:10 → HND T3 12/06 05:05 JST（席 <strong data-vault="seat_ret" data-mask="•••">•••</strong>・<span data-vault="home_ret" data-mask="06:15発→帰宅（要解除）">06:15発→帰宅（要解除）</span>）</p>
+            <div class="pass-cta-row">
+              <button type="button" class="pass-cta" data-showcard="immigration">DFW入国審査でそのまま見せる英語カード</button>
+            </div>
           </div>
         </article>
 
@@ -1360,7 +1876,7 @@
           <button type="button" class="pass-trigger" aria-expanded="false">
             <div class="pass-head">
               <span class="pass-kicker">HOTEL KEYCARD · CENTRAL STRIP</span>
-              <span class="pass-toggle-hint">タップで詳細</span>
+              <span class="pass-toggle-hint">詳細 ▾</span>
             </div>
             <div class="iata-row">
               <span class="iata-code" style="font-size: 40px;">THE LINQ</span>
@@ -1386,7 +1902,9 @@
             <p><strong>電話：</strong>+1-702-731-3311 ／ 部屋タイプは到着時割当。<br>
             <strong>LAS空港からの移動：</strong>タクシー定額 Zone 3 $30.25目安（カード +$3、税・チップ別・10〜20分）または配車アプリ $15〜35。</p>
             <p style="margin-top: 8px;"><strong>ここからの距離目安：</strong>Caesars Forum 徒歩7分 ／ Caesars Palace 徒歩8–10分 ／ Venetian 徒歩10–12分 ／ MGM Grand モノレール15–20分 ／ Wynn 車10分。</p>
-            <button type="button" class="pass-cta" data-showcard="taxi">タクシー運転手に見せる英語住所カード</button>
+            <div class="pass-cta-row">
+              <button type="button" class="pass-cta" data-showcard="taxi">タクシー運転手に見せる英語住所カード</button>
+            </div>
           </div>
         </article>
 
@@ -1395,7 +1913,7 @@
           <button type="button" class="pass-trigger" aria-expanded="false">
             <div class="pass-head">
               <span class="pass-kicker">AWS RE:INVENT 2026 · PASS &amp; ESTA</span>
-              <span class="pass-toggle-hint">タップで詳細</span>
+              <span class="pass-toggle-hint">詳細 ▾</span>
             </div>
             <div class="iata-row">
               <span class="iata-code" style="font-size: 38px;">BADGE 23:59</span>
@@ -1421,7 +1939,9 @@
             <p><strong>11/29 到着夜の最優先：</strong>LAS T1 のバッジ受取は 23:59 まで。21:25 着で当日受取できます（必要物：パスポート＋受取コード／顔写真事前登録推奨）。</p>
             <p style="margin-top: 8px;"><strong>11/30 09:00〜 必須ミッション：</strong>The Venetian Level 1（Casanova 607）の Japan Support Desk で招待メールを提示し、<strong>12/01 Japan Night の参加チケット（先着順）</strong>を受け取ります。</p>
             <p style="margin-top: 8px;"><strong>パーティ夜のID注意：</strong>普段パスポート原本はホテル金庫ですが、11/30 の Sony Happy Hour / APJC Party（21+）など飲酒の場は原本携帯が必須です。</p>
-            <button type="button" class="pass-cta" data-showcard="badge">空港バッジ受取・Japan Desk 英語確認カード</button>
+            <div class="pass-cta-row">
+              <button type="button" class="pass-cta" data-showcard="badge">空港バッジ受取・Japan Desk 英語確認カード</button>
+            </div>
           </div>
         </article>
       </div>
@@ -1444,49 +1964,49 @@
     </section>
 
     <!-- ======================================================================
-         TAB 2: TIME — PHOTO-FREE HIGH-DENSITY TIMELINE WITH TRANSIT CONNECTORS
+         TAB 2: TIME — CLEAN SCANNABLE TIMELINE (TAP ANY CARD FOR FULL SHEET)
          ====================================================================== -->
     <section class="tab-view" id="view-time" aria-labelledby="time-title">
       <div class="view-head">
         <div>
           <h2 id="time-title" class="view-title">TIMELINE</h2>
-          <p class="view-sub">AWS Events API 同期済（11/23 21:31）・部屋番号＆移動コネクタ付</p>
+          <p class="view-sub">カードをタップで詳細・持ち物・英語原文</p>
+        </div>
+        <div class="segmented" role="group" aria-label="タイムゾーン切替">
+          <button type="button" class="seg-btn is-active" data-tz="PST" aria-pressed="true">現地 PST</button>
+          <button type="button" class="seg-btn" data-tz="JST" aria-pressed="false">日本 JST</button>
         </div>
       </div>
 
       <div class="time-controls">
-        <div class="tz-row">
-          <div class="segmented" role="group" aria-label="タイムゾーン切替">
-            <button type="button" class="seg-btn is-active" data-tz="PST" aria-pressed="true">現地 PST</button>
-            <button type="button" class="seg-btn" data-tz="JST" aria-pressed="false">日本 JST</button>
-          </div>
-          <div class="chip-scroll" id="timeFilters" role="group" aria-label="種別フィルタ">
-            <button type="button" class="chip is-active" data-tfilter="all">全部</button>
-            <button type="button" class="chip" data-tfilter="confirmed">確定</button>
-            <button type="button" class="chip" data-tfilter="event">Sony/JP</button>
-            <button type="button" class="chip" data-tfilter="optional">候補/当日</button>
-          </div>
+        <div class="filter-row" id="timeFilters" role="group" aria-label="種別フィルタ">
+          <button type="button" class="chip is-active" data-tfilter="all">全部</button>
+          <button type="button" class="chip" data-tfilter="confirmed">確定</button>
+          <button type="button" class="chip" data-tfilter="event">Sony/JP</button>
+          <button type="button" class="chip" data-tfilter="optional">候補/当日</button>
         </div>
-        <div class="chip-scroll" id="dayPills" role="tablist" aria-label="日付選択"></div>
+        <div class="chip-scroll has-fade" id="dayPills" role="tablist" aria-label="日付選択"></div>
       </div>
 
       <div class="timeline-feed" id="timelineFeed" aria-live="polite"></div>
 
-      <div class="dark-panel" style="margin-top: 16px;">
-        <p style="font-size: 13px; color: var(--muted);">
-          <strong>API同期メモ（11/23 21:31 取得）：</strong>予約済8件（COM325-R1 はまだ残存中・要キャンセル）、招待2件（APJC Kick Off Party / EBC46788 Cloud Game Development）、JPN101 はハート登録済みを確認。JAM 候補4枠（すべて Caesars Palace / Emperors Level Palace Ballroom I）は現時点で満席（unavailable）です。
-        </p>
-      </div>
+      <button type="button" class="sync-banner-btn" data-guide="api-sync">
+        <div>
+          <div style="font-size: 13.5px; font-weight: 700; color: var(--ink);">AWS Events API 同期ステータス（11/23 21:31）</div>
+          <div style="font-size: 12.5px; color: var(--muted); margin-top: 2px;">予約8件・招待2件・JAM満席状況・残アクションを確認</div>
+        </div>
+        <span class="chev" aria-hidden="true">›</span>
+      </button>
     </section>
 
     <!-- ======================================================================
-         TAB 3: VEGAS — REAL PHOTOS (ONLY WHERE THEY MATTER) + YOUTUBE CINEMA
+         TAB 3: VEGAS — SCANNABLE CARDS + RICH DETAIL DIALOGS + YOUTUBE 12
          ====================================================================== -->
     <section class="tab-view" id="view-vegas" aria-labelledby="vegas-title">
       <div class="view-head">
         <div>
           <h2 id="vegas-title" class="view-title">VEGAS &amp; VIDEO</h2>
-          <p class="view-sub">未決プランの判断・LINQ周辺の食・厳選YouTube 12本</p>
+          <p class="view-sub">タップで詳しい比較・動画解説・行き方ガイドを開けます</p>
         </div>
       </div>
 
@@ -1506,18 +2026,23 @@
           </div>
           <div class="photo-card-body">
             <h3>Sphere『オズの魔法使い』＆『KÀ』</h3>
-            <p>最優先は <strong>Sphere</strong>（セッションより優先可・日中可）。Japan Night（12/01夜）と re:Play（12/03夜）があるため2案に絞られています（未購入）。タップで仮メモを残せます。</p>
+            <p class="photo-card-lead">最優先は <strong>Sphere</strong>（未購入）。タップで仮メモをピン留めでき、下のボタンから座席選び・価格・代償の詳しい比較を開けます。</p>
             <div class="choice-group" data-decision="show">
               <button type="button" class="choice-card" data-choice="plan1">
                 <div class="choice-title"><span>案1（推奨）：12/02（水）同日はしご</span><span class="picked-badge" hidden>選択中</span></div>
-                <div class="choice-sub">Sphere 17:00（75分・開場45分前・遅刻不可・$104〜／中央200番台 $139〜）＋ MGM Grand『KÀ』20:30（90分・$87.88〜・約7割売済）。代償：COM324-R（15:00–16:00）の欠席または早退。</div>
+                <div class="choice-price">Sphere $104〜（中央200番台 $139〜）＋ KÀ $87.88〜</div>
+                <div class="choice-sub">Sphere 17:00 → MGM『KÀ』20:30。代償：COM324-R の欠席または早退。</div>
               </button>
               <button type="button" class="choice-card" data-choice="plan3">
                 <div class="choice-title"><span>案3：12/04（金）日中回 Sphere 11:00</span><span class="picked-badge" hidden>選択中</span></div>
-                <div class="choice-sub">最終日午前に Sphere へ行く案。代償：同日のフーバーダム6名ツアー不参加。別候補の『Mystère』（Treasure Island・18:30/21:00）は在庫豊富。</div>
+                <div class="choice-price">Sphere 11:00（75分・日中回）</div>
+                <div class="choice-sub">最終日午前に観る案。代償：同日のフーバーダム6名ツアー不参加。</div>
               </button>
             </div>
-            <p style="font-size: 12px; margin-bottom: 0;">※価格は11/17–20確認・Ticketmaster 1枚手数料込・税別目安。購入前に総額を再確認。</p>
+            <button type="button" class="detail-open-btn" data-guide="shows">
+              <span>座席・価格・遅刻ルール・Mystère比較を詳しく見る</span>
+              <span class="tap-hint">詳細 ›</span>
+            </button>
           </div>
         </article>
 
@@ -1528,26 +2053,33 @@
           </div>
           <div class="photo-card-body">
             <h3>最終日 12/04 フーバーダム（6名確定）</h3>
-            <p>11/23に保留解除・予約進行方針（<strong>送信・請求はまだ未実行</strong>）。AA651（19:32発・荷物締切18:32）のため、ホテル17:15発を守る前提です。</p>
+            <p class="photo-card-lead">Gray Line で予約進行中（<strong>送信・請求はまだ未実行</strong>）。AA651（19:32発・荷物締切18:32）のため17:15ホテル発が絶対条件です。</p>
             <div class="choice-group" data-decision="hoover">
               <button type="button" class="choice-card" data-choice="grayline">
-                <div class="choice-title"><span>進行中：Gray Line 発電所ツアー込み（6名）</span><span class="picked-badge" hidden>選択中</span></div>
-                <div class="choice-sub"><strong>6名合計 ¥82,866（1人あたり ¥13,811・税・手数料込）</strong>。12/02請求・12/03 09:00まで無料キャンセル。8:00〜8:15頃お迎え→レビュー実態の帰着は <strong>14:30〜15:00</strong>。残確認：代表電話番号・The LINQ 送迎可否・成立後72時間前（12/01頃）リコンファーム必須。</div>
+                <div class="choice-title"><span>進行中：Gray Line 発電所ツアー込み</span><span class="picked-badge" hidden>選択中</span></div>
+                <div class="choice-price">6名合計 ¥82,866（1人 ¥13,811・税・手数料込）</div>
+                <div class="choice-sub">8:00頃お迎え → 実態帰着 14:30〜15:00。12/03 09:00まで無料キャンセル。</div>
               </button>
               <button type="button" class="choice-card" data-choice="mini">
                 <div class="choice-title"><span>代替A：Viator ミニツアー（発電所なし）</span><span class="picked-badge" hidden>選択中</span></div>
-                <div class="choice-sub">1人あたり $76目安。発電所・ビジターセンターなしだが 11:00 頃帰着で時間に余裕。</div>
+                <div class="choice-price">1人 $76目安（6名 約$456目安）</div>
+                <div class="choice-sub">11:00頃帰着で時間に大きな余裕。発電所内部見学は含まれません。</div>
               </button>
               <button type="button" class="choice-card" data-choice="car">
                 <div class="choice-title"><span>代替B：Alamo レンタカー＋公式発電所</span><span class="picked-badge" hidden>選択中</span></div>
-                <div class="choice-sub">7–8人乗り 車両単位 $97.70〜$105.71（税・手数料込）＋駐車 $10＋USBR公式発電所 1人 $25。国際運転免許証が必要。</div>
+                <div class="choice-price">車両 $97.70〜$105.71＋駐車$10＋発電所 1人$25</div>
+                <div class="choice-sub">7–8人乗りで自由行動。国際運転免許証と現地運転が必要です。</div>
               </button>
             </div>
+            <button type="button" class="detail-open-btn" data-guide="hoover">
+              <span>残確認3点・タイムライン・リコンファーム手順を見る</span>
+              <span class="tap-hint">詳細 ›</span>
+            </button>
           </div>
         </article>
       </div>
 
-      <!-- Sub-panel: YouTube 12 Videos (with Offline 3-Line Takeaways!) -->
+      <!-- Sub-panel: YouTube 12 Videos -->
       <div id="vpanel-videos" hidden>
         <div class="chip-scroll" id="ytCatPills" style="margin-bottom: 14px;" role="group" aria-label="動画カテゴリ">
           <button type="button" class="chip is-active" data-ytcat="all">すべて (12)</button>
@@ -1568,52 +2100,18 @@
           </div>
           <div class="photo-card-body">
             <h3>LINQ 目の前の朝・昼・夜グルメ</h3>
-            <div class="venue-row">
-              <div><span class="venue-name">Nook Express（LINQ館内・24h）</span><span class="venue-note">早朝のコーヒー・朝食サンドを秒で買える拠点ショップ</span></div>
-              <span class="venue-time">0m</span>
-            </div>
-            <div class="venue-row">
-              <div><span class="venue-name">In-N-Out Burger（Promenade）</span><span class="venue-note">西海岸名物バーガー。並んでも回転が速く手頃</span></div>
-              <span class="venue-time">2m</span>
-            </div>
-            <div class="venue-row">
-              <div><span class="venue-name">Gordon Ramsay Fish &amp; Chips</span><span class="venue-note">カウンター形式で揚げたて。短時間の昼食に最適</span></div>
-              <span class="venue-time">2m</span>
-            </div>
-            <div class="venue-row">
-              <div><span class="venue-name">Favorite Bistro / Maxie's</span><span class="venue-note">しっかり座って食べる朝・ブランチの定番2軒</span></div>
-              <span class="venue-time">3m</span>
-            </div>
-            <div class="venue-row">
-              <div><span class="venue-name">Flour &amp; Barley / Yard House</span><span class="venue-note">窯焼きピザ＆クラフトビール。セッション帰りの1杯に</span></div>
-              <span class="venue-time">4m</span>
-            </div>
-            <div class="venue-row">
-              <div><span class="venue-name">Urth Caffé / Grand Lux Cafe（Venetian）</span><span class="venue-note">12/01・12/03のVenetian滞在日に便利なカフェ＆大箱</span></div>
-              <span class="venue-time">10m</span>
-            </div>
-            <div class="venue-row">
-              <div><span class="venue-name">Café Americano（Caesars Palace・24h）</span><span class="venue-note">GameDay後や夜遅めの食事でも開いているダイナー</span></div>
-              <span class="venue-time">8m</span>
-            </div>
+            <p style="font-size: 13px; color: var(--muted); margin-bottom: 8px;">各店をタップするとおすすめメニュー・予算・チップ目安・地図を開けます。</p>
+            <div class="tap-list" id="foodList"></div>
           </div>
         </article>
 
         <div class="dark-panel">
           <h3>お土産ミッション（12/03夜・12/04朝・空港が安全）</h3>
-          <div class="venue-row">
-            <div><span class="venue-name">会社向け（大人数・小分け個包装）</span><span class="venue-note">カジノチップ型チョコ、「Welcome to Fabulous Las Vegas」小物</span></div>
-            <span class="venue-time">配り用</span>
-          </div>
-          <div class="venue-row">
-            <div><span class="venue-name">家族・目上向け：Ethel M Chocolates</span><span class="venue-note">ラスベガス地元の老舗。LAS空港内にも店舗あり</span></div>
-            <span class="venue-time">定番</span>
-          </div>
-          <div class="venue-row">
-            <div><span class="venue-name">友人向け：M&amp;M's World / Trader Joe's</span><span class="venue-note">限定チョコやアメリカらしいスナック類</span></div>
-            <span class="venue-time">手軽</span>
-          </div>
-          <p style="font-size: 13px; color: var(--muted); margin-top: 10px;">※免税目安：個人使用品合計20万円以下・酒3本（760ml=1本）・たばこ200本。高額品レシート保管。往路スーツケースは2〜3割空きを残します。</p>
+          <div class="tap-list" id="souvenirList"></div>
+          <button type="button" class="detail-open-btn" style="margin-top: 10px;" data-guide="duty-free">
+            <span>免税枠（20万円・酒・たばこ）とスーツケース余白ルール</span>
+            <span class="tap-hint">詳細 ›</span>
+          </button>
         </div>
       </div>
 
@@ -1626,14 +2124,15 @@
           </div>
           <div class="photo-card-body">
             <h3>The LINQ からの会場アクセス一覧</h3>
-            <div id="venueMapList"></div>
+            <p style="font-size: 13px; color: var(--muted); margin-bottom: 8px;">会場をタップすると行き方のコツ・関連セッション・Googleマップを開けます。</p>
+            <div class="tap-list" id="venueMapList"></div>
           </div>
         </article>
       </div>
     </section>
 
     <!-- ======================================================================
-         TAB 4: GEAR — ENGLISH SHOW CARDS + TIP SLIDER + PHRASES + SOS
+         TAB 4: GEAR — ENGLISH SHOW CARDS + TIP SLIDER + SOS + REFERENCE DIALOGS
          ====================================================================== -->
     <section class="tab-view" id="view-gear" aria-labelledby="gear-title">
       <div class="view-head">
@@ -1679,7 +2178,7 @@
       <div class="calc-box">
         <div class="view-head" style="margin-bottom: 10px;">
           <h3 style="font-size: 18px;">チップ計算 ＆ ドル円換算</h3>
-          <span class="cond num" style="font-size: 20px; color: var(--vermilion);" id="tipPctDisplay">18%</span>
+          <span class="cond num" style="font-size: 22px; color: var(--vermilion);" id="tipPctDisplay">18%</span>
         </div>
 
         <div class="calc-readout" aria-live="polite">
@@ -1733,11 +2232,14 @@
             <div class="bill-chip"><strong>$10</strong><span>×3枚</span></div>
             <div class="bill-chip"><strong>$20</strong><span>×2枚</span></div>
           </div>
-          <p style="font-size: 12.5px; color: var(--muted);">清掃 $2–5/毎朝・バー $1–2/杯・ベル $1–2/個・ガイド $5–10。両替はオンライン宅配4社が小札指定不可のため、<strong>店頭カウンター事前電話確認（推奨・約¥24,000〜24,300）</strong>か Travelex オンライン（送料¥990・現地崩し）の2択（決定待ち）。</p>
+          <button type="button" class="detail-open-btn" data-guide="cash-exchange">
+            <span>現金チップ相場＆両替2択（店頭 vs 宅配）の詳細</span>
+            <span class="tap-hint">詳細 ›</span>
+          </button>
         </div>
       </div>
 
-      <!-- Mini English Phrasebook + Emergency SOS -->
+      <!-- Emergency SOS -->
       <div class="dark-panel" style="margin-bottom: 16px;">
         <h3>緊急連絡先（1タップ発信）</h3>
         <div class="sos-grid">
@@ -1746,39 +2248,37 @@
           <a class="sos-btn" href="tel:18004337300"><strong>American Airlines</strong><span>1-800-433-7300</span></a>
           <a class="sos-btn" href="tel:+14157806000"><strong>在SF日本国総領事館</strong><span>+1-415-780-6000</span></a>
         </div>
-        <div class="calc-row" style="margin-bottom: 0;">
+        <div class="memo-stack">
           <div>
-            <label for="memoIns" class="inp-label">海外旅行保険（未登録・端末保存）</label>
-            <input id="memoIns" class="dark-input" type="text" placeholder="証券番号・緊急連絡先を入力">
+            <label for="memoIns" class="inp-label">海外旅行保険（端末内に保存）</label>
+            <input id="memoIns" class="dark-input" type="text" placeholder="例：証券番号 / 24hデスク電話">
           </div>
           <div>
-            <label for="memoComp" class="inp-label">会社の緊急連絡先（未登録・端末保存）</label>
-            <input id="memoComp" class="dark-input" type="text" placeholder="SIE 緊急連絡先を入力">
+            <label for="memoComp" class="inp-label">会社の緊急連絡先（端末内に保存）</label>
+            <input id="memoComp" class="dark-input" type="text" placeholder="例：SIE 緊急連絡先・担当者">
           </div>
         </div>
       </div>
 
-      <div class="acc-group">
-        <details>
-          <summary>現地ですぐ使えるミニ英語フレーズ</summary>
-          <div style="margin-top: 10px; display: grid; gap: 10px; font-size: 14px;">
-            <div><strong>入国審査（目的）：</strong><br><span style="color: var(--gold);">"I'm here for AWS re:Invent, a business conference, for 5 days."</span></div>
-            <div><strong>ホテルチェックイン：</strong><br><span style="color: var(--gold);"><span data-vault="checkin_phrase" data-mask="ロック解除で氏名入りフレーズを表示">ロック解除で氏名入りフレーズを表示</span></span></div>
-            <div><strong>配車アプリの本人確認：</strong><br><span style="color: var(--gold);"><span data-vault="rideshare_phrase" data-mask="ロック解除で氏名入りフレーズを表示">ロック解除で氏名入りフレーズを表示</span></span>（ナンバー一致も確認）</div>
-            <div><strong>レストラン会計：</strong><br><span style="color: var(--gold);">"Could I get the check, please?" / "In US dollars, please."</span></div>
-            <div><strong>ホテルで荷物預け（12/04朝）：</strong><br><span style="color: var(--gold);">"Could I leave my luggage here until 5 PM?"</span></div>
-          </div>
-        </details>
-
-        <details>
-          <summary>防犯・パスポート保管・通信（ahamo）のルール</summary>
-          <div style="margin-top: 10px; display: grid; gap: 8px; font-size: 13.5px; color: var(--muted);">
-            <p><strong style="color: var(--ink);">パスポート：</strong>普段はホテル金庫＋スマホ写真＆コピー。飲酒・21+イベントの夜（11/30）だけ服の下のセキュリティポーチで原本携帯。</p>
-            <p><strong style="color: var(--ink);">分散と防犯：</strong>カード別ブランド2枚と現金を財布・ポーチ・金庫に分散。深夜は配車/タクシーを使い、飲み物を置いたまま離れない。ATMはホテル/銀行内のみ。</p>
-            <p><strong style="color: var(--ink);">通信：</strong>ahamo 米国ローミング込みで十分（11月残量約20GB→12/01に40GBへ増量・15日制限対象外・追加eSIM不要）。</p>
-            <p><strong style="color: var(--ink);">紛失時手順：</strong>①カード停止 → ②警察でポリスレポート取得＆在SF総領事館で渡航書 → ③海外旅行保険へ連絡。</p>
-          </div>
-        </details>
+      <!-- Quick Reference Sheets -->
+      <div class="dark-panel">
+        <h3>現地サバイバルガイド（タップで詳しく表示）</h3>
+        <div class="tap-list">
+          <button type="button" class="venue-row-btn" data-guide="phrases">
+            <div>
+              <span class="venue-name">現地ですぐ使えるミニ英語フレーズ集</span>
+              <span class="venue-note">入国・チェックイン・配車確認・会計・荷物預けの5場面</span>
+            </div>
+            <span class="chev" aria-hidden="true">›</span>
+          </button>
+          <button type="button" class="venue-row-btn" data-guide="security">
+            <div>
+              <span class="venue-name">防犯・パスポート保管・通信（ahamo）ルール</span>
+              <span class="venue-note">21+イベントのID携帯、カード分散、紛失時の3ステップ</span>
+            </div>
+            <span class="chev" aria-hidden="true">›</span>
+          </button>
+        </div>
       </div>
     </section>
 
@@ -1805,14 +2305,12 @@
 
       <div class="dark-panel" style="margin-top: 14px;">
         <h3>iPhone 15 オフラインアプリ状態</h3>
-        <p style="font-size: 13.5px; color: var(--muted); margin-bottom: 10px;" id="offlineStatusMsg">チェック中…</p>
-        <p style="font-size: 13px; color: var(--muted);">
-          <strong>ホーム画面に追加する手順（PWA版）：</strong>Safari で HTTPS の公開URLを開き、下部中央の「共有（□↑）」→「ホーム画面に追加」をタップ。1回開くと Service Worker が写真・YouTubeサムネ・全データを iPhone 15 内にキャッシュし、機内モードでもそのまま起動できます。
-        </p>
-        <div style="margin-top: 12px; display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap;">
-          <button type="button" class="pill-btn" id="refreshCacheBtn">オフライン保存を再確認</button>
-          <button type="button" class="pill-btn" id="resetPackBtn">チェック状態を初期化</button>
-          <button type="button" class="pill-btn" id="showCreditsBtn">写真クレジットを見る</button>
+        <p style="font-size: 13.5px; color: var(--muted); margin-bottom: 12px;" id="offlineStatusMsg">チェック中…</p>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <button type="button" class="pill-btn" id="refreshCacheBtn">保存を再確認</button>
+          <button type="button" class="pill-btn" data-guide="offline-howto">ホーム画面追加の手順</button>
+          <button type="button" class="pill-btn" id="resetPackBtn">チェック初期化</button>
+          <button type="button" class="pill-btn" id="showCreditsBtn">写真クレジット</button>
         </div>
       </div>
     </section>
@@ -1844,7 +2342,7 @@
     </div>
   </nav>
 
-  <!-- NATIVE FULLSCREEN ENGLISH SHOW CARD DIALOG (closedby="any" + Safari fallback) -->
+  <!-- NATIVE FULLSCREEN ENGLISH SHOW CARD DIALOG -->
   <dialog id="showCardDialog" class="app-dialog" closedby="any" aria-labelledby="scTitle">
     <div class="showcard-modal-body">
       <div class="showcard-modal-jp" id="scTitle">相手に見せる英語カード</div>
@@ -1856,22 +2354,21 @@
     </div>
   </dialog>
 
-  <!-- NATIVE VIDEO / CREDITS DIALOG -->
-  <dialog id="videoDialog" class="video-modal" closedby="any" aria-labelledby="vdTitle">
-    <div style="padding: 18px;">
-      <p style="font-size: 12px; color: var(--muted); margin-bottom: 4px;" id="vdChannel"></p>
-      <h3 id="vdTitle" style="font-size: 18px; line-height: 1.35; margin-bottom: 12px;"></h3>
-      <div id="vdMediaWrap" style="aspect-ratio: 16/9; background: #000; border-radius: 12px; overflow: hidden; margin-bottom: 12px;">
-        <img id="vdImg" src="" alt="" style="width: 100%; height: 100%; object-fit: cover; display: block;">
-      </div>
-      <div id="vdBody" style="font-size: 14px; color: var(--muted); margin-bottom: 16px;"></div>
-      <div style="display: grid; gap: 8px;">
-        <a id="vdOpen" href="#" target="_blank" rel="noopener" style="display: block; text-align: center; padding: 13px; border-radius: 12px; background: var(--vermilion); color: #0E0E10; font-weight: 800; text-decoration: none;">YouTube で動画を観る</a>
+  <!-- UNIVERSAL RICH DETAIL BOTTOM-SHEET DIALOG (SESSIONS / YOUTUBE / VEGAS / GUIDES) -->
+  <dialog id="detailDialog" class="detail-sheet" closedby="any" aria-labelledby="ddTitle">
+    <div class="sheet-head">
+      <div class="sheet-grab" aria-hidden="true"></div>
+      <div class="sheet-head-row">
+        <div style="min-width: 0;">
+          <div class="sheet-kicker" id="ddKicker"></div>
+          <h3 class="sheet-title" id="ddTitle"></h3>
+        </div>
         <form method="dialog">
-          <button type="submit" style="width: 100%; padding: 12px; border-radius: 12px; background: var(--surface-2); color: var(--ink); font-weight: 700;">閉じる</button>
+          <button type="submit" class="sheet-x" aria-label="閉じる">×</button>
         </form>
       </div>
     </div>
+    <div class="sheet-scroll" id="ddBody"></div>
   </dialog>
 
 
@@ -1883,8 +2380,8 @@
       <p style="font-size: 13.5px; color: var(--muted); margin-bottom: 14px;">確認番号・座席・旅券末尾・暗証番号・最寄り駅は暗号化されています。パスコードを入力すると、この端末の中だけで復号されます（外部送信なし）。</p>
       <form id="vaultForm" style="display: grid; gap: 10px;">
         <input id="vaultPassInput" class="dark-input" type="password" autocomplete="current-password" placeholder="パスコードを入力" required>
-        <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); cursor: pointer;">
-          <input id="vaultRemember" type="checkbox" checked style="width: 18px; height: 18px; accent-color: var(--mint);">
+        <label style="display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--muted); cursor: pointer;">
+          <input id="vaultRemember" type="checkbox" checked style="width: 20px; height: 20px; flex-shrink: 0; accent-color: var(--mint);">
           この端末（iPhone）に復号状態を保存する（機内モードでも維持）
         </label>
         <p id="vaultErr" style="font-size: 13px; color: var(--vermilion); margin: 0;" hidden>パスコードが違います。もう一度確認してください。</p>
@@ -1901,7 +2398,6 @@
       /* ======================================================================
          0. NON-BLOCKING OPTIONAL FONTS + SERVICE WORKER OFFLINE VERIFICATION
          ====================================================================== */
-      // Load optional web fonts ONLY when online, never blocking offline/airplane startup
       if (navigator.onLine) {
         const fl = document.createElement('link');
         fl.rel = 'stylesheet';
@@ -1922,17 +2418,17 @@
               const cache = await caches.open(lvKey);
               const items = await cache.keys();
               offlinePill.textContent = navigator.onLine ? 'OFFLINE OK' : 'OFFLINE';
-              offlineMsg.textContent = `${isStandalone ? 'ホーム画面アプリ起動中・' : ''}端末キャッシュ完了（${items.length}ファイル保存済み）。このまま機内モードでも全画面・写真・サムネ・計算機・チェックリストが動作します。`;
+              offlineMsg.textContent = `${isStandalone ? 'ホーム画面アプリ起動中・' : ''}端末キャッシュ完了（${items.length}ファイル保存済み）。機内モードでも全画面・写真・サムネ・計算機・詳細ダイアログがそのまま動きます。`;
               return;
             }
           } catch (_) {}
         }
         if (location.protocol === 'file:' || !location.protocol.startsWith('http')) {
           offlinePill.textContent = 'STANDALONE';
-          offlineMsg.textContent = '単一HTMLスタンドアロン版（写真4点・YouTubeサムネ12点・全データ内蔵）。オフライン環境でそのまま動作します。';
+          offlineMsg.textContent = '単一HTMLスタンドアロン版（写真4点・YouTubeサムネ12点・全データ内蔵）。オフライン環境でそのまま動きます。';
         } else {
           offlinePill.textContent = 'CACHING...';
-          offlineMsg.textContent = 'オフライン用キャッシュを準備中です。数秒後に「オフライン保存を再確認」を押してください。';
+          offlineMsg.textContent = 'オフライン用キャッシュを準備中です。数秒後に「保存を再確認」を押してください。';
         }
       }
 
@@ -1988,7 +2484,7 @@
       /* ======================================================================
          3. AES-256-GCM ENCRYPTED PERSONAL VAULT (PBKDF2 310,000 ITERATIONS)
          ====================================================================== */
-      const ENCRYPTED_VAULT = {"v":1,"iter":310000,"salt":"MAMcgklpE3ak6ZyrJhdrgQ==","iv":"OqqRT4wxVpdq0pEm","ct":"cb+U5+p8FIeprA1j01wDcr/sdLRet0sboXJpzy26BONYZjQ32DPb3f3lGPHxurYE8MdyX/wILqi2DjPlInLBwykyFlqrmDr+6s6brXtycHvGVUL1RHk6wIWjxAGD9lh6T6j4J7zxiN9cm0glw+v9fNDo5yr562Ae0vjiUf3MnSzGhpNALwOQEAFnwMXiSWGBblDg2JL7qP0FCEnjO10+zrt4hu1rp+n1tcrghRpT9BzJVvSHNaz1DFjIZohM1B2MYZ0bU19X/lPinyQpHzgm8yRT5AldW913G6Sq5CXOCkx0iJTtE9MtJ6hcHzcjEk1lloOLL2VlPKJEPPoCFUVA8yrlp1PMK8QlhLWbljFLIh0Wn+Q25CWwgTIE03g5NM/GsbO0ODv62EhJ96oQ2Xupttmm6wcGN0oLu46NHwzH3Irw7VnfFT8yGS8ky2seTmQMHLDAIzOOQ3uFhyFq2VfIH1LEZc7B1PI5Wp+J/yew2b5dS0QDkBQE8xZ9iN0cD4eADm8DeA7prQkHJVpF6+ioOAT6vHBcGE4cTkdNq7ZvIh0h2fPbQYgF06B2bdh30AavYJg7zNY2n5kSmVW/QBEqsGpxO9qMIrys8kZO86M5D4H4+DK/IpxMrnZ72ZuUEYGOEJi2v0MOCsfqn7tpY73i6EoYNSe3vrX7bFTuPOGFge+RPkwMpet6OuDRJn6iAxuoQ0p4Te7ve7NS7UuG/+mnAZdOPcwsmQ31ocCXViDTgX4gRkATmFUoKq5/RYx7qLrj8tU3Kp4zEWQ1OHI23lQH8icqUqP7Z2d/RR62o04KB5okNThC5IwlW/xzVSAXH2GeDTTPLCIfR6gR73OFVu8Dzie7Yyid0WaLhGgJ7fBpxEE7zi7v1qsZEbZsu7ZyKEkYr9djus5HGUPotxUR"};
+      const ENCRYPTED_VAULT = {"v":1,"iter":310000,"salt":"uha4MeKlxak8dpElnWZrwg==","iv":"BQzD8ULrTsCt1UBd","ct":"PmfNJI6f3OezRSL0BOjlJbd/m5FLysLFXvzqW3wTtwEvzf6STbBUoZ3MLKs4J8ZtgFPGnuRMydpSn2XiY5En2Vr+v3Y281ggALAEg0XWWZLr4igcKhCpFAV61fUoxg561LE7l7oSeXUUM4rVeLkBhNnvBCbs9N1IhE9GO7H7v8ptcKzRACemzbLZGzeAWqFQFtfY3OY+FX+ukGBi8RxDa71jyTXv20uSjXPbT5+5bjGp5usRFfL00x8VkFsRj4aUwvQ8z1S9wFhibFvQ5A5Uxf1MbsZQQXG5Fz8im5/HSI9keTGUucy0qmd9Dk9ydUgMJeynRD/fX/Qph5Rswy8hj8YAS6SanxzVTA4w9Q4S2tUmIE7LRR1kOhwOr6oR83jfHnpscElRaQVBkxXuZ1RFyqq4Upyv1JP88/I8ThNQ1f7eWZKlq4N5irz2GiU82WzwvznyHce7+7cU51AK7E3lWKgBhLCjRCJs/PF0PoPpYhjWA4IlAIsQJzx5XasYsU5WoB5dawHWTa6kHxQeSrCgkN8l9Di4fuqn9ETqFe+xrgz41l5Pp4lcdAxR5+gB2u4t6CVQg91/BbIzgRvg3hMDNmPQ2ehEi4MfY/Fbm6a3T2q8rkRHG2hLsUI8xkQX0bctffT7HkmfdKz2esbgNFOcBzNRKoXOF4BrGJvzROYJEw8xq599YBD9Jk7N8Q6HPzebhsxcIew8eIOHVJ2cy1S/Um7SDh8XeZwnbNamVVy0Xz0Jwu6uol/ZqX2DBv6ovFh+s2W275q0TmH4qidtM+NgM/YVXNFjb5xKAH7nZLYQoQDnSYXsjVe1pTFh7CQUULuQvwV7U9OTy4X/ejIjYj4QmrCuYcQbpWYP/awXLb6/U7CwuH2PCgrzwSKlJjU6oAbwTIckvu5YSNdNCcNh"};
       const VAULT_STORE_KEY = 'lv26_unlocked_vault_v1';
       let unlockedData = null;
 
@@ -2024,7 +2520,7 @@
         return JSON.parse(new TextDecoder().decode(plain));
       }
 
-      function applyVaultToDom() {
+      function applyPrivacyToDom() {
         const unlocked = !!unlockedData;
         document.body.classList.toggle('privacy-masked', !unlocked);
         vaultBtn.setAttribute('aria-pressed', String(unlocked));
@@ -2041,12 +2537,13 @@
         const cached = localStorage.getItem(VAULT_STORE_KEY);
         if (cached) unlockedData = JSON.parse(cached);
       } catch (_) {}
+      applyPrivacyToDom();
 
       vaultBtn.addEventListener('click', () => {
         if (unlockedData) {
           unlockedData = null;
           try { localStorage.removeItem(VAULT_STORE_KEY); } catch (_) {}
-          applyVaultToDom();
+          applyPrivacyToDom();
         } else {
           vaultErr.hidden = true;
           vaultPassInput.value = '';
@@ -2062,7 +2559,7 @@
           if (vaultRemember.checked) {
             try { localStorage.setItem(VAULT_STORE_KEY, JSON.stringify(unlockedData)); } catch (_) {}
           }
-          applyVaultToDom();
+          applyPrivacyToDom();
           vaultDialog.close();
         } catch (_) {
           vaultErr.hidden = false;
@@ -2082,7 +2579,8 @@
       }
 
       /* ======================================================================
-         4. SCHEDULE DATA WITH REAL TRANSIT CONNECTORS
+         4. SCHEDULE DATA (SYNCED WITH AWS EVENTS API 2026-11-23 21:31)
+         Clean card summary + Rich structured detail dialog metadata
          ====================================================================== */
       const DAYS = [
         { id: '11-29', label: '11/29 日' },
@@ -2096,52 +2594,649 @@
 
       const SCHEDULE = [
         // 11/29
-        { day: '11-29', start: '2026-11-29T16:30:00+09:00', end: '2026-11-29T17:30:00+09:00', title: '自宅出発 → 羽田空港 T3', venue: '<span data-vault="home_route_out" data-mask="自宅最寄り → 羽田T3">自宅最寄り → 羽田T3</span>', type: 'confirmed', tag: '移動', desc: '電車 ¥370（40〜55分）。タクシー代替は16:50発 約¥4,000。', nextMove: '国際線チェックイン・保安検査（AAオンラインチェックインは前日20:25〜）' },
-        { day: '11-29', start: '2026-11-29T20:25:00+09:00', end: '2026-11-29T17:20:00-06:00', title: 'AA176 羽田 T3 → ダラス（DFW）', venue: 'B777-200 / <span data-vault="seat_hnd" data-mask="Seat •••">Seat •••</span>', type: 'confirmed', tag: 'フライト', desc: '11時間55分。DFW ターミナルD着。初回ESTAのため通常レーンで入国審査。', nextMove: 'DFW乗継 2h58m：入国審査→荷物受取→税関→再預け→保安検査→Skylink' },
-        { day: '11-29', start: '2026-11-29T20:18:00-06:00', end: '2026-11-29T21:25:00-08:00', title: 'AA1797 ダラス → ラスベガス T1', venue: 'A321 / <span data-vault="seat_las" data-mask="Seat •••">Seat •••</span>', type: 'confirmed', tag: 'フライト', desc: '3時間7分。LAS T1 到着後すぐバッジ窓口へ。', nextMove: '最優先：空港内で re:Invent バッジを受け取ってからタクシーへ' },
-        { day: '11-29', start: '2026-11-29T21:40:00-08:00', end: '2026-11-29T23:00:00-08:00', title: 'LAS T1 バッジ受取（23:59締切）→ The LINQ', venue: 'LAS T1 → 3535 Las Vegas Blvd S', type: 'conflict', tag: '到着夜最優先', desc: 'パスポート＋受取コード必須。タクシー定額 Zone 3 $30.25目安または配車 $15〜35（22:30頃ホテル着見込み）。' },
+        {
+          id: 's-1129-hnd', day: '11-29', code: 'TRANSIT', dur: '60m',
+          start: '2026-11-29T16:30:00+09:00', end: '2026-11-29T17:30:00+09:00',
+          title: '自宅出発 → 羽田空港 T3',
+          venueShort: '羽田空港 第3ターミナル',
+          venue: '<span data-vault="home_route_out" data-mask="自宅最寄り → 羽田T3">自宅最寄り → 羽田T3</span>',
+          type: 'confirmed', tag: '移動',
+          desc: '電車 ¥370（40〜55分）。タクシー代替は16:50発 約¥4,000。',
+          points: [
+            '国際線出発の約3時間前（17:30頃）に羽田T3到着を目標にします。',
+            'American Airlines のオンラインチェックインは前日 11/28 20:25 JST から開始できます。',
+            'モバイルバッテリー・PC・パスポート・現金・常備薬は必ず機内持込リュックに入れます。'
+          ],
+          prep: 'パスポート・航空券確認・モバイルバッテリー機内持込',
+          nextMove: '国際線チェックイン・保安検査へ'
+        },
+        {
+          id: 's-1129-aa176', day: '11-29', code: 'AA176', dur: '11h55m',
+          start: '2026-11-29T20:25:00+09:00', end: '2026-11-29T17:20:00-06:00',
+          flightTimeNote: 'HND 11/29 20:25 JST → DFW 11/29 17:20 CST（所要 11h55m）',
+          title: '羽田 T3 → ダラス（DFW）',
+          venueShort: 'B777-200 / DFW ターミナルD着',
+          venue: 'B777-200 / <span data-vault="seat_hnd" data-mask="Seat •••">Seat •••</span>',
+          type: 'confirmed', tag: 'フライト', flag: 'DFW入国',
+          desc: '11時間55分。初回ESTAのため通常レーンで入国審査を受けます。',
+          points: [
+            'CBP公式ルール上、Mobile Passport Control（MPC）はESTA再渡航者限定です。初回渡米のため通常の「Visitors / ESTA」レーンへ並んでください。',
+            '入国審査では目的（AWS re:Invent, business conference）、勤務先（Sony Interactive Entertainment）、滞在先（The LINQ Hotel, 3535 Las Vegas Blvd South）を伝えます。',
+            'DFW到着後は①入国審査 → ②税関ホールでスーツケースを一度受取（LASタグ付きでも必須） → ③税関出口の Connecting Bags へ再預け → ④保安検査 → ⑤Skylink で出発ターミナルへ移動します。'
+          ],
+          prep: 'パスポート・滞在先メモ・入国審査カード（下で表示可）',
+          showCard: 'immigration',
+          nextMove: 'DFW乗継 2h58m：入国審査→荷物受取→再預け→保安検査→Skylink'
+        },
+        {
+          id: 's-1129-aa1797', day: '11-29', code: 'AA1797', dur: '3h07m',
+          start: '2026-11-29T20:18:00-06:00', end: '2026-11-29T21:25:00-08:00',
+          flightTimeNote: 'DFW 11/29 20:18 CST → LAS T1 11/29 21:25 PST（所要 3h07m）',
+          title: 'ダラス（DFW）→ ラスベガス（LAS T1）',
+          venueShort: 'A321 / LAS ターミナル1着',
+          venue: 'A321 / <span data-vault="seat_las" data-mask="Seat •••">Seat •••</span>',
+          type: 'confirmed', tag: 'フライト',
+          desc: '3時間7分の米国内線。到着後は空港内でそのままバッジ受取へ直行します。',
+          points: [
+            'ダラス（CST）からラスベガス（PST）へさらに2時間の時差があります。',
+            'LAS Terminal 1 到着後は、ホテルへ向かう前に空港内の re:Invent バッジ受取窓口（23:59まで）へ寄るのが最優先です。'
+          ],
+          prep: '到着直後にパスポートとバッジ受取コードを出せる状態にする',
+          showCard: 'badge',
+          nextMove: '最優先：空港内で re:Invent バッジを受け取ってからタクシーへ'
+        },
+        {
+          id: 's-1129-badge', day: '11-29', code: 'BADGE', dur: '80m',
+          start: '2026-11-29T21:40:00-08:00', end: '2026-11-29T23:00:00-08:00',
+          title: 'LAS T1 バッジ受取（23:59締切）→ The LINQ',
+          venueShort: 'LAS T1 → The LINQ Hotel',
+          venue: 'LAS T1 → 3535 Las Vegas Blvd S',
+          type: 'conflict', tag: '到着夜最優先', flag: '23:59締切',
+          desc: 'パスポート＋受取コード必須。タクシー定額 Zone 3 $30.25目安または配車 $15〜35。',
+          points: [
+            '日曜夜のうちに空港でバッジを受け取っておくと、月曜朝の巨大な行列を回避できます。',
+            '空港から The LINQ まではタクシー定額 Zone 3（$30.25目安・カード +$3・税チップ別・10〜20分）または Uber/Lyft（$15〜35）。',
+            'ホテルチェックイン後はパスポート原本を室内金庫へ入れ、明日 09:00 の Japan Support Desk に備えて休めます（22:30頃ホテル着見込み）。'
+          ],
+          prep: 'パスポート・バッジ受取コード・タクシー英語住所カード',
+          showCard: 'taxi',
+          mapQ: 'The+LINQ+Hotel+Las+Vegas'
+        },
 
         // 11/30
-        { day: '11-30', start: '2026-11-30T09:00:00-08:00', end: '2026-11-30T10:00:00-08:00', title: 'Japan Night 参加チケット受取（先着順）', venue: 'Venetian · Level 1 | Casanova 607（Japan Desk）', type: 'event', tag: '必須前提', desc: '招待メールを提示して12/01夜のチケットを入手。LINQ から徒歩10〜12分。', nextMove: 'Venetian → Caesars Forum：徒歩約10〜15分（昼食も確保）' },
-        { day: '11-30', start: '2026-11-30T12:00:00-08:00', end: '2026-11-30T13:00:00-08:00', title: 'AIM301-R｜Application Archeology with Kiro', venue: "Caesars Forum · Level 1 | Forum 120 | Builders' Session 1", type: 'confirmed', tag: '予約済', desc: '初日1本目の確定枠（Builders’ session）。終了直後の13:00 MGM Grand（DVT214-S・Level 3 Premier 318）は開始に間に合わず見送り推奨。', nextMove: 'Forum → Wynn / Encore：車約10分・シャトルまたは徒歩20〜25分' },
-        { day: '11-30', start: '2026-11-30T14:30:00-08:00', end: '2026-11-30T15:00:00-08:00', title: 'AIM288-S｜How to run parallel coding agents（前半のみ）', venue: 'Wynn/Encore · Upper Conv. Promenade | Cristal 2 | Blue Theater', type: 'optional', tag: 'お気に入り・当日枠', desc: '15:00予約と同じ Cristal 2 エリアのため前半30分だけ様子見が可能。', nextMove: '同エリア（Wynn/Encore Cristal 2）内で移動' },
-        { day: '11-30', start: '2026-11-30T15:00:00-08:00', end: '2026-11-30T16:00:00-08:00', title: 'ARC310-R｜Well-Architected in your AI coding agent', venue: "Wynn/Encore · Upper Conv. Promenade | Cristal 2 | Builders' Session 2", type: 'confirmed', tag: '予約済', desc: 'Wynn での予約枠（Builders’ session）。終了後は北隣の Resorts World へすぐ動けます。', nextMove: 'Wynn → Resorts World：北へ車5〜10分（パスポート原本携帯確認！）' },
-        { day: '11-30', start: '2026-11-30T16:00:00-08:00', end: '2026-11-30T18:00:00-08:00', title: 'AWS & Sony Happy Hour（推奨） vs AIM289-S', venue: 'Eight Cigar Lounge（Resorts World）', type: 'conflict', tag: '二択・推奨', desc: 'ソニーグループ社員対象。同時刻の Venetian 当日枠 AIM289-S（Level 2 Ballroom F Purple Theater）との二択は未決（Happy Hour推奨）。きれいめ服＋パスポート原本携帯。', nextMove: 'Resorts World → Vanderpump：南下して車約10分（LINQ近く）' },
-        { day: '11-30', start: '2026-11-30T18:30:00-08:00', end: '2026-11-30T23:30:00-08:00', title: 'ESAP26｜APJC Kick Off Party', venue: 'Soleia Rooftop and Pool（The Vanderpump Hotel）', type: 'event', tag: '招待確定済', desc: 'API上で招待確定（300分）。21歳以上・バッジ必須・パスポート原本携帯。LINQ すぐ近くのため帰りも楽。' },
+        {
+          id: 's-1130-jpdesk', day: '11-30', code: 'JP DESK', dur: '60m',
+          start: '2026-11-30T09:00:00-08:00', end: '2026-11-30T10:00:00-08:00',
+          title: 'Japan Night 参加チケット受取（先着順）',
+          venueShort: 'Venetian · L1 Casanova 607',
+          venue: 'Venetian · Level 1 | Casanova 607（Japan Desk）',
+          type: 'event', tag: '必須前提', flag: '先着順',
+          desc: '招待メールを提示して 12/01 夜のチケットを受け取ります。LINQから徒歩10〜12分。',
+          points: [
+            '12/01（火）夜の Japan Night は事前チケット引換が必須（先着順）のため、月曜 09:00 の開場直後に取りに行くのが確実です。',
+            'Japan Support Desk は月〜木 09:00–17:00、金 09:00–12:00 開設。日本語スタッフに現地動線やEXPOツアーも相談できます。',
+            '受取後は Caesars Forum 方面へ歩きつつ、早めの昼食かコーヒー休憩を取ると12:00のセッションに余裕をもって入れます。'
+          ],
+          prep: 'Japan Night 招待メール・re:Invent バッジ',
+          showCard: 'badge',
+          mapQ: 'The+Venetian+Las+Vegas',
+          nextMove: 'Venetian → Caesars Forum：徒歩約10〜15分（昼食も確保）'
+        },
+        {
+          id: 's-1130-aim301', day: '11-30', code: 'AIM301-R', dur: '60m',
+          start: '2026-11-30T12:00:00-08:00', end: '2026-11-30T13:00:00-08:00',
+          title: 'Application Archeology: Digging up lost knowledge with Kiro',
+          venueShort: "Caesars Forum · L1 Forum 120",
+          venue: "Caesars Forum · Level 1 | Forum 120 | Content Hub | Builders' Session 1",
+          type: 'confirmed', tag: '予約済', flag: '💻 PC持参',
+          sessionType: "Builders' session", level: '300 – Advanced',
+          services: ['Kiro'], topics: ['Business Agents', 'Developer Tools'], features: ['Hands-on'],
+          speakers: ['Fiona McCann', 'Deric Martinez', 'Ben Turnbull', 'Sofia Kendall', 'Sulaman Khan'],
+          desc: 'Kiro の Steering ファイル・MCP・サブエージェントで属人化したコード知見を掘り起こす実践枠。',
+          points: [
+            'メンバー離職などで失われがちなコードベース・Runbook・連携仕様の文脈を、Kiro を使って体系化するハンズオン形式です。',
+            'チームの規約を Steering ファイル化し、MCP サーバーでドキュメントや API の文脈を取り込み、コード更新に追従する構成図・ナレッジベースをサブエージェントで生成します。',
+            '終了直後の 13:00 MGM Grand（DVT214-S・Anthropic Claude Code）は距離的に開始へ間に合わないため見送り推奨です。'
+          ],
+          abstract: "Every organization bleeds knowledge when people leave. For mission-driven teams, a single departure can erase years of context from codebases, runbooks, and integrations. In this builder session, use Kiro — AWS's AI-powered development environment — to reverse that loss. Configure steering files that encode your team's conventions, connect MCP servers to pull context from docs and APIs, and deploy subagents that generate living architecture diagrams and knowledge bases as your code evolves. Walk away with a Kiro workspace that turns any new hire into a productive contributor from day one — no more tribal knowledge walking out the door.",
+          prep: 'ノートPC（満充電）・バッジ',
+          mapQ: 'Caesars+Forum+Las+Vegas',
+          nextMove: 'Forum → Wynn / Encore：車約10分・シャトルまたは徒歩20〜25分'
+        },
+        {
+          id: 's-1130-aim288', day: '11-30', code: 'AIM288-S', dur: '30m+',
+          start: '2026-11-30T14:30:00-08:00', end: '2026-11-30T15:00:00-08:00',
+          title: 'How to run parallel coding agents（前半30分のみ様子見）',
+          venueShort: 'Wynn/Encore · Cristal 2 Blue Theater',
+          venue: 'Wynn/Encore · Upper Convention Promenade | Cristal 2 | Content Hub | Blue Theater',
+          type: 'optional', tag: 'お気に入り・当日枠',
+          sessionType: 'Breakout session (Sponsored by SpaceXSI)', level: '200 – Intermediate',
+          services: ['Amazon Bedrock'], topics: ['Artificial Intelligence', 'Developer Tools'], features: ['AWS Partners', 'Lecture-style'],
+          desc: '15:00の予約枠と同じ Cristal 2 エリアのため、前半30分だけ覗いて移動できます。',
+          points: [
+            '複数コーディングエージェントを並列稼働させるオーケストレーション層（Grok Bot）のライブデモです。',
+            '直後の 15:00 ARC310-R が同じ Cristal 2 の Content Hub にあるため、途中退席しやすい後方席に座っておくと安心です。'
+          ],
+          abstract: "Running multiple coding agents in parallel can increase throughput, but only if technical leads and engineers avoid being pulled into every agent’s execution loop. Join this session to learn how Grok Bot is an orchestration layer for technical knowledge work, coordinating workflows while saving time and mitigating costs. Through live demos, see Grok Bot operate from its own VM and browser, maintain authenticated tool access, monitor usage, and provision cloud agents on demand. We’ll be joined by a customer in production as well as SpaceXAI engineers as they share the workflows they run today.",
+          mapQ: 'Wynn+Las+Vegas',
+          nextMove: '同エリア（Wynn/Encore Cristal 2）内で移動'
+        },
+        {
+          id: 's-1130-arc310', day: '11-30', code: 'ARC310-R', dur: '60m',
+          start: '2026-11-30T15:00:00-08:00', end: '2026-11-30T16:00:00-08:00',
+          title: 'Well-Architected in your AI coding agent: Find gaps before you commit',
+          venueShort: "Wynn/Encore · Cristal 2",
+          venue: "Wynn/Encore · Upper Convention Promenade | Cristal 2 | Content Hub | Builders' Session 2",
+          type: 'confirmed', tag: '予約済', flag: '💻 PC必須',
+          sessionType: "Builders' session", level: '300 – Advanced',
+          services: ['Kiro'], topics: ['Architecture', 'Developer Tools', 'Open Source'], features: ['Hands-on'],
+          speakers: ['Kevin Hakanson', 'Swapnil Singh', 'Ibrahim Cesar', 'Murithi Gitonga', 'Aaron Castellanos'],
+          desc: 'AIコーディングエージェントに Well-Architected スキルを組み込み、コミット前に設計ギャップを検出。',
+          points: [
+            '公式概要に「Bring your laptop to participate」と明記されている PC 必須のハンズオンです。',
+            'オープンソースの Well-Architected スキルを設定し、耐障害性・セキュリティ・運用の抜け漏れを数分で検出したうえで、自社規約のカスタムスキルも作成します。',
+            '終了後は北隣の Resorts World へすぐ移動できます（夜のイベント用にパスポート原本携帯を忘れずに）。'
+          ],
+          abstract: "Architecture reviews happen at milestones: a design review here, an operational readiness check there. But AI coding agents make architectural decisions dozens of times a day, and governance that runs at milestone pace can't keep up. In this session, you will configure open-source Well-Architected skills in your coding agent, run a full Well-Architected review and catch resilience, security, and operational gaps in minutes. Then author a custom skill that encodes your team's standards and trade-offs. You leave with a review loop that runs every commit. Bring your laptop to participate.",
+          prep: 'ノートPC必須・パスポート原本（夜の21+イベント用）',
+          mapQ: 'Wynn+Las+Vegas',
+          nextMove: 'Wynn → Resorts World：北へ車5〜10分（パスポート原本携帯確認！）',
+          warnMove: true
+        },
+        {
+          id: 's-1130-sony', day: '11-30', code: 'CHOICE', dur: '2h',
+          start: '2026-11-30T16:00:00-08:00', end: '2026-11-30T18:00:00-08:00',
+          title: 'AWS & Sony Happy Hour（推奨） vs AIM289-S',
+          venueShort: 'Eight Cigar Lounge（Resorts World）',
+          venue: 'Eight Cigar Lounge（Resorts World）',
+          type: 'conflict', tag: '二択・未決', flag: '🪪 旅券原本',
+          desc: 'ソニーグループ社員対象の交流会（推奨）。同時刻 Venetian の AIM289-S と二択です。',
+          points: [
+            'Wynn（16:00終）から Resorts World はすぐ北隣で動線が非常にスムーズです。',
+            '対抗の AIM289-S（Venetian Level 2 Ballroom F Purple Theater・SpaceXSI による AI SDLC 講演）はブレイクアウト枠のため、現地交流の価値が高い Sony Happy Hour が推奨です。',
+            '飲酒あり・21歳以上確認が入る可能性があるため、パスポート原本をセキュリティポーチで携帯してください。服装はきれいめカジュアルが安心です。'
+          ],
+          abstract: "Alternative AIM289-S: This 201 technical deep dive covers the AI Software Development Lifecycle featuring the Grok product family. SpaceXAI experts and customers in production will demo proven patterns, covering which parts of the SDLC to delegate to agents first, how to structure review and testing when agents write most of the code.",
+          prep: 'パスポート原本・名刺・きれいめの服装',
+          mapQ: 'Resorts+World+Las+Vegas',
+          nextMove: 'Resorts World → Vanderpump：南下して車約10分（LINQ近く）'
+        },
+        {
+          id: 's-1130-apjc', day: '11-30', code: 'ESAP26', dur: '5h',
+          start: '2026-11-30T18:30:00-08:00', end: '2026-11-30T23:30:00-08:00',
+          title: 'APJC Kick Off Party',
+          venueShort: 'Soleia Rooftop & Pool（Vanderpump）',
+          venue: 'Soleia Rooftop and Pool（The Vanderpump Hotel）',
+          type: 'event', tag: '招待確定済', flag: '🪪 旅券原本',
+          sessionType: 'Ancillary (Invited)',
+          desc: 'API上で招待確定（300分）。21歳以上・バッジ必須。LINQ すぐ近くのため帰りも楽です。',
+          points: [
+            'APJC 地域の参加者・パートナー・AWS リーダーが集まる公式キックオフパーティーです。',
+            '会場の The Vanderpump Hotel は The LINQ から徒歩 5〜8 分のため、終盤までいても安心して歩いて帰れます。',
+            '屋外ルーフトップ会場は夜の冷え込み（5〜10°C前後）が強いため、羽織るアウターを持参してください。'
+          ],
+          abstract: "You're invited to the AWS re:Invent APJC Kickoff Party. Celebrate the remarkable growth and innovation happening across the APJC region while networking with peers, partners, and AWS leaders. This is your chance to exchange ideas, explore collaboration opportunities, and be part of a community shaping the future of cloud in APJC.",
+          prep: 're:Invent バッジ・パスポート原本（21+）・防寒アウター・名刺',
+          mapQ: 'The+Vanderpump+Hotel+Las+Vegas'
+        },
 
         // 12/01
-        { day: '12-01', start: '2026-12-01T08:30:00-08:00', end: '2026-12-01T10:30:00-08:00', title: 'KEY002｜CEO Keynote', venue: 'Venetian · Level 2 | Ballroom E | Keynote', type: 'optional', tag: 'お気に入り', desc: 'お気に入り登録済みの基調講演（120分）。同会場で次の BIZ111-S・EXPO へ直結します。', nextMove: '同会場（Venetian Level 2）で Hall B Expo へ移動' },
-        { day: '12-01', start: '2026-12-01T11:00:00-08:00', end: '2026-12-01T11:20:00-08:00', title: 'BIZ111-S｜Build the Agentic Workplace: Slack', venue: 'Venetian · Level 2 | Hall B | Expo | Builder Theater', type: 'optional', tag: 'お気に入り・20分', desc: '20分のライトニングトーク。そのまま同会場の日本語EXPOツアーへ接続できます。', nextMove: '同会場（Venetian Hall B）で EXPO ツアー集合へ' },
-        { day: '12-01', start: '2026-12-01T11:30:00-08:00', end: '2026-12-01T12:30:00-08:00', title: '日本人向け EXPO パートナーツアー（候補）', venue: 'Venetian · Level 2 | Hall B（11:00〜／14:00〜 15分間隔）', type: 'event', tag: '要申込', desc: '約50〜60分・先着15名・リストバンド必須。12/01 11時台が最も組みやすい枠。', nextMove: 'Venetian → Caesars Palace：徒歩約12〜15分（昼食挟む）' },
-        { day: '12-01', start: '2026-12-01T14:00:00-08:00', end: '2026-12-01T17:00:00-08:00', title: 'GHJ301-S｜AWS GameDay（Agentic AI & New Relic）', venue: 'Caesars Palace · Emperors Level | Palace Ballroom III', type: 'confirmed', tag: '予約済・3h', desc: '3時間のチームハンズオン。終了後LINQで一息入れて Wynn へ。', nextMove: 'LINQ → Wynn Event Pavilion：車約10分（Japan Night チケット持参！）' },
-        { day: '12-01', start: '2026-12-01T19:00:00-08:00', end: '2026-12-01T21:00:00-08:00', title: 'Japan Night（18:30開場）', venue: 'Wynn Event Pavilion', type: 'event', tag: '参加決定済', desc: '11/30 に Japan Support Desk で受け取ったチケットを忘れずに。' },
+        {
+          id: 's-1201-key002', day: '12-01', code: 'KEY002', dur: '2h',
+          start: '2026-12-01T08:30:00-08:00', end: '2026-12-01T10:30:00-08:00',
+          title: 'CEO Keynote（Matt Garman）',
+          venueShort: 'Venetian · L2 Ballroom E',
+          venue: 'Venetian · Level 2 | Ballroom E | Keynote',
+          type: 'optional', tag: 'お気に入り',
+          sessionType: 'Keynote', speakers: ['Matt Garman', 'Barbara Karuth-Zelle', 'Tony Xu'],
+          desc: 'AWS CEO Matt Garman による基調講演。同会場で直後の BIZ111-S・EXPO へ直結します。',
+          points: [
+            're:Invent 最大の新サービス発表が集中するメイン基調講演です（120分）。',
+            '前方席を狙う場合は 30〜45 分前の入場が目安ですが、オーバーフロー会場やライブ配信もあります。',
+            '終わったらそのまま Venetian Level 2 の Hall B（EXPO会場）へ移動できます。'
+          ],
+          abstract: "Join AWS CEO Matt Garman for the re:Invent 2026 CEO Keynote as he shares the latest innovations powering the agentic era. From AI infrastructure and inference to data, agent platforms, and the software agents AWS is building, see how AWS gives you the depth, breadth, and integration to build what's next with new announcements and stories from customers already doing it.",
+          mapQ: 'The+Venetian+Las+Vegas',
+          nextMove: '同会場（Venetian Level 2）で Hall B Expo へ移動'
+        },
+        {
+          id: 's-1201-biz111', day: '12-01', code: 'BIZ111-S', dur: '20m',
+          start: '2026-12-01T11:00:00-08:00', end: '2026-12-01T11:20:00-08:00',
+          title: "Build the Agentic Workplace: What's New on Slack",
+          venueShort: 'Venetian · L2 Hall B Builder Theater',
+          venue: 'Venetian · Level 2 | Hall B | Expo | Builder Theater',
+          type: 'optional', tag: 'お気に入り・20分',
+          sessionType: 'Lightning talk (Sponsored by Salesforce)', level: '100 – Foundational',
+          topics: ['Business Agents'], features: ['AWS Partners', 'Lecture-style'], speakers: ['Josh Milas'],
+          desc: 'Slack Code Channels・Slack Agent Kit・MCP 連携を20分でキャッチアップ。',
+          points: [
+            'Claude Code・Devin・Cursor などのエージェントとチームがリアルタイム協働する「Code Channels」や Slackbot MCP Client の最新機能を紹介します。',
+            '20分で終わるため、そのまま同じ Hall B 内の日本人向け EXPO ツアーへ合流しやすい枠です。'
+          ],
+          abstract: "Slack is becoming a multiplayer work operating system, where humans and AI agents build together, not just chat. This session shows AWS developers how to ship on the modern Slack Platform: Code Channels, a new space where agents like Claude Code, Devin, and Cursor collaborate with teams in real time; the Slack Agent Kit for building first-class agents; deep bidirectional MCP support, including the Slackbot MCP Client; Real-Time Search (RTS) for grounding agents in live workspace context; and Block Kit for rich, interactive UI.",
+          mapQ: 'The+Venetian+Las+Vegas',
+          nextMove: '同会場（Venetian Hall B）で EXPO ツアー集合へ'
+        },
+        {
+          id: 's-1201-expo', day: '12-01', code: 'EXPO JP', dur: '60m',
+          start: '2026-12-01T11:30:00-08:00', end: '2026-12-01T12:30:00-08:00',
+          title: '日本人向け EXPO パートナーツアー（候補）',
+          venueShort: 'Venetian · L2 Hall B',
+          venue: 'Venetian · Level 2 | Hall B（11:00〜／14:00〜 15分間隔）',
+          type: 'event', tag: '要申込・先着',
+          desc: '約50〜60分・先着15名・リストバンド必須。12/01 11時台が最も組みやすい枠です。',
+          points: [
+            '巨大な EXPO 会場の見どころブースを日本語ガイド付きで効率よく回れるツアーです。',
+            '11/30 に Japan Support Desk へ寄った際に集合場所・リストバンド配布条件を確認しておくと確実です。',
+            '終了後は昼食を挟んで Caesars Palace へ移動し、14:00 の GameDay に備えます。'
+          ],
+          prep: 'リストバンド（要事前申込／Japan Desk 確認）',
+          mapQ: 'The+Venetian+Las+Vegas',
+          nextMove: 'Venetian → Caesars Palace：徒歩約12〜15分（昼食挟む）'
+        },
+        {
+          id: 's-1201-ghj301', day: '12-01', code: 'GHJ301-S', dur: '3h',
+          start: '2026-12-01T14:00:00-08:00', end: '2026-12-01T17:00:00-08:00',
+          title: 'AWS GameDay - Agentic AI & AI App Monitoring (New Relic)',
+          venueShort: 'Caesars Palace · Palace Ballroom III',
+          venue: 'Caesars Palace · Emperors Level | Palace Ballroom III',
+          type: 'confirmed', tag: '予約済・3h', flag: '💻 PC必須',
+          sessionType: 'Gamified learning', level: '300 – Advanced',
+          topics: ['Artificial Intelligence', 'Developer Tools'], features: ['AWS Partners', 'Hands-on'], speakers: ['Lillian Pham'],
+          desc: 'Bedrock AgentCore・モデル評価・New Relic 可観測性を駆使する3時間のチーム演習。',
+          points: [
+            '1人参加でも現地でチーム編成して競い合う実践型イベントです。re:Invent ならではの体験枠なので最優先で楽しめます。',
+            'Amazon Bedrock・Bedrock AgentCore・プロンプト設計・モデル評価・ML パイプライン監視（New Relic 連携）を本番さながらの環境で攻略します。',
+            '3時間と長丁場のため、ノートPCのフル充電＋充電器＋飲み物を持参してください。終了後は一度 LINQ へ戻って荷物を置いてから Japan Night へ向かえます。'
+          ],
+          abstract: "Join us for an immersive, collaborative learning exercise to build practical skills in deploying and monitoring AI-powered applications on AWS. Dive into a live environment where you'll engineer production-ready AI systems and ensure reliability through comprehensive observability. Leverage Amazon Bedrock, Amazon Bedrock Agentcore, foundation models, AI agents, prompt engineering, model evaluation, and ML pipeline monitoring as you build and operate AI workloads end-to-end. This session features integrated use cases with New Relic.",
+          prep: 'ノートPC＋ACアダプタ・飲み物・バッジ',
+          mapQ: 'Caesars+Palace+Las+Vegas',
+          nextMove: 'LINQで一息 → Wynn Event Pavilion：車約10分（Japan Night チケット持参！）'
+        },
+        {
+          id: 's-1201-jpnight', day: '12-01', code: 'JP NIGHT', dur: '2h',
+          start: '2026-12-01T19:00:00-08:00', end: '2026-12-01T21:00:00-08:00',
+          title: 'Japan Night（18:30開場）',
+          venueShort: 'Wynn Event Pavilion',
+          venue: 'Wynn Event Pavilion',
+          type: 'event', tag: '参加決定済', flag: '🎫 チケット必須',
+          desc: '日本人参加者向けの大規模ネットワーキングパーティー。11/30受取のチケット必須。',
+          points: [
+            '11/30（月）に Japan Support Desk で受け取った参加チケットと re:Invent バッジを忘れずに持参します。',
+            'The LINQ から Wynn までは配車アプリ・タクシーで約10分（歩くと20〜25分）。GameDay 後に一度ホテルへ寄って PC を置いて身軽で行けます。'
+          ],
+          prep: 'Japan Night 参加チケット・バッジ・名刺・防寒着',
+          mapQ: 'Wynn+Las+Vegas'
+        },
 
         // 12/02
-        { day: '12-02', start: '2026-12-02T06:30:00-08:00', end: '2026-12-02T08:30:00-08:00', title: 'ACT053｜AWS re:Invent 5K Run', venue: 'Allegiant Stadium', type: 'optional', tag: '見送り寄り', desc: 'API公式日程は12/02（水）06:30〜。直後08:30の DVT340 と重なるため見送り推奨。', nextMove: 'LINQ → Caesars Forum：徒歩約7分' },
-        { day: '12-02', start: '2026-12-02T08:30:00-08:00', end: '2026-12-02T09:30:00-08:00', title: 'DVT340｜Build on top of large codebases', venue: 'Caesars Forum · Level 1 | Academy 417', type: 'confirmed', tag: '予約済', desc: '朝一番の予約枠（Chalk talk）。', nextMove: 'Forum → Caesars Palace：徒歩約10分（30分バッファあり）' },
-        { day: '12-02', start: '2026-12-02T10:00:00-08:00', end: '2026-12-02T11:30:00-08:00', title: 'TNC333-R1｜Developing Apps from Specs with Kiro', venue: 'Caesars Palace · Emperors Level | Augustus Ballroom V', type: 'confirmed', tag: '予約済・90分', desc: '90分の Kiro 仕様駆動ハンズオン Lab。', nextMove: 'Caesars Palace → Caesars Forum：徒歩約10分（昼食の余裕60分あり）' },
-        { day: '12-02', start: '2026-12-02T12:30:00-08:00', end: '2026-12-02T14:30:00-08:00', title: 'OPN307-R｜Build multi-agent workflows with Strands Agents SDK', venue: 'Caesars Forum · Level 1 | Academy 412', type: 'confirmed', tag: '予約済・2h', desc: 'API同期で予約確定を確認した120分 Workshop（同時刻13:00の MGM 当日枠 DAT453 よりこちらが確定枠）。', nextMove: '同会場（Caesars Forum Level 1）内で移動（30分余裕あり）' },
-        { day: '12-02', start: '2026-12-02T15:00:00-08:00', end: '2026-12-02T16:00:00-08:00', title: 'COM324-R｜Pit Crew AI: Multi-Agent Cloud Ops', venue: 'Caesars Forum · Level 1 | Forum 120 | Code Talk', type: 'conflict', tag: 'ショー次第で調整', desc: '予約済だが、ショー案1（Sphere 17:00・開場45分前・遅刻不可）を選ぶ場合は欠席または早退を検討。', nextMove: 'Sphere（Venetian東側）→ 終演後 MGM Grand へ（または Venetian 16:30 Expo Happy Hour AWS010）', warnMove: true },
-        { day: '12-02', start: '2026-12-02T17:00:00-08:00', end: '2026-12-02T22:00:00-08:00', title: 'ショー案1（未決・推奨）：Sphere 17:00 ＋ KÀ 20:30', venue: 'Sphere → MGM Grand', type: 'optional', tag: '未購入', desc: 'Sphere『オズの魔法使い』（75分）の後、MGM Grand で『KÀ』（90分）をはしごする推奨プラン（16:30〜18:00の AWS010 Happy Hour in Expo とは重複）。' },
+        {
+          id: 's-1202-5k', day: '12-02', code: 'ACT053', dur: '2h',
+          start: '2026-12-02T06:30:00-08:00', end: '2026-12-02T08:30:00-08:00',
+          title: 'AWS re:Invent 5K Run',
+          venueShort: 'Allegiant Stadium',
+          venue: 'Allegiant Stadium',
+          type: 'optional', tag: '見送り寄り',
+          sessionType: 'Featured experience',
+          desc: 'API公式日程は12/02（水）06:30〜。直後08:30の DVT340 と重なるため見送り推奨。',
+          points: [
+            'Allegiant Stadium 外周を6周（3.1マイル）走る無料ファンラン（Lululemon 協賛）。',
+            '08:30 終了で Caesars Forum の DVT340（08:30開始）と完全に被るため、基本は見送って睡眠と朝ごはんを優先するのが現実的です。'
+          ],
+          abstract: "Get ready for a 5K unlike any other. Conquer 3.1 miles in six high energy laps around the perimeter of Allegiant Stadium alongside the global AWS community. Completely free and open to all paces.",
+          mapQ: 'Allegiant+Stadium+Las+Vegas',
+          nextMove: 'LINQ → Caesars Forum：徒歩約7分'
+        },
+        {
+          id: 's-1202-dvt340', day: '12-02', code: 'DVT340', dur: '60m',
+          start: '2026-12-02T08:30:00-08:00', end: '2026-12-02T09:30:00-08:00',
+          title: 'Build on top of large codebases without breaking your code',
+          venueShort: 'Caesars Forum · L1 Academy 417',
+          venue: 'Caesars Forum · Level 1 | Academy 417',
+          type: 'confirmed', tag: '予約済',
+          sessionType: 'Chalk talk', level: '300 – Advanced',
+          services: ['Kiro'], topics: ['Artificial Intelligence', 'Developer Tools'], features: ['Discussion'],
+          speakers: ['Anil Maktala', 'Kenneth Sanchez'],
+          desc: '大規模コードベースでAIエージェントの設計ドリフトを防ぐ Kiro のアプローチを議論。',
+          points: [
+            '大規模コードベースでコンテキストが溢れてエージェントが意図しない実装をする課題に対し、Kiro がニューロシンボリック手法で要件の曖昧さ・矛盾をコード生成前に取り除く仕組みを解説します。',
+            'Chalk talk（ホワイトボード形式の対話セッション）なので、現場での疑問を直接質問するチャンスです。LINQ から徒歩7分と朝一に最適です。'
+          ],
+          abstract: "Your AI agent writes code fast, but when you unleash it on a large codebase, context can fill up quickly and the agent can make questionable implementation choices. Learn how Kiro uses neurosymbolic techniques to understand what you want to build, removing ambiguity, contradictions, and gaps in your requirements before any code is generated. Then, learn simple practices you can use to keep your agent implementation surgical, and detect drift before it spreads all over your codebase.",
+          mapQ: 'Caesars+Forum+Las+Vegas',
+          nextMove: 'Forum → Caesars Palace：徒歩約10分（30分バッファあり）'
+        },
+        {
+          id: 's-1202-tnc333', day: '12-02', code: 'TNC333-R1', dur: '90m',
+          start: '2026-12-02T10:00:00-08:00', end: '2026-12-02T11:30:00-08:00',
+          title: 'Developing Apps from Specs with Kiro',
+          venueShort: 'Caesars Palace · Augustus Ballroom V',
+          venue: 'Caesars Palace · Emperors Level | Augustus Ballroom V',
+          type: 'confirmed', tag: '予約済・90分', flag: '💻 PC持参',
+          sessionType: 'Lab', level: '300 – Advanced',
+          services: ['Kiro'], topics: ['Artificial Intelligence', 'Business Agents', 'Developer Tools'], features: ['Hands-on'],
+          speakers: ['Sam Shalil SHALIL', 'Bruno Marcondes'],
+          desc: 'EARS形式の仕様書→設計→タスク実行→Hook自動検証まで通す90分の Kiro Lab。',
+          points: [
+            '1つの自然言語プロンプトから構造化要件（EARS形式ユーザーストーリー）・技術設計・実行タスクを生成して動く MVP を作る SimuLearn ラボです。',
+            '保存時にデータファイルを自動検証する Kiro Hook の構築まで体験します。',
+            '終了後 12:30 までは 60 分あるため、Forum へ戻りつつしっかり昼食が取れます。'
+          ],
+          abstract: "Kiro, the Agentic IDE, transforms a single natural language prompt into structured requirements, a technical design, and an executable implementation plan. In this SimuLearn session, you build a city event management application by guiding Kiro through its spec-driven workflow: generating EARS-format user stories, reviewing architecture decisions, and executing a sequenced task list that produces a working MVP. You also configure a Kiro Hook that automatically validates data files on save.",
+          prep: 'ノートPC・バッジ',
+          mapQ: 'Caesars+Palace+Las+Vegas',
+          nextMove: 'Caesars Palace → Caesars Forum：徒歩約10分（昼食の余裕60分あり）'
+        },
+        {
+          id: 's-1202-opn307', day: '12-02', code: 'OPN307-R', dur: '2h',
+          start: '2026-12-02T12:30:00-08:00', end: '2026-12-02T14:30:00-08:00',
+          title: 'Build multi-agent workflows with Strands Agents SDK',
+          venueShort: 'Caesars Forum · L1 Academy 412',
+          venue: 'Caesars Forum · Level 1 | Academy 412',
+          type: 'confirmed', tag: '予約済・2h', flag: '💻 PC持参',
+          sessionType: 'Workshop', level: '300 – Advanced',
+          topics: ['Artificial Intelligence', 'Developer Tools'], features: ['Hands-on'],
+          speakers: ['Daniel Lorch', 'Arun Kumar Selvaraj'],
+          desc: 'Strands Agents SDK＋MCP＋エージェント間委譲＋ステートフルメモリを実装する2時間Workshop。',
+          points: [
+            '11/23 の API 同期で予約確定を確認した 120 分のハンズオンワークショップです。',
+            '役割別の専門エージェントを作り、MCP 経由のツール接続・エージェント間委譲・会話メモリを実装して End-to-End でデプロイ検証します。',
+            '同時刻 13:00 の MGM Grand 当日枠（DAT453・Aurora 新発表 400レベル）とは重複しますが、こちらは確保済みの体験型ワークショップなので優先度が高いです。'
+          ],
+          abstract: "In this hands-on workshop, build a multi-agent system using the Strands Agents open source SDK. You will create specialized agents with distinct roles, connect them via MCP for tool access, implement agent-to-agent delegation patterns, and add memory for stateful conversations. Deploy and test your multi-agent workflow end-to-end. Walk away with working code and reusable patterns for orchestrating collaborative AI agents using open source tooling.",
+          prep: 'ノートPC＋ACアダプタ・バッジ',
+          mapQ: 'Caesars+Forum+Las+Vegas',
+          nextMove: '同会場（Caesars Forum Level 1）内で移動（30分余裕あり）'
+        },
+        {
+          id: 's-1202-com324', day: '12-02', code: 'COM324-R', dur: '60m',
+          start: '2026-12-02T15:00:00-08:00', end: '2026-12-02T16:00:00-08:00',
+          title: 'Pit Crew AI: Multi-Agent Cloud Operations on AWS',
+          venueShort: 'Caesars Forum · L1 Forum 120',
+          venue: 'Caesars Forum · Level 1 | Forum 120 | Code Talk',
+          type: 'conflict', tag: 'ショー次第で調整', flag: '時間注意',
+          sessionType: 'Code talk', level: '300 – Advanced',
+          services: ['Amazon Bedrock', 'Amazon CloudWatch', 'Amazon EventBridge'],
+          topics: ['Artificial Intelligence', 'Cloud Operations'], features: ['Community-led', 'Discussion'],
+          speakers: ['Pablo Ezequiel Inchausti', 'David Marcelo Petrocelli'],
+          desc: 'F1ピットクルー発想のマルチエージェント運用。ショー案1（Sphere 17:00）選択時は早退/欠席を検討。',
+          points: [
+            'Bedrock AgentCore・Strands Agents・MCP・GitHub・Jira・IaC を組み合わせ、セキュリティ・コスト・信頼性・可観測性の専門エージェントが運用課題を自動でタスク化するライブデモです。',
+            '【重要】ショー案1（Sphere 17:00開演）を選ぶ場合、開場45分前（16:15）からアトリウム体験があり遅刻入場不可のため、この枠は15:45頃に早退するか欠席してホテルへPCを置きに帰ると安全です。'
+          ],
+          abstract: "AI can generate code at racing speed, but production workloads still require continuous attention to security, reliability, cost, and operational risks. In this Code Talk, we build a multi-agent architecture on AWS inspired by a Formula 1 pit crew. Using Amazon Bedrock AgentCore, Strands Agents, MCP, GitHub, Jira, and Infrastructure as Code, we evolve from a single agent to a team of specialized agents for security, cost optimization, reliability, and observability.",
+          mapQ: 'Caesars+Forum+Las+Vegas',
+          nextMove: 'Sphere（Venetian東側）→ 終演後 MGM Grand へ（または Venetian 16:30 Expo Happy Hour）',
+          warnMove: true
+        },
+        {
+          id: 's-1202-shows', day: '12-02', code: 'SHOWS', dur: '5h',
+          start: '2026-12-02T17:00:00-08:00', end: '2026-12-02T22:00:00-08:00',
+          title: 'ショー案1（推奨・未購入）：Sphere 17:00 ＋ KÀ 20:30',
+          venueShort: 'Sphere → MGM Grand',
+          venue: 'Sphere → MGM Grand（KÀ Theatre）',
+          type: 'optional', tag: '未購入・推奨',
+          desc: 'Sphere『オズの魔法使い』（75分）後、MGM Grand で『KÀ』（90分）をはしごする案。',
+          points: [
+            'Sphere 17:00 回は 16:15 開場・遅刻入場不可。終演は 18:15 頃のため、軽食＋移動を含めても 20:30 の MGM Grand『KÀ』へ無理なく繋がります。',
+            '目安価格：Sphere $104〜（中央200番台 $139〜）、KÀ $87.88〜（約7割売済のため早め判断が吉）。',
+            '同時間帯 16:30〜18:00 の AWS010（Happy Hour in Expo・Venetian）とは重複します。VEGAS タブの「未決の2大プラン」で仮選択を残せます。'
+          ],
+          prep: 'デジタルチケット・小さいバッグ（Sphereは大きいリュック持込不可に注意）',
+          mapQ: 'Sphere+Las+Vegas'
+        },
 
         // 12/03
-        { day: '12-03', start: '2026-12-03T12:00:00-08:00', end: '2026-12-03T12:45:00-08:00', title: 'EBC46788｜Cloud Game Development (CGD)', venue: 'Venetian · Level 4 | Zeno 4704（EBC Meeting Rooms）', type: 'event', tag: '招待確定済', desc: 'API同期で招待確定を確認した45分の EBC ミーティング（Games）。終了後は同会場 Venetian で昼食をとりそのまま JPN101 へ移動できます。', nextMove: '同会場（Venetian）で昼食 → 14:30 開場の Level 2 Theatre へ' },
-        { day: '12-03', start: '2026-12-03T15:00:00-08:00', end: '2026-12-03T17:00:00-08:00', title: 'JPN101｜Japan Wrap-up Session（14:30開場）', venue: 'Venetian · Level 2 | Venetian Theatre', type: 'event', tag: 'ハート登録済', desc: 'API上でハート（お気に入り）登録完了を確認済み。帰国後の社内共有に役立つ日本語ラップアップ（120分）。', nextMove: '同時刻 COM325-R1 はまだ予約残存中（下記・要キャンセル）' },
-        { day: '12-03', start: '2026-12-03T15:00:00-08:00', end: '2026-12-03T16:00:00-08:00', title: 'COM325-R1｜The agent orchestration spectrum', venue: 'Caesars Forum · Level 1 | Forum 120 | Code Talk', type: 'conflict', tag: '予約残存・要キャンセル', cancelled: true, desc: 'JPN101優先で不参加決定済みですが、API上ではまだ予約が残っています。ポータルからキャンセルして空席を返してください。', nextMove: 'Venetian → Allegiant Stadium：公式専用シャトル（18:15頃〜）' },
-        { day: '12-03', start: '2026-12-03T18:30:00-08:00', end: '2026-12-03T22:30:00-08:00', title: 're:Play 公式クロージングパーティー', venue: 'Allegiant Stadium', type: 'conflict', tag: '18:30確定・要RSVP確認', desc: 'API公式データで 18:30–22:30（240分）が確定。フルパス込ですが schedule.json に未反映のためポータルで RSVP 状況を確認してください。' },
+        {
+          id: 's-1203-ebc', day: '12-03', code: 'EBC46788', dur: '45m',
+          start: '2026-12-03T12:00:00-08:00', end: '2026-12-03T12:45:00-08:00',
+          title: 'Cloud Game Development (CGD)',
+          venueShort: 'Venetian · L4 Zeno 4704 (EBC)',
+          venue: 'Venetian · Level 4 | Zeno 4704（EBC Meeting Rooms）',
+          type: 'event', tag: '招待確定済',
+          sessionType: 'EBC Meeting Rooms (Invited)',
+          desc: 'API同期で招待確定を確認した45分の EBC ミーティング（Games）。終了後は同館で昼食→JPN101へ。',
+          points: [
+            'Executive Briefing Center（EBC）の招待枠です。Level 4 の Zeno 4704 は通常セッションエリアより上階のため、10〜15分前には Venetian に着いて案内表示を確認すると安心です。',
+            '12:45 終了後はそのまま Venetian 館内（Urth Caffé や Grand Lux Cafe など）で昼食をとり、14:30 開場の JPN101 へ直結できる理想的な流れです。'
+          ],
+          prep: 'バッジ・名刺',
+          mapQ: 'The+Venetian+Las+Vegas',
+          nextMove: '同会場（Venetian）で昼食 → 14:30 開場の Level 2 Theatre へ'
+        },
+        {
+          id: 's-1203-jpn101', day: '12-03', code: 'JPN101', dur: '2h',
+          start: '2026-12-03T15:00:00-08:00', end: '2026-12-03T17:00:00-08:00',
+          title: 'Japan Wrap-up Session（14:30開場）',
+          venueShort: 'Venetian · L2 Venetian Theatre',
+          venue: 'Venetian · Level 2 | Venetian Theatre',
+          type: 'event', tag: 'ハート登録済',
+          sessionType: 'Breakout session (Japanese)', level: '100 – Foundational',
+          speakers: ['Issei Kawasaki', 'Yasuhiro Kose', 'Kempei Igarashi', 'Taro Hirose'],
+          desc: '日本語による重要発表総まとめ（120分）。帰国後の社内報告づくりにそのまま役立ちます。',
+          points: [
+            '11/23 の API 同期でハート（お気に入り）登録完了を確認済みです。',
+            '全キーノート・主要アップデートを日本語で体系立てて振り返るため、帰国後の社内共有メモを一気に整理できます。',
+            '同時刻の COM325-R1 はまだ予約が残っているため、出発前にポータルでキャンセルを済ませてください。'
+          ],
+          abstract: "This session will be delivered in Japanese and provides a comprehensive recap of the major announcements and strategic updates from the keynote sessions throughout the event. Experienced speakers will summarize the most impactful innovations and key messages from AWS leadership and help you prepare to share what you learned at re:Invent with your teams when you return to the office.",
+          mapQ: 'The+Venetian+Las+Vegas',
+          nextMove: '同時刻 COM325-R1 は予約残存中（下記・要キャンセル）'
+        },
+        {
+          id: 's-1203-com325', day: '12-03', code: 'COM325-R1', dur: '60m',
+          start: '2026-12-03T15:00:00-08:00', end: '2026-12-03T16:00:00-08:00',
+          title: 'The agent orchestration spectrum: Agents, Step Functions, or Lambda?',
+          venueShort: 'Caesars Forum · L1 Forum 120',
+          venue: 'Caesars Forum · Level 1 | Forum 120 | Code Talk',
+          type: 'conflict', tag: '要キャンセル', cancelled: true, flag: '予約残存',
+          sessionType: 'Code talk', level: '300 – Advanced',
+          services: ['AWS Lambda', 'AWS Step Functions', 'Amazon Bedrock'],
+          speakers: ['Håkon Eriksen Drange'],
+          desc: 'JPN101優先で不参加決定済みですが、API上に予約が残存中。ポータルからキャンセルしてください。',
+          points: [
+            '同じ GenAI ワークロードを Bedrock AgentCore / Step Functions / Lambda durable functions の3通りで比較するライブコーディング枠です。',
+            'JPN101 を優先して不参加の方針ですが、11/23 21:31 時点の API ではまだ予約枠を保持した状態です。ポータルでキャンセルすると他の参加者に席を譲れます。'
+          ],
+          abstract: "Orchestration mode matters more for end user experience than just model choice. In this live-coding session, I build the same GenAI workload three ways: Amazon Bedrock AgentCore, AWS Step Functions, and AWS Lambda durable functions - and show what each costs in latency, dollars, and debuggability on a production content platform.",
+          nextMove: 'Venetian → Allegiant Stadium：公式専用シャトル（18:15頃〜）'
+        },
+        {
+          id: 's-1203-replay', day: '12-03', code: 'RE:PLAY', dur: '4h',
+          start: '2026-12-03T18:30:00-08:00', end: '2026-12-03T22:30:00-08:00',
+          title: 're:Play 公式クロージングパーティー',
+          venueShort: 'Allegiant Stadium',
+          venue: 'Allegiant Stadium',
+          type: 'conflict', tag: '要RSVP確認', flag: '18:30確定',
+          desc: 'API公式データで 18:30–22:30（240分）が確定。ポータルで RSVP 状況を確認してください。',
+          points: [
+            'フルパスに料金込みですが、11/23 時点の schedule.json には未反映のためポータル側で RSVP が必要か確認してください。',
+            '会場の Allegiant Stadium へは各主要ホテルから公式専用シャトルが出ます。大きなバッグは制限されるため最小限の身軽スタイル（バッジ・スマホ・防寒着・念のためID）が安全です。',
+            '翌朝 12/04 は 08:00 頃にフーバーダム出発＆チェックアウトのため、深追いしすぎず 21:30〜22:00 頃には戻ると翌日が楽です。'
+          ],
+          prep: 'バッジ・防寒着・小さいポーチ（翌朝パッキングも夜のうちに！）',
+          mapQ: 'Allegiant+Stadium+Las+Vegas'
+        },
 
         // 12/04
-        { day: '12-04', start: '2026-12-04T08:00:00-08:00', end: '2026-12-04T15:00:00-08:00', title: 'フーバーダム 6名ツアー（Gray Line 予約進行中）', venue: 'Hoover Dam（LINQ送迎要確認）', type: 'optional', tag: '6名・予約進行中', desc: '6名合計 ¥82,866（1人 ¥13,811）。朝チェックアウト＆荷物預けを済ませて出発。帰着は14:30〜15:00見込み。', nextMove: '重要：14:30〜15:00帰着 → 17:15 ホテル発（荷物締切 18:32）', warnMove: true },
-        { day: '12-04', start: '2026-12-04T17:15:00-08:00', end: '2026-12-04T18:32:00-08:00', title: 'The LINQ 出発 → LAS T1 チェックイン', venue: 'The LINQ → LAS T1', type: 'conflict', tag: '荷物締切 18:32', desc: '荷物預け締切は出発60分前（18:32）。余裕をもって17:15にホテルを出ます。', nextMove: 'LAS T1 保安検査 → 搭乗ゲートへ' },
-        { day: '12-04', start: '2026-12-04T19:32:00-08:00', end: '2026-12-04T20:53:00-08:00', title: 'AA651 ラスベガス T1 → ロサンゼルス（LAX）', venue: 'A321 / Seat <span data-vault="seat_lax" data-mask="•••">•••</span>', type: 'confirmed', tag: 'フライト', desc: '1時間21分。荷物は羽田までスルー預け。', nextMove: 'LAX 乗継 3時間17分（荷物受取不要）' },
-        { day: '12-04', start: '2026-12-05T00:10:00-08:00', end: '2026-12-06T05:05:00+09:00', title: 'AA169 ロサンゼルス → 羽田 T3（12/06 朝着）', venue: 'B787 / Seat <span data-vault="seat_ret" data-mask="•••">•••</span>', type: 'confirmed', tag: 'フライト', desc: '11時間55分。Visit Japan Web のQRコードを準備しておきます。' },
+        {
+          id: 's-1204-hoover', day: '12-04', code: 'HOOVER', dur: '7h',
+          start: '2026-12-04T08:00:00-08:00', end: '2026-12-04T15:00:00-08:00',
+          title: 'フーバーダム 6名ツアー（Gray Line 進行中）',
+          venueShort: 'Hoover Dam（LINQ送迎要確認）',
+          venue: 'Hoover Dam（LINQ送迎要確認）',
+          type: 'optional', tag: '6名・進行中', flag: '15:00帰着目安',
+          desc: '6名合計 ¥82,866（1人 ¥13,811）。朝チェックアウト＆ベルデスク荷物預けを済ませて出発。',
+          points: [
+            '11/23 に予約進行方針を決定（送信・決済はまだ未実行）。残確認は①代表電話番号 ②The LINQ 送迎可否 ③成立後72時間前（12/01頃）のリコンファームです。',
+            '出発前にチェックアウトを済ませ、60Lスーツケースはベルデスクへ預けます（チップ $1–2/個）。',
+            'レビュー実態の帰着は 14:30〜15:00。帰着後にお土産最終購入・スーツケース整理をして 17:15 にホテルを出発します。'
+          ],
+          prep: 'サングラス・防寒着・ガイド用チップ現金（$5–10目安）',
+          mapQ: 'Hoover+Dam',
+          nextMove: '重要：14:30〜15:00帰着 → 17:15 ホテル発（荷物締切 18:32）',
+          warnMove: true
+        },
+        {
+          id: 's-1204-depart', day: '12-04', code: 'CHECK-IN', dur: '75m',
+          start: '2026-12-04T17:15:00-08:00', end: '2026-12-04T18:32:00-08:00',
+          title: 'The LINQ 出発 → LAS T1 チェックイン',
+          venueShort: 'The LINQ → LAS ターミナル1',
+          venue: 'The LINQ → LAS T1',
+          type: 'conflict', tag: '荷物締切 18:32', flag: '時間厳守',
+          desc: '荷物預け締切は出発60分前（18:32）。金曜夕方の渋滞を見込み17:15にホテルを出ます。',
+          points: [
+            '金曜夕方のストリップ周辺は渋滞しやすいため、17:15 出発を厳守してください。',
+            'LAS で預けたスーツケースは羽田（HND）までスルーチェックインされます（タグが「HND」になっていることをカウンターで目視確認）。',
+            '買い忘れたお土産（Ethel M Chocolates など）は保安検査後の LAS 空港内ショップでも買えます。'
+          ],
+          prep: 'パスポート・スーツケース・液体100ml以下確認・Visit Japan Web 確認',
+          mapQ: 'Harry+Reid+International+Airport+Terminal+1',
+          nextMove: 'LAS T1 保安検査 → 搭乗ゲートへ'
+        },
+        {
+          id: 's-1204-aa651', day: '12-04', code: 'AA651', dur: '1h21m',
+          start: '2026-12-04T19:32:00-08:00', end: '2026-12-04T20:53:00-08:00',
+          title: 'ラスベガス T1 → ロサンゼルス（LAX）',
+          venueShort: 'A321 / LAX 乗継 3h17m',
+          venue: 'A321 / Seat <span data-vault="seat_lax" data-mask="•••">•••</span>',
+          type: 'confirmed', tag: 'フライト',
+          desc: '1時間21分。預け荷物は羽田までスルーのため、LAX での荷物受取は不要です。',
+          points: [
+            'LAX 到着後は 3時間17分の乗継時間があります。預け荷物は羽田直行のため身軽に動けます。',
+            '出国審査はありません。AA169 国際線ゲート（通常 Tom Bradley International Terminal 付近）へ移動し、深夜便に備えて水分・歯磨き・軽食を済ませます。'
+          ],
+          nextMove: 'LAX 乗継 3時間17分（荷物受取不要）'
+        },
+        {
+          id: 's-1204-aa169', day: '12-04', code: 'AA169', dur: '11h55m',
+          start: '2026-12-05T00:10:00-08:00', end: '2026-12-06T05:05:00+09:00',
+          flightTimeNote: 'LAX 12/05 00:10 PST → HND T3 12/06 05:05 JST（所要 11h55m）',
+          title: 'ロサンゼルス（LAX）→ 羽田 T3（12/06 朝着）',
+          venueShort: 'B787 / 12/06 05:05 JST着',
+          venue: 'B787 / Seat <span data-vault="seat_ret" data-mask="•••">•••</span>',
+          type: 'confirmed', tag: 'フライト',
+          desc: '11時間55分の深夜便。Visit Japan Web のQRコードを事前にオフライン保存しておきます。',
+          points: [
+            '12/05 00:10 PST 発 → 日付変更線を越えて 12/06（日）05:05 JST 羽田T3着です。',
+            '乾燥対策のマスク・のど飴・リップ、折りたたみスリッパを手元に置いて休めます。',
+            'Visit Japan Web の税関申告 QR コードをスクショ保存しておくと早朝入国が一瞬で終わります。'
+          ],
+          prep: 'Visit Japan Web QRスクショ・折りたたみスリッパ・乾燥対策'
+        },
 
         // 12/06
-        { day: '12-06', start: '2026-12-06T05:05:00+09:00', end: '2026-12-06T07:00:00+09:00', title: '羽田 T3 到着 → 帰宅', venue: '<span data-vault="home_route_ret" data-mask="羽田 T3 → 自宅最寄り">羽田 T3 → 自宅最寄り</span>', type: 'confirmed', tag: '帰国', desc: '<span data-vault="home_ret_desc" data-mask="Visit Japan Web 通過後、06:15羽田発が目安です。">Visit Japan Web 通過後、06:15羽田発が目安です。</span>' }
+        {
+          id: 's-1206-home', day: '12-06', code: 'RETURN', dur: '115m',
+          start: '2026-12-06T05:05:00+09:00', end: '2026-12-06T07:00:00+09:00',
+          title: '羽田 T3 到着 → 帰宅',
+          venueShort: '羽田空港 第3ターミナル',
+          venue: '<span data-vault="home_route_ret" data-mask="羽田 T3 → 自宅最寄り">羽田 T3 → 自宅最寄り</span>',
+          type: 'confirmed', tag: '帰国',
+          desc: '<span data-vault="home_ret_desc" data-mask="Visit Japan Web 通過後、06:15羽田発が目安です。">Visit Japan Web 通過後、06:15羽田発が目安です。</span>',
+          points: [
+            '免税範囲（個人使用品合計20万円以下・酒3本・たばこ200本）を超える購入品があれば税関で申告します。',
+            '帰国後は経費精算用の領収書（ホテル・タクシー・空港移動など）をまとめて保管します。'
+          ]
+        }
       ];
 
       /* ======================================================================
-         5. LIVE CLOCKS + MISSION RADAR + TIME-TRAVEL SIMULATOR
+         5. UNIVERSAL RICH DETAIL BOTTOM-SHEET ENGINE
+         ====================================================================== */
+      const detailDialog = document.getElementById('detailDialog');
+      const ddKicker = document.getElementById('ddKicker');
+      const ddTitle = document.getElementById('ddTitle');
+      const ddBody = document.getElementById('ddBody');
+
+      function openDetailSheet({ kicker, title, bodyHtml }) {
+        ddKicker.innerHTML = kicker || '';
+        ddTitle.textContent = title || '';
+        ddBody.innerHTML = bodyHtml || '';
+        applyPrivacyToDom();
+        detailDialog.showModal();
+        ddBody.scrollTop = 0;
+      }
+
+      // Close detail sheet before opening show card from inside sheet
+      detailDialog.addEventListener('click', (e) => {
+        const sc = e.target.closest('[data-sheet-showcard]');
+        if (!sc) return;
+        const key = sc.dataset.sheetShowcard;
+        detailDialog.close();
+        openShowCard(key);
+      });
+
+      function openSessionDetail(item) {
+        const pst = fmtRange(item.start, item.end, 'PST', item.day);
+        const jst = fmtRange(item.start, item.end, 'JST', item.day);
+        const pillCls = item.type === 'confirmed' ? 'p-confirmed' : item.type === 'event' ? 'p-event' : item.type === 'conflict' ? 'p-conflict' : '';
+
+        const kicker = `
+          <span>${item.code || 'SCHEDULE'}</span>
+          <span class="t-pill ${pillCls}">${item.tag}</span>
+          ${item.flag ? `<span class="t-pill p-flag">${item.flag}</span>` : ''}
+        `;
+
+        const facts = [];
+        if (item.flightTimeNote) {
+          facts.push(`<div class="fact-box is-full"><span class="fact-lbl">出発・到着地の現地時刻</span><span class="fact-val is-gold num">${item.flightTimeNote}</span></div>`);
+        }
+        facts.push(
+          `<div class="fact-box"><span class="fact-lbl">ベガス時間（PST）</span><span class="fact-val num">${pst.startDate} ${pst.start}–${pst.endLabel}</span></div>`,
+          `<div class="fact-box"><span class="fact-lbl">日本時間（JST）</span><span class="fact-val num">${jst.startDate} ${jst.start}–${jst.endLabel}</span></div>`,
+          `<div class="fact-box is-full"><span class="fact-lbl">会場・部屋・座席</span><span class="fact-val is-gold">${item.venue}</span></div>`
+        );
+        if (item.sessionType || item.level) {
+          facts.push(`<div class="fact-box is-full"><span class="fact-lbl">形式・レベル・所要時間</span><span class="fact-val">${[item.sessionType, item.level, item.dur].filter(Boolean).join(' · ')}</span></div>`);
+        }
+        if (item.prep) {
+          facts.push(`<div class="fact-box is-full"><span class="fact-lbl">持ち物・事前確認</span><span class="fact-val is-mint">${item.prep}</span></div>`);
+        }
+
+        const tags = [...(item.services || []), ...(item.topics || []), ...(item.features || [])];
+        const parts = [];
+        parts.push(`<div class="fact-grid">${facts.join('')}</div>`);
+
+        if (item.points && item.points.length) {
+          parts.push(`<div><div class="sheet-sec-h">この予定のポイント</div><ul class="sheet-list">${item.points.map((p) => `<li>${p}</li>`).join('')}</ul></div>`);
+        } else if (item.desc) {
+          parts.push(`<div class="sheet-callout">${item.desc}</div>`);
+        }
+
+        if (item.nextMove) {
+          parts.push(`<div class="sheet-callout ${item.warnMove ? 'is-warn' : ''}"><strong>次の移動・接続：</strong><br>${item.nextMove}</div>`);
+        }
+
+        if (tags.length) {
+          parts.push(`<div><div class="sheet-sec-h">関連 AWS サービス・トピック</div><div class="sheet-tags">${tags.map((t) => `<span class="sheet-tag">${t}</span>`).join('')}</div></div>`);
+        }
+
+        if (item.speakers && item.speakers.length) {
+          parts.push(`<div><div class="sheet-sec-h">スピーカー</div><p style="font-size:14px;color:var(--muted);">${item.speakers.join(' / ')}</p></div>`);
+        }
+
+        if (item.abstract) {
+          parts.push(`<details class="sheet-abstract"><summary>公式アブストラクト原文（英語）</summary><p>${item.abstract}</p></details>`);
+        }
+
+        const btns = [];
+        if (item.showCard) {
+          btns.push(`<button type="button" class="sheet-btn-primary" data-sheet-showcard="${item.showCard}">相手に見せる英語カードを開く</button>`);
+        }
+        if (item.mapQ) {
+          btns.push(`<a class="sheet-btn-secondary" href="https://maps.google.com/?q=${item.mapQ}" target="_blank" rel="noopener">Google マップで場所を開く ↗</a>`);
+        }
+        if (btns.length) {
+          parts.push(`<div class="sheet-actions">${btns.join('')}</div>`);
+        }
+
+        openDetailSheet({ kicker, title: item.title, bodyHtml: parts.join('') });
+      }
+
+      /* ======================================================================
+         6. LIVE CLOCKS + MISSION RADAR + TIME-TRAVEL SIMULATOR
          ====================================================================== */
       const topClockPst = document.getElementById('topClockPst');
       const topClockJst = document.getElementById('topClockJst');
@@ -2150,19 +3245,21 @@
       const radarBig = document.getElementById('radarBig');
       const radarMission = document.getElementById('radarMission');
       const radarMeta = document.getElementById('radarMeta');
+      const radarMissionBtn = document.getElementById('radarMissionBtn');
       const departMs = Date.parse('2026-11-29T20:25:00+09:00');
       const fmtPst = new Intl.DateTimeFormat('ja-JP', { timeZone: 'America/Los_Angeles', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false });
       const fmtJst = new Intl.DateTimeFormat('ja-JP', { timeZone: 'Asia/Tokyo', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false });
       const fmtTimePst = new Intl.DateTimeFormat('ja-JP', { timeZone: 'America/Los_Angeles', hour: '2-digit', minute: '2-digit', hour12: false });
 
       let simIso = 'real';
+      let currentRadarItem = SCHEDULE[1]; // AA176 default before departure
 
       function updateRadar() {
         const now = simIso === 'real' ? new Date() : new Date(simIso);
         const nowMs = now.getTime();
         topClockPst.textContent = `LAS ${fmtPst.format(now)}`;
         topClockJst.textContent = `TYO ${fmtJst.format(now)}`;
-        radarClockLabel.textContent = simIso === 'real' ? '現在時刻（リアル）' : `仮想日時 ${fmtPst.format(now)} PST`;
+        radarClockLabel.textContent = simIso === 'real' ? '現在時刻' : `仮想 ${fmtPst.format(now)} PST`;
 
         if (nowMs < departMs - 6 * 3600000) {
           const diff = departMs - nowMs;
@@ -2170,8 +3267,9 @@
           const h = Math.floor((diff % 86400000) / 3600000);
           radarBadge.textContent = 'PRE-FLIGHT COUNTDOWN';
           radarBig.textContent = `あと ${d}日 ${h}時間`;
-          radarMission.textContent = '11/29 20:25 JST 羽田T3発（AA176）→ ダラス経由ラスベガス';
-          radarMeta.textContent = '出発前の残件：COM325-Rキャンセル確認・JPN101・re:Play RSVP・フーバーダム6名予約・現金$150両替。';
+          radarMission.textContent = '11/29 20:25 JST 羽田T3発（AA176）→ DFW → LAS';
+          radarMeta.textContent = 'タップで搭乗・DFW入国手順を確認（残件はPACKタブへ）';
+          currentRadarItem = SCHEDULE[1];
           return;
         }
 
@@ -2184,25 +3282,41 @@
           radarBadge.textContent = 'NOW HAPPENING';
           radarBig.textContent = `残り ${leftMin >= 60 ? `${Math.floor(leftMin/60)}h ${leftMin%60}m` : `${leftMin}分`}`;
           radarMission.textContent = current.title;
-          radarMeta.textContent = `${current.venue}${upcoming ? ` ／ 次：${fmtTimePst.format(new Date(upcoming.start))} ${upcoming.title}` : ''}`;
+          radarMeta.textContent = `${current.venueShort || current.venue}${upcoming ? ` ／ 次 ${fmtTimePst.format(new Date(upcoming.start))}` : ''}`;
+          currentRadarItem = current;
         } else if (upcoming) {
           const waitMin = Math.max(1, Math.round((Date.parse(upcoming.start) - nowMs) / 60000));
           radarBadge.textContent = 'NEXT MISSION';
           radarBig.textContent = waitMin >= 60 ? `${Math.floor(waitMin/60)}時間 ${waitMin%60}分後` : `あと ${waitMin}分`;
           radarMission.textContent = `${fmtTimePst.format(new Date(upcoming.start))}｜${upcoming.title}`;
-          radarMeta.textContent = `${upcoming.venue} — ${upcoming.desc}`;
+          radarMeta.textContent = `${upcoming.venueShort || upcoming.venue} · タップで詳細`;
+          currentRadarItem = upcoming;
         } else {
           radarBadge.textContent = 'TRIP COMPLETE';
           radarBig.textContent = 'おかえりなさい';
           radarMission.textContent = 'AWS re:Invent 2026 初アメリカ出張完了';
           radarMeta.textContent = 'JPN101 の振り返りと領収書精算を整理しましょう。';
+          currentRadarItem = SCHEDULE[SCHEDULE.length - 1];
         }
       }
 
+      radarMissionBtn.addEventListener('click', () => {
+        if (currentRadarItem) openSessionDetail(currentRadarItem);
+      });
+
+      const simToggleBtn = document.getElementById('simToggleBtn');
+      const simStrip = document.getElementById('simStrip');
+      const simActiveTag = document.getElementById('simActiveTag');
+      simToggleBtn.addEventListener('click', () => {
+        const open = simStrip.hidden;
+        simStrip.hidden = !open;
+        simToggleBtn.setAttribute('aria-expanded', String(open));
+      });
       document.getElementById('simChips').addEventListener('click', (e) => {
         const btn = e.target.closest('[data-sim]');
         if (!btn) return;
         simIso = btn.dataset.sim;
+        simActiveTag.textContent = btn.dataset.simLabel || '設定中';
         document.querySelectorAll('#simChips [data-sim]').forEach((b) => b.classList.toggle('is-active', b.dataset.sim === simIso));
         updateRadar();
       });
@@ -2210,7 +3324,7 @@
       setInterval(updateRadar, 30000);
 
       /* ======================================================================
-         6. TIMELINE RENDERING (PST <-> JST + TRANSIT CONNECTORS)
+         7. TIMELINE RENDERING (SCANNABLE CARDS -> TAP FOR FULL DETAIL SHEET)
          ====================================================================== */
       let activeDay = '11-30';
       let activeTz = 'PST';
@@ -2218,12 +3332,25 @@
       const dayPillsEl = document.getElementById('dayPills');
       const timelineFeedEl = document.getElementById('timelineFeed');
 
-      function fmtRange(sIso, eIso, tzMode) {
+      function fmtRange(sIso, eIso, tzMode, refDayId) {
         const tz = tzMode === 'PST' ? 'America/Los_Angeles' : 'Asia/Tokyo';
         const tf = new Intl.DateTimeFormat('ja-JP', { timeZone: tz, hour: '2-digit', minute: '2-digit', hour12: false });
         const df = new Intl.DateTimeFormat('ja-JP', { timeZone: tz, month: 'numeric', day: 'numeric' });
+        const keyFmt = new Intl.DateTimeFormat('en-CA', { timeZone: tz, month: '2-digit', day: '2-digit' });
         const s = new Date(sIso), e = new Date(eIso);
-        return { start: tf.format(s), end: tf.format(e), date: `${df.format(s)} ${tzMode}` };
+        const sDate = df.format(s), eDate = df.format(e);
+        const sKey = keyFmt.format(s); // "MM-DD"
+        const start = tf.format(s), end = tf.format(e);
+        const crossDay = sDate !== eDate;
+        const shiftedFromTab = !!refDayId && sKey !== refDayId;
+        return {
+          start,
+          end,
+          endLabel: crossDay ? `翌${end}` : end,
+          startDate: sDate,
+          date: `${sDate} ${tzMode}`,
+          shiftedFromTab
+        };
       }
 
       function renderDays() {
@@ -2244,39 +3371,49 @@
           return;
         }
         timelineFeedEl.innerHTML = list.map((it, idx) => {
-          const r = fmtRange(it.start, it.end, activeTz);
+          const r = fmtRange(it.start, it.end, activeTz, activeDay);
           const pillCls = it.type === 'confirmed' ? 'p-confirmed' : it.type === 'event' ? 'p-event' : it.type === 'conflict' ? 'p-conflict' : '';
           const connector = it.nextMove && idx < list.length - 1
             ? `<div class="transit-link ${it.warnMove ? 'is-warn' : ''}">↓ ${it.nextMove}</div>`
             : `<div style="height: 10px;"></div>`;
           return `
-            <article class="t-card type-${it.type} ${it.cancelled ? 'is-cancelled' : ''}">
-              <div>
+            <button type="button" class="t-card type-${it.type} ${it.cancelled ? 'is-cancelled' : ''}" data-sid="${it.id}" aria-label="${it.title} の詳細を開く">
+              <div class="t-time-col">
+                ${r.shiftedFromTab ? `<span class="t-date-shift num">${r.startDate} ${activeTz}</span>` : ''}
                 <span class="t-time num">${r.start}</span>
-                <span class="t-time-end num">– ${r.end}</span>
-                <span class="t-date-sub">${r.date}</span>
+                <span class="t-time-end num">– ${r.endLabel}</span>
+                <span class="t-dur num">${it.dur || r.date}</span>
               </div>
-              <div>
-                <div class="t-head-row">
-                  <div class="t-title">${it.title}</div>
+              <div class="t-main-col">
+                <div class="t-meta-top">
+                  ${it.code ? `<span class="t-code">${it.code}</span>` : ''}
                   <span class="t-pill ${pillCls}">${it.tag}</span>
+                  ${it.flag ? `<span class="t-pill p-flag">${it.flag}</span>` : ''}
                 </div>
-                <div class="t-venue">${it.venue}</div>
-                <p class="t-desc">${it.desc}</p>
+                <div class="t-title">${it.title}</div>
+                <div class="t-venue">${it.venueShort || it.venue}</div>
+                <div class="t-one-liner">${it.desc}</div>
               </div>
-            </article>
+              <div class="t-chev-col" aria-hidden="true"><span class="chev">›</span></div>
+            </button>
             ${connector}
           `;
         }).join('');
+        applyPrivacyToDom();
       }
 
+      timelineFeedEl.addEventListener('click', (e) => {
+        const card = e.target.closest('[data-sid]');
+        if (!card) return;
+        const item = SCHEDULE.find((s) => s.id === card.dataset.sid);
+        if (item) openSessionDetail(item);
+      });
       dayPillsEl.addEventListener('click', (e) => {
         const b = e.target.closest('[data-day]');
         if (!b) return;
         activeDay = b.dataset.day;
         renderDays();
         renderTimeline();
-      applyVaultToDom();
       });
       document.querySelectorAll('[data-tz]').forEach((b) => {
         b.addEventListener('click', () => {
@@ -2287,7 +3424,6 @@
             x.setAttribute('aria-pressed', String(on));
           });
           renderTimeline();
-          applyVaultToDom();
         });
       });
       document.getElementById('timeFilters').addEventListener('click', (e) => {
@@ -2296,14 +3432,12 @@
         activeFilter = b.dataset.tfilter;
         document.querySelectorAll('#timeFilters [data-tfilter]').forEach((x) => x.classList.toggle('is-active', x.dataset.tfilter === activeFilter));
         renderTimeline();
-        applyVaultToDom();
       });
       renderDays();
       renderTimeline();
-      applyVaultToDom();
 
       /* ======================================================================
-         7. VEGAS TAB — SUB-TABS, DECISION MEMORY, VENUES, YOUTUBE 12 VIDEOS
+         8. VEGAS TAB — SUB-TABS, DECISION PINNING, RICH DETAIL DIALOGS
          ====================================================================== */
       document.getElementById('vegasSubTabs').addEventListener('click', (e) => {
         const b = e.target.closest('[data-vtab]');
@@ -2315,7 +3449,7 @@
         });
       });
 
-      // Decision Pin Memory (localStorage)
+      // Decision Pin Memory
       let savedDecisions = {};
       try { savedDecisions = JSON.parse(localStorage.getItem('lv26_decisions') || '{}'); } catch (_) {}
       function syncDecisions() {
@@ -2341,66 +3475,287 @@
       });
       syncDecisions();
 
-      // Venue Map List
-      const VENUES = [
-        { name: 'Caesars Forum', time: '徒歩 7分', note: '11/30 AIM301-R、12/02 DVT340・COM324-R', q: 'Caesars+Forum+Las+Vegas' },
-        { name: 'The Vanderpump Hotel', time: '徒歩 5–8分', note: '11/30 18:30 APJC Kick Off Party（RSVP済）', q: 'The+Vanderpump+Hotel+Las+Vegas' },
-        { name: 'Caesars Palace', time: '徒歩 8–10分', note: '12/01 GameDay 3h、12/02 TNC333-R1', q: 'Caesars+Palace+Las+Vegas' },
-        { name: 'The Venetian', time: '徒歩 10–12分', note: 'Japan Desk (L1 607)・EXPO・12/03 JPN101', q: 'The+Venetian+Las+Vegas' },
-        { name: 'MGM Grand', time: 'モノレール 15–20分', note: '12/02 DAT453、ショー『KÀ』候補', q: 'MGM+Grand+Las+Vegas' },
-        { name: 'Wynn / Encore', time: '車 10分', note: '11/30 ARC310-R、12/01 Japan Night（徒歩20–25分）', q: 'Wynn+Las+Vegas' },
-        { name: 'Resorts World', time: '車 10分', note: '11/30 16:00 AWS & Sony Happy Hour', q: 'Resorts+World+Las+Vegas' },
-        { name: 'Allegiant Stadium', time: 'シャトル 15–20分', note: '12/03 夜 re:Play（公式クロージング）', q: 'Allegiant+Stadium+Las+Vegas' }
+      // Food Spots (Tappable for Rich Detail Dialog)
+      const FOODS = [
+        {
+          id: 'nook', name: 'Nook Express（LINQ館内・24h）', time: '0m', note: '早朝のコーヒー・朝食サンドを秒で買える拠点ショップ',
+          budget: '$8〜$16（カウンター・チップ0〜10%）', hours: '24時間営業', bestFor: '12/02 08:30前・12/04 フーバーダム出発前の朝',
+          tips: ['ホテル内エレベーターを降りてすぐのため、時間が読めない朝の最強バックアップです。', 'ペットボトルの水はストリップ内では割高なので、近くの CVS / Walgreens でまとめ買いすると節約できます。'],
+          q: 'Nook+Express+The+LINQ+Las+Vegas'
+        },
+        {
+          id: 'innout', name: 'In-N-Out Burger（LINQ Promenade）', time: '2m', note: '西海岸名物バーガー。並んでも回転が速く手頃',
+          budget: '$10〜$15（カウンター・チップ不要）', hours: '10:30〜深夜（目安）', bestFor: '昼食・夜食のサク飯',
+          tips: ['定番は「Double-Double」。裏メニューの「Animal Style（グリルドオニオン＆特製ソース追加）」も人気です。', 'ラスベガスの物価高のなかで圧倒的にコスパが良く、行列でも10〜15分で回ることが多いです。'],
+          q: 'In-N-Out+Burger+LINQ+Promenade+Las+Vegas'
+        },
+        {
+          id: 'fish', name: 'Gordon Ramsay Fish & Chips', time: '2m', note: 'カウンター形式で揚げたて。短時間の昼食に最適',
+          budget: '$18〜$26（カウンター・チップ不要〜任意）', hours: '11:00〜深夜（目安）', bestFor: 'セッション合間の45分ランチ',
+          tips: ['有名シェフ Gordon Ramsay のカジュアル店。フィッシュ＆チップス＋タルタル系ソースの組み合わせが定番です。', '着席レストランより圧倒的に早く食べ終われるため、11/30 や 12/02 の合間に使いやすいです。'],
+          q: 'Gordon+Ramsay+Fish+Chips+LINQ+Las+Vegas'
+        },
+        {
+          id: 'bistro', name: "Favorite Bistro / Maxie's", time: '3m', note: 'しっかり座って食べる朝・ブランチの定番2軒',
+          budget: '$25〜$40＋チップ18%', hours: '朝〜夜（Maxie’s は朝強い）', bestFor: '時間に余裕のある朝・仲間とのブランチ',
+          tips: ['どちらも LINQ Promenade 沿いで徒歩3分圏内。テーブルサービスのため税引前18%チップを見込みます。', '12/03（木）は午前が空いているため、ゆっくり朝食をとるのにぴったりです。'],
+          q: 'Maxies+Las+Vegas+LINQ'
+        },
+        {
+          id: 'yard', name: 'Flour & Barley / Yard House', time: '4m', note: '窯焼きピザ＆クラフトビール。セッション帰りの1杯に',
+          budget: '$30〜$55＋チップ18%', hours: '昼〜深夜', bestFor: '夜に仲間と軽く飲む・食事する場面',
+          tips: ['Yard House は生ビール100種以上＆メニュー豊富でグループでも入りやすい定番店。', 'LINQ 徒歩4分なので飲んだあとすぐ部屋に戻れます。'],
+          q: 'Yard+House+LINQ+Promenade+Las+Vegas'
+        },
+        {
+          id: 'urth', name: 'Urth Caffé / Grand Lux Cafe（Venetian）', time: '10m', note: '12/01・12/03のVenetian滞在日に便利なカフェ＆大箱',
+          budget: '$20〜$40', hours: '朝〜夜（Grand Lux は24h枠あり）', bestFor: '12/01 Keynote後・12/03 EBC〜JPN101の合間',
+          tips: ['12/03 は 12:45 に EBC46788 が終わり、14:30 開場の JPN101 まで同館内で過ごせるため Venetian 内の食事がベストです。', 're:Invent 期間中の昼時は混むため、12:45 終了直後にすぐ向かうとスムーズです。'],
+          q: 'Grand+Lux+Cafe+Venetian+Las+Vegas'
+        },
+        {
+          id: 'americano', name: 'Café Americano（Caesars Palace・24h）', time: '8m', note: 'GameDay後や夜遅めの食事でも開いているダイナー',
+          budget: '$25〜$45＋チップ18%', hours: '24時間営業', bestFor: '12/01 GameDay 後・深夜の食事難民回避',
+          tips: ['Caesars Palace ロビー付近の24時間ダイナー。到着が遅れた夜や、イベント後の小腹満たしに覚えておくと心強いです。'],
+          q: 'Cafe+Americano+Caesars+Palace+Las+Vegas'
+        }
       ];
-      document.getElementById('venueMapList').innerHTML = VENUES.map((v) => `
-        <div class="venue-row">
-          <div>
-            <a class="venue-name" href="https://maps.google.com/?q=${v.q}" target="_blank" rel="noopener">${v.name} ↗</a>
-            <span class="venue-note">${v.note}</span>
-          </div>
-          <span class="venue-time">${v.time}</span>
-        </div>
+
+      document.getElementById('foodList').innerHTML = FOODS.map((f) => `
+        <button type="button" class="venue-row-btn" data-food="${f.id}">
+          <div><span class="venue-name">${f.name}</span><span class="venue-note">${f.note}</span></div>
+          <div class="venue-right"><span class="venue-time">${f.time}</span><span class="chev" aria-hidden="true">›</span></div>
+        </button>
       `).join('');
 
-      // 12 Verified YouTube Videos + Offline 3-Line Takeaways
+      document.getElementById('foodList').addEventListener('click', (e) => {
+        const b = e.target.closest('[data-food]');
+        if (!b) return;
+        const f = FOODS.find((x) => x.id === b.dataset.food);
+        if (!f) return;
+        openDetailSheet({
+          kicker: `DINING · THE LINQ から徒歩 ${f.time}`,
+          title: f.name,
+          bodyHtml: `
+            <div class="fact-grid">
+              <div class="fact-box is-full"><span class="fact-lbl">予算・チップ目安</span><span class="fact-val is-gold">${f.budget}</span></div>
+              <div class="fact-box is-full"><span class="fact-lbl">営業時間目安</span><span class="fact-val">${f.hours}</span></div>
+              <div class="fact-box is-full"><span class="fact-lbl">おすすめのタイミング</span><span class="fact-val is-mint">${f.bestFor}</span></div>
+            </div>
+            <div>
+              <div class="sheet-sec-h">現地で役立つメモ</div>
+              <ul class="sheet-list">${f.tips.map((t) => `<li>${t}</li>`).join('')}</ul>
+            </div>
+            <div class="sheet-actions">
+              <a class="sheet-btn-primary" href="https://maps.google.com/?q=${f.q}" target="_blank" rel="noopener">Google マップで場所を見る ↗</a>
+            </div>
+          `
+        });
+      });
+
+      // Souvenirs (Tappable)
+      const SOUVENIRS = [
+        {
+          id: 'corp', name: '会社向け（大人数・小分け個包装）', time: '配り用', note: 'カジノチップ型チョコ、「Welcome to Fabulous Las Vegas」小物',
+          where: 'Walgreens / CVS / LINQ Promenade 土産店 / LAS空港',
+          tips: ['アメリカの菓子は大袋が多く個包装が少ないため、「Individually Wrapped」表記を探します。', 'カジノチップ型の個包装チョコや Ghirardelli（ギラデリ）の個包装スクエアは配りやすくハズレがありません。']
+        },
+        {
+          id: 'ethel', name: '家族・目上向け：Ethel M Chocolates', time: '定番', note: 'ラスベガス地元の老舗。LAS空港内にも店舗あり',
+          where: 'LAS 空港内ショップ（T1 保安検査後あり）・ストリップ周辺',
+          tips: ['ラスベガス発祥のプレミアムチョコブランド。見た目も上品で家族・目上の人向けの本命です。', '空港で買えばスーツケースを圧迫せず、帰国直前まで温度変化も最小限にできます。']
+        },
+        {
+          id: 'friends', name: "友人向け：M&M's World / Trader Joe's", time: '手軽', note: '限定チョコやアメリカらしいスナック類',
+          where: "M&M's World（MGM Grand 近く・4階建て）／ Trader Joe's（市街地）",
+          tips: ['12/02 に MGM Grand へ『KÀ』を観に行くなら、すぐ隣の M&M’s World や Coca-Cola Store に寄れる好動線です。', '往路の60Lスーツケースは2〜3割の空きを残しておくと帰りも楽に収まります。']
+        }
+      ];
+      document.getElementById('souvenirList').innerHTML = SOUVENIRS.map((s) => `
+        <button type="button" class="venue-row-btn" data-souv="${s.id}">
+          <div><span class="venue-name">${s.name}</span><span class="venue-note">${s.note}</span></div>
+          <div class="venue-right"><span class="venue-time">${s.time}</span><span class="chev" aria-hidden="true">›</span></div>
+        </button>
+      `).join('');
+      document.getElementById('souvenirList').addEventListener('click', (e) => {
+        const b = e.target.closest('[data-souv]');
+        if (!b) return;
+        const s = SOUVENIRS.find((x) => x.id === b.dataset.souv);
+        if (!s) return;
+        openDetailSheet({
+          kicker: `SOUVENIR · ${s.time}`,
+          title: s.name,
+          bodyHtml: `
+            <div class="fact-grid">
+              <div class="fact-box is-full"><span class="fact-lbl">主な買える場所</span><span class="fact-val is-gold">${s.where}</span></div>
+            </div>
+            <div>
+              <div class="sheet-sec-h">選び方・買うタイミング</div>
+              <ul class="sheet-list">${s.tips.map((t) => `<li>${t}</li>`).join('')}</ul>
+            </div>
+          `
+        });
+      });
+
+      // Venue Map List (Tappable for Route Tips + Related Sessions + Map)
+      const VENUES = [
+        { id: 'forum', name: 'Caesars Forum', time: '徒歩 7分', note: '11/30 AIM301-R、12/02 DVT340・OPN307-R・COM324-R', route: 'LINQ Promenade を High Roller 方面へ直進し、専用歩道橋を渡るとすぐ到着します。', sessions: ['11/30 12:00 AIM301-R（Level 1 Forum 120）', '12/02 08:30 DVT340（Level 1 Academy 417）', '12/02 12:30 OPN307-R（Level 1 Academy 412）', '12/02 15:00 COM324-R（Level 1 Forum 120）'], q: 'Caesars+Forum+Las+Vegas' },
+        { id: 'vanderpump', name: 'The Vanderpump Hotel', time: '徒歩 5–8分', note: '11/30 18:30 APJC Kick Off Party（招待確定済）', route: 'LINQ からすぐ南側エリア。パーティ後も徒歩で安全に戻れる近さです。', sessions: ['11/30 18:30 ESAP26 APJC Kick Off Party（Soleia Rooftop & Pool）'], q: 'The+Vanderpump+Hotel+Las+Vegas' },
+        { id: 'palace', name: 'Caesars Palace', time: '徒歩 8–10分', note: '12/01 GameDay 3h、12/02 TNC333-R1', route: 'ストリップ大通りを歩道橋で西側へ渡ってすぐ。館内が広いため、Emperors Level の案内表示を見て移動に＋10分見込むと安全です。', sessions: ['12/01 14:00 GHJ301-S GameDay（Emperors Level Palace Ballroom III）', '12/02 10:00 TNC333-R1（Emperors Level Augustus Ballroom V）'], q: 'Caesars+Palace+Las+Vegas' },
+        { id: 'venetian', name: 'The Venetian', time: '徒歩 10–12分', note: 'Japan Desk (L1 607)・EXPO・Keynote・EBC・JPN101', route: 'ストリップ東側を北へ直進。Harrah’s を抜けてすぐ。re:Invent の中心ハブで館内移動だけで10分かかります。', sessions: ['11/30 09:00 Japan Support Desk（L1 Casanova 607）', '12/01 08:30 KEY002 / 11:00 BIZ111-S / EXPO', '12/03 12:00 EBC46788（L4 Zeno 4704）', '12/03 15:00 JPN101（L2 Venetian Theatre）'], q: 'The+Venetian+Las+Vegas' },
+        { id: 'mgm', name: 'MGM Grand', time: 'モノレール 15–20分', note: '12/02 ショー『KÀ』候補（DAT453 会場）', route: 'Harrah’s & The LINQ 駅（ホテル裏側）からモノレール1本で南端 MGM Grand 駅へ直通。渋滞知らずです。', sessions: ['12/02 20:30 シルク・ドゥ・ソレイユ『KÀ』（案1）'], q: 'MGM+Grand+Las+Vegas' },
+        { id: 'wynn', name: 'Wynn / Encore', time: '車 10分', note: '11/30 ARC310-R、12/01 Japan Night（徒歩20–25分）', route: 'Venetian のさらに北側。歩くと20〜25分かかるため、時間がない時や夜の Japan Night は配車アプリ／シャトルが楽です。', sessions: ['11/30 14:30 AIM288-S / 15:00 ARC310-R（Cristal 2）', '12/01 19:00 Japan Night（Wynn Event Pavilion）'], q: 'Wynn+Las+Vegas' },
+        { id: 'rw', name: 'Resorts World', time: '車 10分', note: '11/30 16:00 AWS & Sony Happy Hour', route: 'Wynn のすぐ北西。11/30 は 16:00 に Wynn でセッションが終わるため、そのまま北へ車で5〜10分で着きます。', sessions: ['11/30 16:00 AWS & Sony Happy Hour（Eight Cigar Lounge）'], q: 'Resorts+World+Las+Vegas' },
+        { id: 'allegiant', name: 'Allegiant Stadium', time: 'シャトル 15–20分', note: '12/03 夜 re:Play（公式クロージング）', route: 're:Play 専用シャトルバスが主要ホテルから運行されます。帰りは混み合うため少し早めに動くか防寒対策をしておきます。', sessions: ['12/03 18:30–22:30 re:Play 公式パーティー'], q: 'Allegiant+Stadium+Las+Vegas' }
+      ];
+      document.getElementById('venueMapList').innerHTML = VENUES.map((v) => `
+        <button type="button" class="venue-row-btn" data-venue="${v.id}">
+          <div><span class="venue-name">${v.name}</span><span class="venue-note">${v.note}</span></div>
+          <div class="venue-right"><span class="venue-time">${v.time}</span><span class="chev" aria-hidden="true">›</span></div>
+        </button>
+      `).join('');
+      document.getElementById('venueMapList').addEventListener('click', (e) => {
+        const b = e.target.closest('[data-venue]');
+        if (!b) return;
+        const v = VENUES.find((x) => x.id === b.dataset.venue);
+        if (!v) return;
+        openDetailSheet({
+          kicker: `VENUE ACCESS · THE LINQ から ${v.time}`,
+          title: v.name,
+          bodyHtml: `
+            <div class="sheet-callout"><strong>行き方のコツ：</strong><br>${v.route}</div>
+            <div>
+              <div class="sheet-sec-h">この会場での予定</div>
+              <ul class="sheet-list">${v.sessions.map((s) => `<li>${s}</li>`).join('')}</ul>
+            </div>
+            <div class="sheet-actions">
+              <a class="sheet-btn-primary" href="https://maps.google.com/?q=${v.q}" target="_blank" rel="noopener">Google マップでルートを開く ↗</a>
+            </div>
+          `
+        });
+      });
+
+      // 12 Verified YouTube Videos + Rich Offline Study Guides
       const YT_THUMBS = {"-yBb9gMtSUU":"./media/yt_-yBb9gMtSUU.jpg","jkn02rqkF90":"./media/yt_jkn02rqkF90.jpg","wPlOaAKHco0":"./media/yt_wPlOaAKHco0.jpg","Vz70ZUoDSy4":"./media/yt_Vz70ZUoDSy4.jpg","01DJCxLuzAQ":"./media/yt_01DJCxLuzAQ.jpg","_OVGi0rLzAc":"./media/yt__OVGi0rLzAc.jpg","zcNR6cDJeHU":"./media/yt_zcNR6cDJeHU.jpg","U0s144AKnaU":"./media/yt_U0s144AKnaU.jpg","Y0n7IMd3mWM":"./media/yt_Y0n7IMd3mWM.jpg","05THTK74xb0":"./media/yt_05THTK74xb0.jpg","LKG6KZxP9JU":"./media/yt_LKG6KZxP9JU.jpg","P87lXNx2ycI":"./media/yt_P87lXNx2ycI.jpg"};
       const VIDEOS = [
-        { id: '-yBb9gMtSUU', cat: 'transit', lang: '日本語', ch: "M's Travel & Recreation", title: 'ダラス国際空港到着から入国審査と乗り継ぎ便ゲートまでの移動', pts: ['AA国際線はターミナルD着、案内表示は「Connecting Flights」へ', '税関で一度スーツケースを拾い、直後のConnecting Bagsへ再預け', '保安検査を抜けて高架列車 Skylink で出発ターミナルへ移動'] },
-        { id: 'jkn02rqkF90', cat: 'transit', lang: '日本語', ch: 'Far West Life / アメリカガイドMasa', title: 'ラスベガス空港で旅行者が注意すべきこと（タクシー・Uber・T1）', pts: ['タクシーはゾーン定額制（LINQはZone 3・$30.25目安＋税チップ）', '配車アプリ（Uber/Lyft）乗り場は駐車場側へ少し歩く導線', '到着夜にバッジ受取窓口（T1・23:59まで）を先に済ませると効率的'] },
-        { id: 'wPlOaAKHco0', cat: 'transit', lang: '日本語', ch: 'Far West Life / アメリカガイドMasa', title: 'ラスベガスのモノレールの乗り方と注意すべき点', pts: ['ホテル裏手（東側）に駅があるため、カジノ奥まで少し歩く', 'Harrah’s & The LINQ 駅から MGM Grand 駅まで渋滞なしで直通', 'スマホのデジタル乗車券を買っておくと改札がスムーズ'] },
-
-        { id: 'Vz70ZUoDSy4', cat: 'reinvent', lang: '英語', ch: 'Dash0', title: 'AWS re:Invent 2026 Survival Guide: Tips from Two AWS Heroes', pts: ['1日2万歩ペースになるため、最も履き慣れた靴が最優先', '会場間移動は最低30〜45分見積もり、詰め込みすぎない', 'Breakoutは後日YouTube公開されるため体験型・交流を優先'] },
-        { id: '01DJCxLuzAQ', cat: 'reinvent', lang: '英語', ch: 'AWS Made Easy Livestream', title: 'AWS re:Invent — Top tips for first-timers', pts: ['空港で日曜夜にバッジを受け取ると月曜朝の行列を回避できる', '会場内は冷房が強く乾燥するため、重ね着と水筒が必須', 'セッション間の廊下（Hallway Track）やパーティ交流が価値大'] },
-        { id: '_OVGi0rLzAc', cat: 'reinvent', lang: '日本語', ch: 'クラメソチャンネル', title: 'AWS re:Invent 現地レポート（展示・セッション・新サービス）', pts: ['Venetian の巨大 EXPO 会場の熱量と規模感を事前に把握', '日本語サポートデスクや日本人向けツアーの使いどころがわかる', '帰国後の社内共有に向けてキーノート・JPN101の聞き方を整理'] },
-
-        { id: 'zcNR6cDJeHU', cat: 'shows', lang: '英語', ch: 'Yellow Productions', title: 'Wizard of Oz Las Vegas Sphere Experience: REVIEW & FULL WALKTHROUGH', pts: ['開場45分前からアトリウム体験あり、開演後の遅刻入場は不可', '風・香り・振動など4D演出と18K巨大ドーム映像の没入感', '200〜300番台中央が見やすく、400番台は傾斜がかなり急'] },
-        { id: 'U0s144AKnaU', cat: 'shows', lang: '英語', ch: 'Jared Owen', title: "What's inside of the Sphere? (Las Vegas)", pts: ['世界最大の球体LEDと16万個超のビームフォーミング音響を3D解剖', '座席ごとのハプティック（振動）と環境制御の仕組みがわかる', 'エンジニア視点で観る前に知っておくと興奮が倍増する1本'] },
-        { id: 'Y0n7IMd3mWM', cat: 'shows', lang: '公式映像', ch: 'Cirque du Soleil', title: 'KÀ Official Trailer | Cirque du Soleil', pts: ['MGM Grand 専用劇場で90分休憩なしのバトルアクション', '垂直に立ち上がり回転する巨大油圧ステージが最大の見どころ', '最前列は見上げ続けるため、中央やや後方が全体を見渡せる'] },
-        { id: '05THTK74xb0', cat: 'shows', lang: '英語', ch: 'Bret', title: 'Hoover Dam Power Plant Tour | Full Walkthrough from Las Vegas', pts: ['エレベーターで岩盤の下へ降り、巨大発電機ホールを見学', 'メモリアルブリッジからのダム正面パノラマが圧巻の撮影点', 'ラスベガスから往復＆見学でドアツードア6時間前後の体感'] },
-
-        { id: 'LKG6KZxP9JU', cat: 'linq', lang: '英語', ch: 'Gear Horizon', title: 'THE LINQ Promenade Las Vegas 2026 | FULL Walkthrough', pts: ['ホテル出てすぐの歩行者天国にある全飲食店・ショップを一周', '観覧車 High Roller とジップラインまでの位置関係が一目瞭然', '夜のライトアップの雰囲気と入りやすい店を事前に下見できる'] },
-        { id: 'P87lXNx2ycI', cat: 'linq', lang: '英語', ch: 'Nu Yawk', title: 'Restaurant Guide For Visitors To The LINQ & LINQ Promenade', pts: ['In-N-Out や Fish & Chips などコスパ良くすぐ食べられる店を比較', 'Favorite Bistro・Maxie’s など朝昼の着席レストランの特徴', '混みやすい時間帯とテイクアウトの使い分けがわかる'] }
+        {
+          id: '-yBb9gMtSUU', cat: 'transit', lang: '日本語', ch: "M's Travel & Recreation",
+          title: 'ダラス国際空港到着から入国審査と乗り継ぎ便ゲートまでの移動',
+          hook: 'DFW到着→荷物再預け→Skylinkの実写導線',
+          why: '11/29 の初アメリカ入国・乗継 2h58m の不安を一気に消せる最優先動画です。',
+          when: '出発前（〜11/28）に1回視聴推奨',
+          pts: ['AA国際線はターミナルD着。降機後は「Arrivals / Connecting Flights」の表示に従います。', 'ラスベガス直行タグが付いていても、ダラスの税関ホールで一度スーツケースを受け取り、出口の「Connecting Bags」へ再預けするのが米国ルールです。', '保安検査を抜けた先にある高架列車「Skylink」は2〜3分間隔で走っており、他ターミナルへ数分で移動できます。']
+        },
+        {
+          id: 'jkn02rqkF90', cat: 'transit', lang: '日本語', ch: 'Far West Life / アメリカガイドMasa',
+          title: 'ラスベガス空港で旅行者が注意すべきこと（タクシー・Uber・T1）',
+          hook: 'タクシー定額Zone 3とUber乗り場の違い',
+          why: '11/29 21:25 LAS T1 到着夜に迷わずバッジ受取→ホテル直行するための予習です。',
+          when: '出発前（〜11/28）に視聴推奨',
+          pts: ['タクシーは行き先ごとのゾーン定額制（The LINQ は Zone 3・$30.25目安＋カード$3＋税チップ）。ぼったくり防止のため定額表を把握しておきます。', 'Uber / Lyft の配車乗り場はターミナルから駐車場棟（Parking Garage）へ少し歩くため、荷物が多い夜や急ぐ時はタクシーの方が早い場合があります。', '日曜夜は 23:59 まで空港内で re:Invent バッジを受け取れるため、外へ出る前に済ませるのが鉄則です。']
+        },
+        {
+          id: 'wPlOaAKHco0', cat: 'transit', lang: '日本語', ch: 'Far West Life / アメリカガイドMasa',
+          title: 'ラスベガスのモノレールの乗り方と注意すべき点',
+          hook: 'LINQ駅→MGM Grand直通の乗り場と券買い方',
+          why: '12/02 に MGM Grand（『KÀ』など）へ移動する際、ストリップ渋滞を完全回避できます。',
+          when: '出発前または12/02朝',
+          pts: ['駅はストリップ大通り側ではなくホテルの裏手（東側）にあるため、カジノ奥から看板「Monorail」をたどります。', 'Harrah’s & The LINQ 駅から南端の MGM Grand 駅まで15〜20分で直通します。', '紙の切符よりスマホのデジタル乗車券（Apple Wallet対応）を買っておくと改札がスムーズです。']
+        },
+        {
+          id: 'Vz70ZUoDSy4', cat: 'reinvent', lang: '英語', ch: 'Dash0',
+          title: 'AWS re:Invent 2026 Survival Guide: Tips from Two AWS Heroes',
+          hook: '1日2万歩・会場間30分・体験枠優先の鉄則',
+          why: 'AWS Hero 2名による最新2026年版サバイバル術。初参加のペース配分が掴めます。',
+          when: '出発前（〜11/28）',
+          pts: ['会場が巨大で1日2万歩ペースになるため、新品の靴は避け、最も履き慣れたスニーカーを主軸にします。', 'ホテル名だけでは遠く、館内移動を含めて会場間は最低30〜45分見積もるのが安全です。', '座学の Breakout は後日 YouTube で公開されるため、現地では GameDay・Builders’ Session・Workshop・交流を優先するのが王道です。']
+        },
+        {
+          id: '01DJCxLuzAQ', cat: 'reinvent', lang: '英語', ch: 'AWS Made Easy Livestream',
+          title: 'AWS re:Invent — Top tips for first-timers',
+          hook: '日曜夜バッジ受取・乾燥対策・廊下トラック',
+          why: '初参加者がやりがちな失敗（体調崩し・朝の行列・詰め込みすぎ）を事前に防げます。',
+          when: 'パッキング前（〜11/27）',
+          pts: ['日曜夜に空港でバッジを受け取ることで、月曜朝の最大60分待ち行列をスキップできます。', 'ラスベガスの強烈な乾燥＋会場の冷房対策として、脱ぎ着できる重ね着・マイ水筒・リップ・のど飴が効きます。', 'セッションだけでなく廊下での立ち話（Hallway Track）や夜パーティーでの出会いが最大の収穫になりやすいです。']
+        },
+        {
+          id: '_OVGi0rLzAc', cat: 'reinvent', lang: '日本語', ch: 'クラメソチャンネル',
+          title: 'AWS re:Invent 現地レポート（展示・セッション・新サービス）',
+          hook: 'EXPO熱量・日本語サポート・社内共有のコツ',
+          why: '日本人エンジニア目線で現地の空気感・Venetian EXPO の規模感がリアルにわかります。',
+          when: '出発前（〜11/28）',
+          pts: ['Venetian の巨大 EXPO 会場や Swag 配布の雰囲気を事前に見ておくと現地で気後れしません。', 'Japan Support Desk や日本人向け EXPO ツアーをどう活用すると効率的かが分かります。', '帰国後の社内共有に向けて、Keynote と最終日の JPN101 で要点を拾う流れが整理できます。']
+        },
+        {
+          id: 'zcNR6cDJeHU', cat: 'shows', lang: '英語', ch: 'Yellow Productions',
+          title: 'Wizard of Oz Las Vegas Sphere Experience: REVIEW & FULL WALKTHROUGH',
+          hook: '45分前入場・遅刻不可・200番台座席レビュー',
+          why: 'Sphere チケット購入前に座席エリア選びと遅刻ルールを視覚的に確認できる決定版です。',
+          when: 'チケット購入前',
+          pts: ['開演45分前からアトリウムでのロボット・インタラクティブ体験が始まり、開演後の途中入場はできません。', '風・香り・振動の4D演出と 18K 巨大ドーム映像の組み合わせで、映画というより体験型アトラクションです。', '中央の 200〜300 番台が視界バランス最良。400番台は傾斜が非常に急なため高所が苦手な場合は避けると無難です。']
+        },
+        {
+          id: 'U0s144AKnaU', cat: 'shows', lang: '英語', ch: 'Jared Owen',
+          title: "What's inside of the Sphere? (Las Vegas)",
+          hook: '球体LED＆16万スピーカーの3D技術解剖',
+          why: 'エンジニア視点で Sphere の構造を知ってから観ると感動が何倍にも跳ね上がります。',
+          when: '移動中・機内前などいつでも',
+          pts: ['外装 Exosphere と内装 16K/18K LED スクリーンの構造を 3D CG でわかりやすく分解しています。', '16万個以上のスピーカーによるビームフォーミング音響（エリアごとに違う音を届ける技術）の仕組みが見どころです。', '座席のハプティック（振動）や風・香り装置の配置まで解説されています。']
+        },
+        {
+          id: 'Y0n7IMd3mWM', cat: 'shows', lang: '公式映像', ch: 'Cirque du Soleil',
+          title: 'KÀ Official Trailer | Cirque du Soleil',
+          hook: '垂直に立つ巨大油圧ステージの迫力プレビュー',
+          why: '12/02 に Sphere と同日はしごするか判断するための公式ハイライト映像です。',
+          when: 'ショー案1の検討時',
+          pts: ['MGM Grand 専用劇場で上演される90分・休憩なしのバトルアクション大作です。', '舞台全体が360度回転し垂直の壁に立ち上がる巨大油圧ステージが圧巻です。', '最前列は見上げ続ける姿勢になるため、全体を見渡せる中央やや後方の席が人気です。']
+        },
+        {
+          id: '05THTK74xb0', cat: 'shows', lang: '英語', ch: 'Bret',
+          title: 'Hoover Dam Power Plant Tour | Full Walkthrough from Las Vegas',
+          hook: '岩盤エレベーター・巨大発電機・橋からの絶景',
+          why: '12/04 のフーバーダム6名ツアー（Gray Line 発電所込み）で何が見られるか予習できます。',
+          when: '出発前または12/03夜',
+          pts: ['エレベーターで岩盤の奥へ降り、コロラド川の水力で回る巨大なタービン発電機ホールを間近に見学します。', 'メモリアルブリッジ（歩道）からダム正面を見下ろすアングルが最高の写真スポットです。', 'ラスベガス往復＋見学でドアツードア約6〜7時間。12/04 は 14:30〜15:00 帰着見込みのためフライト逆算が重要です。']
+        },
+        {
+          id: 'LKG6KZxP9JU', cat: 'linq', lang: '英語', ch: 'Gear Horizon',
+          title: 'THE LINQ Promenade Las Vegas 2026 | FULL Walkthrough',
+          hook: 'ホテル目の前の全店舗・High Roller周辺を下見',
+          why: '拠点 The LINQ の目の前の街並みを事前に歩いておくと、初日からホーム感覚で動けます。',
+          when: '出発前（〜11/28）',
+          pts: ['ホテル正面を出てすぐ広がる歩行者天国（LINQ Promenade）の全飲食店・ショップを一気に見渡せます。', '観覧車 High Roller や Caesars Forum 側へ抜ける位置関係が直感的に頭に入ります。', '夜のライトアップの雰囲気と、1人でも入りやすい店の感覚がわかります。']
+        },
+        {
+          id: 'P87lXNx2ycI', cat: 'linq', lang: '英語', ch: 'Nu Yawk',
+          title: 'Restaurant Guide For Visitors To The LINQ & LINQ Promenade',
+          hook: 'In-N-Out・Fish&Chips・朝食店の選び方比較',
+          why: '「今日どこで食べよう？」を現地で迷わず即決できるグルメ比較ガイドです。',
+          when: '出発前または現地滞在中',
+          pts: ['In-N-Out や Gordon Ramsay Fish & Chips など、短時間・コスパ重視で食べられる定番店を比較しています。', 'Favorite Bistro や Maxie’s など、座ってしっかり食べる朝食・ブランチ店の特徴が分かります。', '昼夜の混雑ピークとテイクアウトの使い分けが参考になります。']
+        }
       ];
 
       let activeYtCat = 'all';
       const ytListEl = document.getElementById('ytList');
-      const videoDialog = document.getElementById('videoDialog');
 
       function renderYt() {
         const items = VIDEOS.filter((v) => activeYtCat === 'all' || v.cat === activeYtCat);
         ytListEl.innerHTML = items.map((v) => `
-          <article class="yt-item">
-            <button type="button" class="yt-thumb-trigger" data-vid="${v.id}" aria-label="${v.title} の詳細を開く">
-              <img src="${YT_THUMBS[v.id]}" width="480" height="270" loading="lazy" alt="${v.title} サムネイル">
+          <button type="button" class="yt-card-btn" data-vid="${v.id}" aria-label="${v.title} の詳しい解説を開く">
+            <div class="yt-thumb-box">
+              <img src="${YT_THUMBS[v.id]}" width="264" height="148" loading="lazy" alt="">
               <span class="yt-badge">▶ ${v.lang}</span>
-            </button>
-            <div class="yt-info">
-              <span class="yt-ch">${v.ch}</span>
-              <h4 class="yt-t">${v.title}</h4>
-              <ul class="yt-bullets">${v.pts.map((p) => `<li>${p}</li>`).join('')}</ul>
-              <a class="yt-open-link" href="https://www.youtube.com/watch?v=${v.id}" target="_blank" rel="noopener">YouTube で観る ↗</a>
             </div>
-          </article>
+            <div class="yt-info">
+              <div>
+                <div class="yt-ch">${v.ch}</div>
+                <div class="yt-t">${v.title}</div>
+                <div class="yt-hook">${v.hook}</div>
+              </div>
+              <div class="yt-foot"><span>解説を読む・観る</span><span>›</span></div>
+            </div>
+          </button>
         `).join('');
       }
       document.getElementById('ytCatPills').addEventListener('click', (e) => {
@@ -2415,21 +3770,242 @@
         if (!tr) return;
         const v = VIDEOS.find((x) => x.id === tr.dataset.vid);
         if (!v) return;
-        document.getElementById('vdChannel').textContent = `${v.ch}（${v.lang}）`;
-        document.getElementById('vdTitle').textContent = v.title;
-        document.getElementById('vdMediaWrap').hidden = false;
-        document.getElementById('vdImg').src = YT_THUMBS[v.id];
-        document.getElementById('vdImg').alt = v.title;
-        document.getElementById('vdBody').innerHTML = `<ul style="margin:0;padding-left:18px;display:grid;gap:6px;">${v.pts.map((p) => `<li>${p}</li>`).join('')}</ul>`;
-        const openBtn = document.getElementById('vdOpen');
-        openBtn.hidden = false;
-        openBtn.href = `https://www.youtube.com/watch?v=${v.id}`;
-        videoDialog.showModal();
+        openDetailSheet({
+          kicker: `YOUTUBE · ${v.ch}（${v.lang}）`,
+          title: v.title,
+          bodyHtml: `
+            <div class="sheet-media">
+              <img src="${YT_THUMBS[v.id]}" alt="${v.title}">
+            </div>
+            <div class="fact-grid">
+              <div class="fact-box is-full"><span class="fact-lbl">この動画を観る理由</span><span class="fact-val">${v.why}</span></div>
+              <div class="fact-box is-full"><span class="fact-lbl">おすすめの視聴タイミング</span><span class="fact-val is-gold">${v.when}</span></div>
+            </div>
+            <div>
+              <div class="sheet-sec-h">オフライン要約（動画を開けなくても要点把握）</div>
+              <ul class="sheet-list">${v.pts.map((p) => `<li>${p}</li>`).join('')}</ul>
+            </div>
+            <div class="sheet-actions">
+              <a class="sheet-btn-primary" href="https://www.youtube.com/watch?v=${v.id}" target="_blank" rel="noopener">YouTube アプリ / ブラウザで観る ↗</a>
+            </div>
+          `
+        });
       });
       renderYt();
 
       /* ======================================================================
-         8. FULLSCREEN ENGLISH SHOW CARDS (1-TAP PRESENTATION)
+         9. RICH REFERENCE & DECISION GUIDE DIALOGS (data-guide)
+         ====================================================================== */
+      const GUIDES = {
+        'api-sync': {
+          kicker: 'AWS EVENTS API · 2026-11-23 21:31 SYNC',
+          title: 'API 同期ステータス＆残アクション',
+          bodyHtml: `
+            <div class="fact-grid">
+              <div class="fact-box"><span class="fact-lbl">予約確定（Reserved）</span><span class="fact-val is-mint">8件（内1件要キャンセル）</span></div>
+              <div class="fact-box"><span class="fact-lbl">招待確定（Invited）</span><span class="fact-val is-gold">2件（ESAP26 / EBC）</span></div>
+              <div class="fact-box is-full"><span class="fact-lbl">ハート登録確認</span><span class="fact-val">JPN101・KEY002・BIZ111-S・AWS010 ほか確認済</span></div>
+            </div>
+            <div class="sheet-callout is-warn">
+              <strong>ポータルで対応が必要な2点：</strong><br>
+              ① 12/03 15:00 <strong>COM325-R1</strong> は JPN101 優先で不参加決定済みですが、API上に予約が残っています（要キャンセル）。<br>
+              ② 12/03 18:30–22:30 <strong>re:Play</strong> は公式時間が確定していますが schedule.json に未反映のため RSVP 要確認。
+            </div>
+            <div>
+              <div class="sheet-sec-h">JAM 候補4枠の空き状況（すべて Caesars Palace · Palace Ballroom I）</div>
+              <ul class="sheet-list">
+                <li>GHJ308-S-R / GHJ308-S-R1（Agentic AI Jam · Nvidia）— 現在満席（unavailable）</li>
+                <li>GHJ312（DevOps & Modernization Jam）— 現在満席（unavailable）</li>
+                <li>GHJ311（All-in Builder Showdown）— 現在満席（unavailable）</li>
+                <li>当日キャンセル待ちやウォークアップ枠を狙う場合のみ現地確認。</li>
+              </ul>
+            </div>
+          `
+        },
+        'shows': {
+          kicker: 'DECISION GUIDE · SPHERE & KÀ',
+          title: 'ショー比較：案1（12/02はしご） vs 案3（12/04朝）',
+          bodyHtml: `
+            <div class="fact-grid">
+              <div class="fact-box"><span class="fact-lbl">Sphere 目安価格</span><span class="fact-val is-gold">$104〜（中央200番台 $139〜）</span></div>
+              <div class="fact-box"><span class="fact-lbl">KÀ 目安価格</span><span class="fact-val is-gold">$87.88〜（約7割売済）</span></div>
+            </div>
+            <div class="sheet-callout">
+              <strong>案1（推奨）：12/02（水）に Sphere 17:00 ＋ KÀ 20:30</strong><br>
+              最終日のフーバーダム6名ツアーと両立できる唯一の現実解です。代償は 12/02 15:00 の COM324-R を欠席または 15:45 頃早退すること（16:30 Expo Happy Hour とも重複）。
+            </div>
+            <div>
+              <div class="sheet-sec-h">Sphere 入場＆座席の重要ルール</div>
+              <ul class="sheet-list">
+                <li>開場は開演45分前（16:15）。アトリウム体験があり、<strong>開演後の遅刻入場は不可</strong>です。</li>
+                <li>おすすめは 200〜300 番台中央。400番台は傾斜が非常に急なため注意。</li>
+                <li>大きなバックパックは持込制限があるため、先にホテルへノートPCを置いて向かうと安全です。</li>
+              </ul>
+            </div>
+            <div>
+              <div class="sheet-sec-h">別候補（Mystère）と案3の比較</div>
+              <ul class="sheet-list">
+                <li>案3（12/04 11:00 Sphere）は最終日のフーバーダム6名ツアーと完全に被るため、ダム優先なら案1が有力です。</li>
+                <li>『KÀ』が満席や価格高騰になった場合、Treasure Island の『Mystère』（18:30 / 21:00）は在庫が豊富で徒歩圏内の代替候補になります。</li>
+                <li>※価格は11/17–20確認の Ticketmaster 1枚手数料込・税別目安。購入前に総額を再確認してください。</li>
+              </ul>
+            </div>
+          `
+        },
+        'hoover': {
+          kicker: 'DECISION GUIDE · DEC 4 HOOVER DAM (6 PEOPLE)',
+          title: 'フーバーダム 6名ツアー詳細・残確認',
+          bodyHtml: `
+            <div class="fact-grid">
+              <div class="fact-box"><span class="fact-lbl">6名合計（税・手数料込）</span><span class="fact-val is-gold num">¥82,866</span></div>
+              <div class="fact-box"><span class="fact-lbl">1人あたり</span><span class="fact-val is-mint num">¥13,811</span></div>
+              <div class="fact-box"><span class="fact-lbl">請求 / 無料キャンセル</span><span class="fact-val">12/02請求 / 12/03 09:00迄</span></div>
+              <div class="fact-box"><span class="fact-lbl">実態帰着 → ホテル発</span><span class="fact-val is-warn">14:30–15:00 → 17:15厳守</span></div>
+            </div>
+            <div class="sheet-callout is-warn">
+              <strong>予約確定前に残っている確認3点（送信・決済はまだ未実行）：</strong><br>
+              ① 予約フォーム用の代表電話番号<br>
+              ② The LINQ への送迎ピックアップ可否（近隣ホテル集合の場合は徒歩時間確認）<br>
+              ③ 成立後、<strong>72時間前（12/01頃）のリコンファーム電話・連絡が必須</strong>
+            </div>
+            <div>
+              <div class="sheet-sec-h">12/04（金）当日の安全タイムライン</div>
+              <ul class="sheet-list">
+                <li>07:15頃：チェックアウト完了＆ベルデスクに60Lスーツケース預け（チップ $1–2/個）</li>
+                <li>08:00〜08:15頃：Gray Line お迎え → 発電所内部見学＆ダム観光</li>
+                <li>14:30〜15:00頃：ストリップ帰着（レビュー実態）→ 荷物受取・お土産最終調整</li>
+                <li>17:15厳守：ホテル発 → LAS T1（荷物預け締切 18:32 / AA651 19:32発）</li>
+              </ul>
+            </div>
+          `
+        },
+        'cash-exchange': {
+          kicker: 'CASH & TIPPING · $150 PLAN',
+          title: '現金チップ相場＆両替2択の比較',
+          bodyHtml: `
+            <div class="fact-grid">
+              <div class="fact-box"><span class="fact-lbl">目標金額</span><span class="fact-val is-gold">$150（約¥23,900）</span></div>
+              <div class="fact-box"><span class="fact-lbl">小札内訳</span><span class="fact-val">$1×30 / $5×8 / $10×3 / $20×2</span></div>
+            </div>
+            <div>
+              <div class="sheet-sec-h">現金チップの現地相場</div>
+              <ul class="sheet-list">
+                <li>ホテル清掃：毎朝ベッドサイドに <strong>$2〜$5</strong></li>
+                <li>ベルデスク荷物預け：<strong>$1〜$2 / 個</strong>（12/04朝に使う）</li>
+                <li>バー（無料ドリンク含む）：<strong>$1〜$2 / 杯</strong></li>
+                <li>ツアーガイド（フーバーダム）：<strong>$5〜$10</strong></li>
+                <li>レストラン（着席）：税引前の <strong>18〜20%</strong>（カード決済時の画面入力でOK）</li>
+              </ul>
+            </div>
+            <div class="sheet-callout">
+              <strong>両替2択（オンライン宅配4社は小札指定不可）：</strong><br>
+              ・<strong>推奨：店頭カウンターへ事前電話確認</strong>（小札在庫を確認して来店・約¥24,000〜24,300）<br>
+              ・<strong>代替：Travelex オンライン</strong>（送料¥990・大きめの札は現地カフェ等で崩す）
+            </div>
+          `
+        },
+        'phrases': {
+          kicker: 'ENGLISH SURVIVAL PHRASES',
+          title: '現地ですぐ使えるミニ英語フレーズ集',
+          bodyHtml: `
+            <div class="sheet-callout">
+              <strong>① DFW 入国審査（滞在目的）：</strong><br>
+              "I'm here for AWS re:Invent, a business conference, for 5 days."
+            </div>
+            <div class="sheet-callout">
+              <strong>② ホテルチェックイン：</strong><br>
+              <span data-vault="checkin_phrase" data-mask="ロック解除で氏名入りフレーズを表示">ロック解除で氏名入りフレーズを表示</span>
+            </div>
+            <div class="sheet-callout">
+              <strong>③ 配車アプリ（Uber/Lyft）本人確認：</strong><br>
+              <span data-vault="rideshare_phrase" data-mask="ロック解除で氏名入りフレーズを表示">ロック解除で氏名入りフレーズを表示</span>（乗る前にナンバープレート一致も確認）
+            </div>
+            <div class="sheet-callout">
+              <strong>④ レストラン会計・ドル建て指定：</strong><br>
+              "Could I get the check, please?" ／ "In US dollars, please."
+            </div>
+            <div class="sheet-callout">
+              <strong>⑤ ホテルで荷物預け（12/04 朝）：</strong><br>
+              "Could I leave my luggage here until 5 PM?"
+            </div>
+            <div class="sheet-actions">
+              <button type="button" class="sheet-btn-primary" data-sheet-showcard="usd">「ドル建て指定」大画面カードを開く</button>
+            </div>
+          `
+        },
+        'security': {
+          kicker: 'SAFETY · PASSPORT · AHAMO',
+          title: '防犯・パスポート保管・通信（ahamo）ルール',
+          bodyHtml: `
+            <div>
+              <div class="sheet-sec-h">パスポート＆貴重品の管理</div>
+              <ul class="sheet-list">
+                <li>普段はパスポート原本をホテル室内金庫へ入れ、スマホ写真＆紙コピーを携行します。</li>
+                <li><strong>例外（11/30夜など 21+ 飲酒イベント）：</strong>年齢確認に原本が必要なため、服の下の黒セキュリティポーチで携行します。</li>
+                <li>クレジットカードは別ブランド2枚と現金を「財布・ポーチ・金庫」へ分散します。</li>
+              </ul>
+            </div>
+            <div>
+              <div class="sheet-sec-h">夜の防犯＆ATMルール</div>
+              <ul class="sheet-list">
+                <li>深夜のストリップ徒歩移動や裏通りは避け、配車アプリかタクシーを使います。</li>
+                <li>パーティーやバーでは飲み物を置いたまま席を離れません。</li>
+                <li>ATM を使う場合は街角を避け、ホテル内または銀行内のみを使います（必ず USD 建て選択）。</li>
+              </ul>
+            </div>
+            <div class="sheet-callout">
+              <strong>通信（ahamo）：</strong>米国ローミング込みで追加 eSIM 不要。11月残量約20GB → 12/01 に 40GB へ増量・15日制限対象外のためそのまま使えます。
+            </div>
+            <div class="sheet-callout is-warn">
+              <strong>万一の紛失時3ステップ：</strong><br>
+              ① カード会社へ即停止連絡 → ② 警察でポリスレポート取得＆在SF総領事館（+1-415-780-6000）で渡航書相談 → ③ 海外旅行保険へ連絡。
+            </div>
+          `
+        },
+        'duty-free': {
+          kicker: 'CUSTOMS & LUGGAGE',
+          title: '日本の免税枠と 60L スーツケース戦略',
+          bodyHtml: `
+            <div class="fact-grid">
+              <div class="fact-box"><span class="fact-lbl">一般品免税</span><span class="fact-val is-gold">合計 20万円以下</span></div>
+              <div class="fact-box"><span class="fact-lbl">酒・たばこ</span><span class="fact-val">酒3本(760ml) / 200本</span></div>
+            </div>
+            <div>
+              <div class="sheet-sec-h">パッキング＆税関のコツ</div>
+              <ul class="sheet-list">
+                <li>往路の60Lスーツケースは <strong>2〜3割の空き</strong> を残しておくと、re:Invent の Swag（Tシャツ・パーカー・水筒など）とお土産が無理なく入ります。</li>
+                <li>高額品のレシートは帰国税関まで保管し、Visit Japan Web に事前登録しておくと羽田到着後がスムーズです。</li>
+                <li>折りたたみサブバッグを1つ入れておくと、帰りにお土産が増えても機内持込で逃がせます。</li>
+              </ul>
+            </div>
+          `
+        },
+        'offline-howto': {
+          kicker: 'IPHONE 15 · PWA SETUP',
+          title: 'iPhone 15 ホーム画面アプリ化（機内モード対応）',
+          bodyHtml: `
+            <div>
+              <div class="sheet-sec-h">セットアップ手順（初回1回だけオンラインで実行）</div>
+              <ol class="sheet-list" style="padding-left: 20px;">
+                <li>iPhone 15 の <strong>Safari</strong> で公開URLを開きます。</li>
+                <li>右上の <strong>「解除」</strong> ボタンから個人パスコードを入力し、「この端末に復号状態を保存」をオンにしたまま復号します。</li>
+                <li>Safari 下部中央の共有ボタン（□↑）→ <strong>「ホーム画面に追加」</strong> をタップします。</li>
+                <li>ホーム画面の LV26 アイコンから起動し、PACK タブで「端末キャッシュ完了」を確認したら機内モードでもそのまま使えます。</li>
+              </ol>
+            </div>
+          `
+        }
+      };
+
+      document.addEventListener('click', (e) => {
+        const gBtn = e.target.closest('[data-guide]');
+        if (!gBtn) return;
+        const g = GUIDES[gBtn.dataset.guide];
+        if (g) openDetailSheet(g);
+      });
+
+      /* ======================================================================
+         10. FULLSCREEN ENGLISH SHOW CARDS (1-TAP PRESENTATION)
          ====================================================================== */
       const SHOWCARDS = {
         taxi: {
@@ -2460,19 +4036,22 @@
       };
 
       const scDialog = document.getElementById('showCardDialog');
-      document.addEventListener('click', (e) => {
-        const trigger = e.target.closest('[data-showcard]');
-        if (!trigger) return;
-        const c = SHOWCARDS[trigger.dataset.showcard];
+      function openShowCard(key) {
+        const c = SHOWCARDS[key];
         if (!c) return;
         document.getElementById('scTitle').textContent = c.jp;
         document.getElementById('scEn').innerText = c.en;
         document.getElementById('scSub').textContent = c.sub;
         scDialog.showModal();
+      }
+      document.addEventListener('click', (e) => {
+        const trigger = e.target.closest('[data-showcard]');
+        if (!trigger) return;
+        openShowCard(trigger.dataset.showcard);
       });
 
       // Safari fallback for <dialog closedby="any">
-      [scDialog, videoDialog].forEach((dlg) => {
+      [scDialog, detailDialog].forEach((dlg) => {
         if (!('closedBy' in HTMLDialogElement.prototype)) {
           dlg.addEventListener('click', (event) => {
             if (event.target !== dlg) return;
@@ -2485,7 +4064,7 @@
       });
 
       /* ======================================================================
-         9. TIP SLIDER & FX CALCULATOR + LOCAL EMERGENCY MEMOS
+         11. TIP SLIDER & FX CALCULATOR + LOCAL EMERGENCY MEMOS
          ====================================================================== */
       const gUsd = document.getElementById('gUsd');
       const gFx = document.getElementById('gFx');
@@ -2523,7 +4102,6 @@
       });
       calcGear();
 
-      // Local editable emergency memo fields
       ['memoIns', 'memoComp'].forEach((id) => {
         const el = document.getElementById(id);
         try { el.value = localStorage.getItem(`lv26_${id}`) || ''; } catch (_) {}
@@ -2533,7 +4111,7 @@
       });
 
       /* ======================================================================
-         10. PERSISTENT PREP & 60L SUITCASE CHECKLIST
+         12. PERSISTENT PREP & 60L SUITCASE CHECKLIST
          ====================================================================== */
       const PACK_GROUPS = [
         {
@@ -2638,21 +4216,21 @@
       });
       renderPack();
 
-      // Photo Credits Modal
+      // Photo Credits via Universal Detail Sheet
       document.getElementById('showCreditsBtn').addEventListener('click', () => {
-        document.getElementById('vdChannel').textContent = 'PHOTO ATTRIBUTION · WIKIMEDIA COMMONS';
-        document.getElementById('vdTitle').textContent = '使用写真のライセンス表記';
-        document.getElementById('vdMediaWrap').hidden = true;
-        document.getElementById('vdOpen').hidden = true;
-        document.getElementById('vdBody').innerHTML = `
-          <p style="line-height:1.7;">
-            ・“Las Vegas Strip from Resorts World February 2023 HDR 1” by King of Hearts (CC BY-SA 4.0)<br>
-            ・“Las Vegas, High Roller, 2018.11.22 (01)” by Vahe Martirosyan (CC BY-SA 2.0)<br>
-            ・“Sphere Las Vegas (53473119340)” by Matt Walter (CC BY 2.0)<br>
-            ・“Hoover Dam and Black Canyon seen from the Mike O'Callaghan–Pat Tillman Memorial Bridge” by Christian David (CC BY-SA 4.0)<br>
-            ・YouTube thumbnails belong to their respective creators.
-          </p>`;
-        videoDialog.showModal();
+        openDetailSheet({
+          kicker: 'PHOTO ATTRIBUTION · WIKIMEDIA COMMONS',
+          title: '使用写真のライセンス表記',
+          bodyHtml: `
+            <ul class="sheet-list">
+              <li>“Las Vegas Strip from Resorts World February 2023 HDR 1” by King of Hearts (CC BY-SA 4.0)</li>
+              <li>“Las Vegas, High Roller, 2018.11.22 (01)” by Vahe Martirosyan (CC BY-SA 2.0)</li>
+              <li>“Sphere Las Vegas (53473119340)” by Matt Walter (CC BY 2.0)</li>
+              <li>“Hoover Dam and Black Canyon seen from the Mike O'Callaghan–Pat Tillman Memorial Bridge” by Christian David (CC BY-SA 4.0)</li>
+              <li>YouTube thumbnails belong to their respective creators.</li>
+            </ul>
+          `
+        });
       });
     })();
   </script>
