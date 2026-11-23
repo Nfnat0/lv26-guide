@@ -81,10 +81,16 @@
       touch-action: manipulation;
       border: 0;
       background: none;
+      -webkit-user-select: none;
+      user-select: none;
     }
     button:active {
-      transform: scale(0.98);
+      transform: scale(0.985);
       transition: transform 90ms var(--ease-press);
+    }
+    .sheet-scroll {
+      -webkit-user-select: text;
+      user-select: text;
     }
     :focus-visible {
       outline: 2px solid var(--gold);
@@ -385,7 +391,14 @@
       color: var(--ink);
       margin-bottom: 10px;
     }
-    .radar-mission-btn {
+    .radar-hero-btn {
+      width: 100%;
+      text-align: left;
+      display: block;
+      padding: 0;
+      border-radius: 14px;
+    }
+    .radar-mission-box {
       width: 100%;
       text-align: left;
       background: var(--surface-2);
@@ -396,6 +409,9 @@
       align-items: center;
       justify-content: space-between;
       gap: 10px;
+    }
+    .radar-hero-btn:hover .radar-mission-box {
+      border-color: rgba(255, 255, 255, 0.24);
     }
     .radar-mission {
       font-size: 15px;
@@ -848,17 +864,26 @@
       padding-left: 2px;
     }
 
-    /* Transit Connector between Schedule Items */
+    /* Transit Connector between Schedule Items (Clickable -> Route/Venue Sheet) */
     .transit-link {
+      width: 100%;
+      text-align: left;
       display: flex;
       align-items: center;
+      justify-content: space-between;
       gap: 8px;
-      padding: 8px 12px 8px 34px;
+      padding: 9px 12px 9px 34px;
+      min-height: 40px;
       font-size: 12.5px;
       font-weight: 700;
       color: var(--muted);
       position: relative;
       line-height: 1.45;
+      border-radius: 10px;
+    }
+    .transit-link:hover {
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--ink);
     }
     .transit-link::before {
       content: "";
@@ -923,13 +948,33 @@
       padding: 5px 10px;
       border-radius: 6px;
     }
-    .photo-card-body { padding: 16px; }
-    .photo-card-body h3 {
+    .card-hero-btn {
+      width: 100%;
+      text-align: left;
+      display: block;
+      padding: 0;
+      color: inherit;
+    }
+    .card-hero-head {
+      padding: 16px 16px 12px;
+    }
+    .card-hero-title-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+    .card-hero-head h3 {
       font-size: 19px;
       font-weight: 700;
       line-height: 1.35;
-      margin-bottom: 6px;
     }
+    .card-hero-head .photo-card-lead {
+      margin-bottom: 0;
+    }
+    .photo-card-body { padding: 0 16px 16px; }
+    .photo-card-body.has-top-pad { padding-top: 16px; }
     .photo-card-lead {
       font-size: 14px;
       color: var(--muted);
@@ -941,49 +986,125 @@
       gap: 9px;
       margin-bottom: 12px;
     }
-    .choice-card {
-      width: 100%;
-      text-align: left;
+    .choice-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: stretch;
       background: var(--surface-2);
       border: 2px solid transparent;
       border-radius: 14px;
-      padding: 13px 14px;
-      color: var(--ink);
+      overflow: hidden;
       transition: border-color 150ms ease, background-color 150ms ease;
     }
-    .choice-card.is-picked {
+    .choice-row.is-picked {
       border-color: var(--gold);
       background: rgba(246, 195, 36, 0.11);
+    }
+    .choice-detail-btn {
+      text-align: left;
+      padding: 13px 10px 13px 14px;
+      color: var(--ink);
+      display: block;
+      min-width: 0;
+    }
+    .choice-pin-btn {
+      min-width: 72px;
+      padding: 10px 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--muted);
+      border-left: 1px solid var(--line-soft);
+      background: rgba(255, 255, 255, 0.03);
+    }
+    .choice-row.is-picked .choice-pin-btn {
+      background: var(--gold);
+      color: #141416;
+      border-left-color: transparent;
     }
     .choice-title {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       font-weight: 700;
-      font-size: 15px;
+      font-size: 14.5px;
       margin-bottom: 4px;
     }
     .choice-price {
-      font-size: 13.5px;
+      font-size: 13px;
       font-weight: 700;
       color: var(--gold);
       margin-bottom: 3px;
     }
     .choice-sub {
-      font-size: 13px;
+      font-size: 12.5px;
       color: var(--muted);
       line-height: 1.5;
     }
-    .picked-badge {
-      font-size: 11px;
-      padding: 3px 8px;
-      border-radius: 999px;
-      background: var(--gold);
-      color: #141416;
-      font-weight: 700;
-      flex-shrink: 0;
+    .cash-plan-btn {
+      width: 100%;
+      text-align: left;
+      display: block;
+      margin-top: 14px;
+      padding: 14px 12px 12px;
+      border-radius: 14px;
+      background: var(--bg);
+      border: 1px solid var(--line);
     }
+    .cash-plan-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .sheet-kv-list {
+      display: grid;
+      gap: 8px;
+    }
+    .sheet-kv {
+      background: var(--bg);
+      border: 1px solid var(--line-soft);
+      border-radius: 12px;
+      padding: 11px 13px;
+    }
+    .sheet-kv-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 3px;
+    }
+    .sheet-kv-price {
+      font-family: var(--font-cond);
+      font-weight: 800;
+      font-size: 16px;
+      color: var(--gold);
+      white-space: nowrap;
+    }
+    .sheet-kv-desc {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+    .sheet-steps {
+      margin: 0;
+      padding-left: 20px;
+      display: grid;
+      gap: 9px;
+      font-size: 14px;
+      color: var(--ink);
+      line-height: 1.6;
+    }
+    .sheet-steps strong { color: var(--gold); }
     .detail-open-btn {
       width: 100%;
       min-height: 44px;
@@ -1778,18 +1899,20 @@
 
       <!-- Live Mission Radar -->
       <div class="radar-card">
-        <div class="radar-top">
-          <span class="radar-status"><span class="pulse-dot" aria-hidden="true"></span><span id="radarBadge">COUNTDOWN</span></span>
-          <span class="num" style="font-size: 12.5px; color: var(--muted);" id="radarClockLabel">現在時刻</span>
-        </div>
-        <div class="radar-big num" id="radarBig">あと 6日</div>
-
-        <button type="button" class="radar-mission-btn" id="radarMissionBtn" aria-label="次の予定の詳細を開く">
-          <div style="min-width: 0;">
-            <div class="radar-mission" id="radarMission">11/29 20:25 JST 羽田T3発（AA176）</div>
-            <p class="radar-meta" id="radarMeta">タップで直近の予定・詳細を確認</p>
+        <button type="button" class="radar-hero-btn" id="radarMissionBtn" aria-label="直近の予定の詳細を開く">
+          <div class="radar-top">
+            <span class="radar-status"><span class="pulse-dot" aria-hidden="true"></span><span id="radarBadge">COUNTDOWN</span></span>
+            <span class="num" style="font-size: 12.5px; color: var(--muted);" id="radarClockLabel">現在時刻</span>
           </div>
-          <span class="chev" aria-hidden="true">›</span>
+          <div class="radar-big num" id="radarBig">あと 6日</div>
+
+          <div class="radar-mission-box">
+            <div style="min-width: 0;">
+              <div class="radar-mission" id="radarMission">11/29 20:25 JST 羽田T3発（AA176）</div>
+              <p class="radar-meta" id="radarMeta">タップで直近の予定・詳細を確認</p>
+            </div>
+            <span class="chev" aria-hidden="true">›</span>
+          </div>
         </button>
 
         <div class="sim-toggle-row">
@@ -1866,6 +1989,7 @@
             AA651 LAS T1 19:32 → LAX 20:53（席 <strong data-vault="seat_lax" data-mask="•••">•••</strong>・荷物羽田スルー）<br>
             AA169 LAX 12/05 00:10 → HND T3 12/06 05:05 JST（席 <strong data-vault="seat_ret" data-mask="•••">•••</strong>・<span data-vault="home_ret" data-mask="06:15発→帰宅（要解除）">06:15発→帰宅（要解除）</span>）</p>
             <div class="pass-cta-row">
+              <button type="button" class="pass-cta" data-guide="dfw-deep">DFW入国・Skylink 6ステップ完全ガイドを読む ›</button>
               <button type="button" class="pass-cta" data-showcard="immigration">DFW入国審査でそのまま見せる英語カード</button>
             </div>
           </div>
@@ -1903,6 +2027,7 @@
             <strong>LAS空港からの移動：</strong>タクシー定額 Zone 3 $30.25目安（カード +$3、税・チップ別・10〜20分）または配車アプリ $15〜35。</p>
             <p style="margin-top: 8px;"><strong>ここからの距離目安：</strong>Caesars Forum 徒歩7分 ／ Caesars Palace 徒歩8–10分 ／ Venetian 徒歩10–12分 ／ MGM Grand モノレール15–20分 ／ Wynn 車10分。</p>
             <div class="pass-cta-row">
+              <button type="button" class="pass-cta" data-guide="linq-deep">LAS空港乗場・チェックイン・モノレール詳細ガイド ›</button>
               <button type="button" class="pass-cta" data-showcard="taxi">タクシー運転手に見せる英語住所カード</button>
             </div>
           </div>
@@ -1940,6 +2065,7 @@
             <p style="margin-top: 8px;"><strong>11/30 09:00〜 必須ミッション：</strong>The Venetian Level 1（Casanova 607）の Japan Support Desk で招待メールを提示し、<strong>12/01 Japan Night の参加チケット（先着順）</strong>を受け取ります。</p>
             <p style="margin-top: 8px;"><strong>パーティ夜のID注意：</strong>普段パスポート原本はホテル金庫ですが、11/30 の Sony Happy Hour / APJC Party（21+）など飲酒の場は原本携帯が必須です。</p>
             <div class="pass-cta-row">
+              <button type="button" class="pass-cta" data-guide="badge-deep">re:Invent 10分ルール・Workshop Studio・Japan Desk 詳細 ›</button>
               <button type="button" class="pass-cta" data-showcard="badge">空港バッジ受取・Japan Desk 英語確認カード</button>
             </div>
           </div>
@@ -2010,7 +2136,7 @@
         </div>
       </div>
 
-      <div class="chip-scroll" id="vegasSubTabs" style="margin-bottom: 16px;" role="group" aria-label="Vegasサブカテゴリ">
+      <div class="chip-scroll has-fade" id="vegasSubTabs" style="margin-bottom: 16px;" role="group" aria-label="Vegasサブカテゴリ">
         <button type="button" class="chip is-active" data-vtab="decisions">未決の2大プラン</button>
         <button type="button" class="chip" data-vtab="videos">予習 YouTube (12)</button>
         <button type="button" class="chip" data-vtab="food">LINQ グルメ・土産</button>
@@ -2020,68 +2146,89 @@
       <!-- Sub-panel: Decisions (Sphere/KA + Hoover Dam) -->
       <div class="vegas-stack" id="vpanel-decisions">
         <article class="photo-card">
-          <div class="photo-card-hero">
-            <img src="./media/sphere.jpg" alt="夜空に輝くラスベガスの Sphere" loading="lazy">
-            <span class="photo-card-tag">UNDECIDED · SHOWS</span>
-          </div>
-          <div class="photo-card-body">
-            <h3>Sphere『オズの魔法使い』＆『KÀ』</h3>
-            <p class="photo-card-lead">最優先は <strong>Sphere</strong>（未購入）。タップで仮メモをピン留めでき、下のボタンから座席選び・価格・代償の詳しい比較を開けます。</p>
-            <div class="choice-group" data-decision="show">
-              <button type="button" class="choice-card" data-choice="plan1">
-                <div class="choice-title"><span>案1（推奨）：12/02（水）同日はしご</span><span class="picked-badge" hidden>選択中</span></div>
-                <div class="choice-price">Sphere $104〜（中央200番台 $139〜）＋ KÀ $87.88〜</div>
-                <div class="choice-sub">Sphere 17:00 → MGM『KÀ』20:30。代償：COM324-R の欠席または早退。</div>
-              </button>
-              <button type="button" class="choice-card" data-choice="plan3">
-                <div class="choice-title"><span>案3：12/04（金）日中回 Sphere 11:00</span><span class="picked-badge" hidden>選択中</span></div>
-                <div class="choice-price">Sphere 11:00（75分・日中回）</div>
-                <div class="choice-sub">最終日午前に観る案。代償：同日のフーバーダム6名ツアー不参加。</div>
-              </button>
+          <button type="button" class="card-hero-btn" data-guide="shows" aria-label="SphereとKÀの座席・バッグ規定・比較ガイドを開く">
+            <div class="photo-card-hero">
+              <img src="./media/sphere.jpg" alt="夜空に輝くラスベガスの Sphere" loading="lazy">
+              <span class="photo-card-tag">UNDECIDED · SHOWS · 詳細あり</span>
             </div>
-            <button type="button" class="detail-open-btn" data-guide="shows">
-              <span>座席・価格・遅刻ルール・Mystère比較を詳しく見る</span>
-              <span class="tap-hint">詳細 ›</span>
-            </button>
+            <div class="card-hero-head">
+              <div class="card-hero-title-row">
+                <h3>Sphere『オズの魔法使い』＆『KÀ』</h3>
+                <span class="tap-hint">詳細 ›</span>
+              </div>
+              <p class="photo-card-lead">最優先は <strong>Sphere</strong>（未購入）。写真・見出し・各案の文字をタップすると、100番台見切れ注意・バッグサイズ制限（15×15×5cm）・Venetian屋内連絡橋など詳しい攻略を開けます。</p>
+            </div>
+          </button>
+          <div class="photo-card-body">
+            <div class="choice-group" data-decision="show">
+              <div class="choice-row" data-choice="plan1">
+                <button type="button" class="choice-detail-btn" data-guide="shows-plan1">
+                  <div class="choice-title"><span>案1（推奨）：12/02（水）同日はしご</span><span class="chev" aria-hidden="true">›</span></div>
+                  <div class="choice-price">Sphere $104〜（中央200番台 $139〜）＋ KÀ $87.88〜</div>
+                  <div class="choice-sub">17:00 Sphere → 20:30 MGM『KÀ』。タップで分刻み動線・座席選びを表示。</div>
+                </button>
+                <button type="button" class="choice-pin-btn" data-pin="plan1" aria-pressed="false"><span>☆</span><span class="pin-lbl">仮選択</span></button>
+              </div>
+              <div class="choice-row" data-choice="plan3">
+                <button type="button" class="choice-detail-btn" data-guide="shows-plan3">
+                  <div class="choice-title"><span>案3：12/04（金）日中回 Sphere 11:00</span><span class="chev" aria-hidden="true">›</span></div>
+                  <div class="choice-price">Sphere 11:00（75分・日中回）</div>
+                  <div class="choice-sub">最終日午前に観る案（フーバーダム不参加）。タップで詳細と代替Mystèreを表示。</div>
+                </button>
+                <button type="button" class="choice-pin-btn" data-pin="plan3" aria-pressed="false"><span>☆</span><span class="pin-lbl">仮選択</span></button>
+              </div>
+            </div>
           </div>
         </article>
 
         <article class="photo-card">
-          <div class="photo-card-hero">
-            <img src="./media/hoover.jpg" alt="メモリアルブリッジから望むフーバーダムとコロラド川" loading="lazy">
-            <span class="photo-card-tag">DEC 4 · 6 PEOPLE · IN PROGRESS</span>
-          </div>
-          <div class="photo-card-body">
-            <h3>最終日 12/04 フーバーダム（6名確定）</h3>
-            <p class="photo-card-lead">Gray Line で予約進行中（<strong>送信・請求はまだ未実行</strong>）。AA651（19:32発・荷物締切18:32）のため17:15ホテル発が絶対条件です。</p>
-            <div class="choice-group" data-decision="hoover">
-              <button type="button" class="choice-card" data-choice="grayline">
-                <div class="choice-title"><span>進行中：Gray Line 発電所ツアー込み</span><span class="picked-badge" hidden>選択中</span></div>
-                <div class="choice-price">6名合計 ¥82,866（1人 ¥13,811・税・手数料込）</div>
-                <div class="choice-sub">8:00頃お迎え → 実態帰着 14:30〜15:00。12/03 09:00まで無料キャンセル。</div>
-              </button>
-              <button type="button" class="choice-card" data-choice="mini">
-                <div class="choice-title"><span>代替A：Viator ミニツアー（発電所なし）</span><span class="picked-badge" hidden>選択中</span></div>
-                <div class="choice-price">1人 $76目安（6名 約$456目安）</div>
-                <div class="choice-sub">11:00頃帰着で時間に大きな余裕。発電所内部見学は含まれません。</div>
-              </button>
-              <button type="button" class="choice-card" data-choice="car">
-                <div class="choice-title"><span>代替B：Alamo レンタカー＋公式発電所</span><span class="picked-badge" hidden>選択中</span></div>
-                <div class="choice-price">車両 $97.70〜$105.71＋駐車$10＋発電所 1人$25</div>
-                <div class="choice-sub">7–8人乗りで自由行動。国際運転免許証と現地運転が必要です。</div>
-              </button>
+          <button type="button" class="card-hero-btn" data-guide="hoover" aria-label="フーバーダム6名ツアーの詳細・持ち込み禁止物・当日スケジュールを開く">
+            <div class="photo-card-hero">
+              <img src="./media/hoover.jpg" alt="メモリアルブリッジから望むフーバーダムとコロラド川" loading="lazy">
+              <span class="photo-card-tag">DEC 4 · 6 PEOPLE · 詳細あり</span>
             </div>
-            <button type="button" class="detail-open-btn" data-guide="hoover">
-              <span>残確認3点・タイムライン・リコンファーム手順を見る</span>
-              <span class="tap-hint">詳細 ›</span>
-            </button>
+            <div class="card-hero-head">
+              <div class="card-hero-title-row">
+                <h3>最終日 12/04 フーバーダム（6名確定）</h3>
+                <span class="tap-hint">詳細 ›</span>
+              </div>
+              <p class="photo-card-lead">Gray Line で予約進行中（<strong>送信・請求は未実行</strong>）。タップすると連邦セキュリティ持込禁止物・発電所内部の見どころ・17:15ホテル発逆算タイムラインを開けます。</p>
+            </div>
+          </button>
+          <div class="photo-card-body">
+            <div class="choice-group" data-decision="hoover">
+              <div class="choice-row" data-choice="grayline">
+                <button type="button" class="choice-detail-btn" data-guide="hoover-grayline">
+                  <div class="choice-title"><span>進行中：Gray Line 発電所ツアー込み</span><span class="chev" aria-hidden="true">›</span></div>
+                  <div class="choice-price">6名合計 ¥82,866（1人 ¥13,811・税・手数料込）</div>
+                  <div class="choice-sub">8:00頃お迎え → 実態帰着 14:30〜15:00。タップで残確認3点・当日の流れを表示。</div>
+                </button>
+                <button type="button" class="choice-pin-btn" data-pin="grayline" aria-pressed="false"><span>☆</span><span class="pin-lbl">仮選択</span></button>
+              </div>
+              <div class="choice-row" data-choice="mini">
+                <button type="button" class="choice-detail-btn" data-guide="hoover-mini">
+                  <div class="choice-title"><span>代替A：Viator ミニツアー（発電所なし）</span><span class="chev" aria-hidden="true">›</span></div>
+                  <div class="choice-price">1人 $76目安（6名 約$456目安）</div>
+                  <div class="choice-sub">11:00頃帰着で時間余裕大。タップで発電所あり/なしの差を表示。</div>
+                </button>
+                <button type="button" class="choice-pin-btn" data-pin="mini" aria-pressed="false"><span>☆</span><span class="pin-lbl">仮選択</span></button>
+              </div>
+              <div class="choice-row" data-choice="car">
+                <button type="button" class="choice-detail-btn" data-guide="hoover-car">
+                  <div class="choice-title"><span>代替B：Alamo レンタカー＋公式発電所</span><span class="chev" aria-hidden="true">›</span></div>
+                  <div class="choice-price">車両 $97.70〜$105.71＋駐車$10＋発電所 1人$25</div>
+                  <div class="choice-sub">7–8人乗り自走案。タップで総額試算・国際免許条件を表示。</div>
+                </button>
+                <button type="button" class="choice-pin-btn" data-pin="car" aria-pressed="false"><span>☆</span><span class="pin-lbl">仮選択</span></button>
+              </div>
+            </div>
           </div>
         </article>
       </div>
 
       <!-- Sub-panel: YouTube 12 Videos -->
       <div id="vpanel-videos" hidden>
-        <div class="chip-scroll" id="ytCatPills" style="margin-bottom: 14px;" role="group" aria-label="動画カテゴリ">
+        <div class="chip-scroll has-fade" id="ytCatPills" style="margin-bottom: 14px;" role="group" aria-label="動画カテゴリ">
           <button type="button" class="chip is-active" data-ytcat="all">すべて (12)</button>
           <button type="button" class="chip" data-ytcat="transit">DFW・空港・移動</button>
           <button type="button" class="chip" data-ytcat="reinvent">re:Invent 攻略</button>
@@ -2094,13 +2241,20 @@
       <!-- Sub-panel: Food & Souvenirs -->
       <div class="vegas-stack" id="vpanel-food" hidden>
         <article class="photo-card">
-          <div class="photo-card-hero">
-            <img src="./media/linq.jpg" alt="夜の LINQ Promenade と High Roller" loading="lazy">
-            <span class="photo-card-tag">STEP OUTSIDE THE LINQ</span>
-          </div>
+          <button type="button" class="card-hero-btn" data-guide="dining-tips" aria-label="ラスベガス食事とチップ・節約のコツを開く">
+            <div class="photo-card-hero">
+              <img src="./media/linq.jpg" alt="夜の LINQ Promenade と High Roller" loading="lazy">
+              <span class="photo-card-tag">STEP OUTSIDE THE LINQ</span>
+            </div>
+            <div class="card-hero-head">
+              <div class="card-hero-title-row">
+                <h3>LINQ 目の前の朝・昼・夜グルメ</h3>
+                <span class="tap-hint">食事のコツ ›</span>
+              </div>
+              <p class="photo-card-lead">各店をタップすると具体的な定番メニュー・実価格（USD）・ソース選び・ハッピーアワー・地図を開けます。</p>
+            </div>
+          </button>
           <div class="photo-card-body">
-            <h3>LINQ 目の前の朝・昼・夜グルメ</h3>
-            <p style="font-size: 13px; color: var(--muted); margin-bottom: 8px;">各店をタップするとおすすめメニュー・予算・チップ目安・地図を開けます。</p>
             <div class="tap-list" id="foodList"></div>
           </div>
         </article>
@@ -2118,13 +2272,20 @@
       <!-- Sub-panel: Venues Map -->
       <div class="vegas-stack" id="vpanel-venues" hidden>
         <article class="photo-card">
-          <div class="photo-card-hero">
-            <img src="./media/strip.jpg" alt="Resorts World から望む夜のラスベガス・ストリップ" loading="lazy">
-            <span class="photo-card-tag">BASE: THE LINQ (3535 LV BLVD S)</span>
-          </div>
+          <button type="button" class="card-hero-btn" data-guide="campus-nav" aria-label="re:Invent会場間移動・10分ルール・モノレール料金ガイドを開く">
+            <div class="photo-card-hero">
+              <img src="./media/strip.jpg" alt="Resorts World から望む夜のラスベガス・ストリップ" loading="lazy">
+              <span class="photo-card-tag">BASE: THE LINQ (3535 LV BLVD S)</span>
+            </div>
+            <div class="card-hero-head">
+              <div class="card-hero-title-row">
+                <h3>The LINQ からの会場アクセス一覧</h3>
+                <span class="tap-hint">移動攻略 ›</span>
+              </div>
+              <p class="photo-card-lead">会場をタップすると屋内ショートカット・館内徒歩時間・モノレール料金・該当セッション・地図を開けます。</p>
+            </div>
+          </button>
           <div class="photo-card-body">
-            <h3>The LINQ からの会場アクセス一覧</h3>
-            <p style="font-size: 13px; color: var(--muted); margin-bottom: 8px;">会場をタップすると行き方のコツ・関連セッション・Googleマップを開けます。</p>
             <div class="tap-list" id="venueMapList"></div>
           </div>
         </article>
@@ -2217,26 +2378,26 @@
 
         <label for="gTipRange" class="inp-label">チップ率スライダー（0%〜25%）</label>
         <input id="gTipRange" class="tip-slider" type="range" min="0" max="25" step="1" value="18">
-        <div class="chip-scroll" role="group" aria-label="チップ率ショートカット">
+        <div class="chip-scroll has-fade" role="group" aria-label="チップ率ショートカット">
           <button type="button" class="chip" data-gtip="0">0% カウンター</button>
           <button type="button" class="chip" data-gtip="15">15% 配車/タクシー</button>
           <button type="button" class="chip is-active" data-gtip="18">18% レストラン標準</button>
           <button type="button" class="chip" data-gtip="20">20% 良い接客</button>
         </div>
 
-        <div style="margin-top: 14px; padding-top: 12px; border-top: 1px dashed rgba(255,255,255,0.14);">
-          <strong style="font-size: 14px;">現金 $150（約¥23,900）小札プラン</strong>
-          <div class="bill-stack num">
+        <button type="button" class="cash-plan-btn" data-guide="cash-exchange" aria-label="現金チップ相場と両替2択の詳細を開く">
+          <div class="cash-plan-head">
+            <strong style="font-size: 14.5px; color: var(--ink);">現金 $150（約¥23,900）小札プラン</strong>
+            <span class="tap-hint">両替・相場詳細 ›</span>
+          </div>
+          <div class="bill-stack num" style="margin-bottom: 4px;">
             <div class="bill-chip"><strong>$1</strong><span>×30枚</span></div>
             <div class="bill-chip"><strong>$5</strong><span>×8枚</span></div>
             <div class="bill-chip"><strong>$10</strong><span>×3枚</span></div>
             <div class="bill-chip"><strong>$20</strong><span>×2枚</span></div>
           </div>
-          <button type="button" class="detail-open-btn" data-guide="cash-exchange">
-            <span>現金チップ相場＆両替2択（店頭 vs 宅配）の詳細</span>
-            <span class="tap-hint">詳細 ›</span>
-          </button>
-        </div>
+          <p style="font-size: 12px; color: var(--muted);">タップで場面別の現金チップ相場と両替2択（店頭 vs 宅配）を比較</p>
+        </button>
       </div>
 
       <!-- Emergency SOS -->
@@ -2303,12 +2464,24 @@
 
       <div class="acc-group" id="packAccordions"></div>
 
-      <div class="dark-panel" style="margin-top: 14px;">
-        <h3>iPhone 15 オフラインアプリ状態</h3>
-        <p style="font-size: 13.5px; color: var(--muted); margin-bottom: 12px;" id="offlineStatusMsg">チェック中…</p>
+      <button type="button" class="sync-banner-btn" style="margin-top: 0; margin-bottom: 14px;" data-guide="packing-strategy">
+        <div>
+          <div style="font-size: 14px; font-weight: 700; color: var(--ink);">60L パッキング・砂漠気候・機内持込ルール詳細</div>
+          <div style="font-size: 12.5px; color: var(--muted); margin-top: 2px;">昼夜の寒暖差・乾燥対策・液体100ml・Sphereバッグ規定など</div>
+        </div>
+        <span class="chev" aria-hidden="true">›</span>
+      </button>
+
+      <div class="dark-panel" style="margin-top: 0;">
+        <button type="button" style="width: 100%; text-align: left; display: block; padding: 0; margin-bottom: 12px;" data-guide="offline-howto">
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 6px;">
+            <h3 style="margin: 0;">iPhone 15 オフラインアプリ状態</h3>
+            <span class="tap-hint">追加手順 ›</span>
+          </div>
+          <p style="font-size: 13.5px; color: var(--muted);" id="offlineStatusMsg">チェック中…</p>
+        </button>
         <div style="display: flex; gap: 8px; flex-wrap: wrap;">
           <button type="button" class="pill-btn" id="refreshCacheBtn">保存を再確認</button>
-          <button type="button" class="pill-btn" data-guide="offline-howto">ホーム画面追加の手順</button>
           <button type="button" class="pill-btn" id="resetPackBtn">チェック初期化</button>
           <button type="button" class="pill-btn" id="showCreditsBtn">写真クレジット</button>
         </div>
@@ -2484,7 +2657,7 @@
       /* ======================================================================
          3. AES-256-GCM ENCRYPTED PERSONAL VAULT (PBKDF2 310,000 ITERATIONS)
          ====================================================================== */
-      const ENCRYPTED_VAULT = {"v":1,"iter":310000,"salt":"uha4MeKlxak8dpElnWZrwg==","iv":"BQzD8ULrTsCt1UBd","ct":"PmfNJI6f3OezRSL0BOjlJbd/m5FLysLFXvzqW3wTtwEvzf6STbBUoZ3MLKs4J8ZtgFPGnuRMydpSn2XiY5En2Vr+v3Y281ggALAEg0XWWZLr4igcKhCpFAV61fUoxg561LE7l7oSeXUUM4rVeLkBhNnvBCbs9N1IhE9GO7H7v8ptcKzRACemzbLZGzeAWqFQFtfY3OY+FX+ukGBi8RxDa71jyTXv20uSjXPbT5+5bjGp5usRFfL00x8VkFsRj4aUwvQ8z1S9wFhibFvQ5A5Uxf1MbsZQQXG5Fz8im5/HSI9keTGUucy0qmd9Dk9ydUgMJeynRD/fX/Qph5Rswy8hj8YAS6SanxzVTA4w9Q4S2tUmIE7LRR1kOhwOr6oR83jfHnpscElRaQVBkxXuZ1RFyqq4Upyv1JP88/I8ThNQ1f7eWZKlq4N5irz2GiU82WzwvznyHce7+7cU51AK7E3lWKgBhLCjRCJs/PF0PoPpYhjWA4IlAIsQJzx5XasYsU5WoB5dawHWTa6kHxQeSrCgkN8l9Di4fuqn9ETqFe+xrgz41l5Pp4lcdAxR5+gB2u4t6CVQg91/BbIzgRvg3hMDNmPQ2ehEi4MfY/Fbm6a3T2q8rkRHG2hLsUI8xkQX0bctffT7HkmfdKz2esbgNFOcBzNRKoXOF4BrGJvzROYJEw8xq599YBD9Jk7N8Q6HPzebhsxcIew8eIOHVJ2cy1S/Um7SDh8XeZwnbNamVVy0Xz0Jwu6uol/ZqX2DBv6ovFh+s2W275q0TmH4qidtM+NgM/YVXNFjb5xKAH7nZLYQoQDnSYXsjVe1pTFh7CQUULuQvwV7U9OTy4X/ejIjYj4QmrCuYcQbpWYP/awXLb6/U7CwuH2PCgrzwSKlJjU6oAbwTIckvu5YSNdNCcNh"};
+      const ENCRYPTED_VAULT = {"v":1,"iter":310000,"salt":"tjb42SSAJzrQEYwJG55gGA==","iv":"yGrIzosu6g4uuI1D","ct":"6D+BCIriO4vh3KT2EJ5ZNv8WCA5NX40EO3eU5SEfnKshtUqzbKtI/M+ZG5QIA26tBvnYnLxGI+zCS4pSVomLQtQH1tq8HB8JoO4hf+s0sTfWM3tGXHDfHFP1+jaSLXloi8GzUyXr/7uW83jBVRcQ8FbZVALO685iXCS8ttQWQCIHiXGv0PvyVUFC2fY1sCsMt70ubfWg+RWbihIh+F+NVFu18+yG1Fga3VfMVLUVXRQxmDqAS4JAv1jNkyFfm6elYBrGaciOLz+ohPCQ4wLjwQKAo456rHvtFBrw8cEVqeU3zfHVKIHdp8kNHGUWGlnPJH/sh6Wa2MtbODrpyDTZ2SjT1E7DeYtQ0OwjHOMOYGIBKcrETNbl5y9qRTn+VdEFB9zF+PnwWqSRj38vDfB4V+ta8PCq81Ow5rTWIotnMprVb8kc/8YKEmV+2zA02gi4reteW3z5j6QBHkPq5/0yGD8MovsE8PplQQEBvF5PTAlQlDL8SQ6+NVnrXt+bDBDjHo77UIinX6uQnXjyAqK7gzinR2QQx1pBqgWx9YOY05XdTYiZzwIJ1JS83aN9D1b6aTYhzqiVmddpsD5JpGla1cSWCdWfwojKgsEu9i4qIm+Az3O+7+wlkE1qYQ90MfKbkLLa1oI0m3SNu8QNWjM825zTGcDFZvhanex8KPqsMS0OM/4RKB4Zg2GeFipeyX2l7NpVS1GRhvqXWIRo8bpBrAQIRDitlPX2BkWBhETAMFD0yGoupD5+a/EH8XYypGyPv2UAQQjHbBijqNmtXRlLKZ8nRT26oyaPjzao14x1WoW8UBrvdmmqBaap5//VZzw6j7NXEH5PFCCsRW+CsTSryd3L0/eCWVK94dRTtvgDh+nIFNuMUoIbFPIWfs2j4HGtOgn7TilsqtESdSig"};
       const VAULT_STORE_KEY = 'lv26_unlocked_vault_v1';
       let unlockedData = null;
 
@@ -2603,12 +2776,17 @@
           type: 'confirmed', tag: '移動',
           desc: '電車 ¥370（40〜55分）。タクシー代替は16:50発 約¥4,000。',
           points: [
-            '国際線出発の約3時間前（17:30頃）に羽田T3到着を目標にします。',
-            'American Airlines のオンラインチェックインは前日 11/28 20:25 JST から開始できます。',
-            'モバイルバッテリー・PC・パスポート・現金・常備薬は必ず機内持込リュックに入れます。'
+            '国際線出発（20:25）の約3時間前（17:30頃）に羽田T3到着が目安です。',
+            'American Airlines のオンラインチェックインは出発24時間前（11/28 20:25 JST）から開始できます。アプリで搭乗券を Apple Wallet へ追加しておくと安心です。',
+            '預け荷物タグが「LAS」までスルー印字されているかカウンターで目視確認します（※ただし最初の米国入国地 DFW で税関通過時に一度ピックアップが必須です）。'
           ],
-          prep: 'パスポート・航空券確認・モバイルバッテリー機内持込',
-          nextMove: '国際線チェックイン・保安検査へ'
+          techNotes: [
+            { k: '機内持込リュック必須品', v: 'モバイルバッテリー（預け不可）・ノートPC・パスポート・現金$150・常備薬・液体物（100ml以下を1L透明ジッパー袋へ）' },
+            { k: '60Lスーツケース余白', v: '帰りの Swag（Tシャツ・パーカー・水筒）とお土産のため2〜3割空きを残します' }
+          ],
+          prep: 'パスポート・AAアプリ搭乗券・モバイルバッテリー機内持込',
+          nextMove: '国際線チェックイン・保安検査へ（DFW乗継6ステップを確認）',
+          transitGuide: 'dfw-deep'
         },
         {
           id: 's-1129-aa176', day: '11-29', code: 'AA176', dur: '11h55m',
@@ -2620,13 +2798,18 @@
           type: 'confirmed', tag: 'フライト', flag: 'DFW入国',
           desc: '11時間55分。初回ESTAのため通常レーンで入国審査を受けます。',
           points: [
-            'CBP公式ルール上、Mobile Passport Control（MPC）はESTA再渡航者限定です。初回渡米のため通常の「Visitors / ESTA」レーンへ並んでください。',
-            '入国審査では目的（AWS re:Invent, business conference）、勤務先（Sony Interactive Entertainment）、滞在先（The LINQ Hotel, 3535 Las Vegas Blvd South）を伝えます。',
-            'DFW到着後は①入国審査 → ②税関ホールでスーツケースを一度受取（LASタグ付きでも必須） → ③税関出口の Connecting Bags へ再預け → ④保安検査 → ⑤Skylink で出発ターミナルへ移動します。'
+            '【重要】CBP公式ルール上、Mobile Passport Control（MPC）は「ESTA再渡航者」限定です。初回渡米のため通常の「Visitors / ESTA」レーンへ並んでください。',
+            '入国審査での定番質問は3つ：①目的（AWS re:Invent, business conference） ②期間（5 nights, returning Dec 4） ③滞在先（The LINQ Hotel, 3535 Las Vegas Blvd South）。下の英語カードを見せるだけで通じます。',
+            '米国には国際線スルー乗継（ステライル乗継）がないため、DFW で必ず①入国審査→②荷物受取→③税関→④Connecting Bags再預け→⑤TSA保安検査→⑥Skylink移動の6ステップを通ります。'
           ],
-          prep: 'パスポート・滞在先メモ・入国審査カード（下で表示可）',
+          techNotes: [
+            { k: 'DFW 乗継6ステップ（2h58m）', v: '①Terminal D降機→CBP入国審査 ②下の階でスーツケース受取（LASタグ付でも必須） ③税関出口を通過 ④出口すぐの AA Baggage Recheck へ預け直す ⑤エスカレーターで上階 TSA 保安検査へ ⑥制限エリア内の高架列車 Skylink（2分間隔・最大9分で全ターミナルA〜Eへ移動）で出発ゲートへ' },
+            { k: '機内コンディション対策', v: '長距離便は湿度20%以下。マスク・のど飴・リップ・折りたたみスリッパを手元に置き、DFW着の夕方に向けて機内後半で仮眠しておくとラスベガス初夜が楽です。' }
+          ],
+          prep: 'パスポート・滞在先メモ・入国審査英語カード',
           showCard: 'immigration',
-          nextMove: 'DFW乗継 2h58m：入国審査→荷物受取→再預け→保安検査→Skylink'
+          nextMove: 'DFW乗継 2h58m：入国→荷物受取→再預け→TSA→Skylink（タップで詳細）',
+          transitGuide: 'dfw-deep'
         },
         {
           id: 's-1129-aa1797', day: '11-29', code: 'AA1797', dur: '3h07m',
@@ -2638,12 +2821,17 @@
           type: 'confirmed', tag: 'フライト',
           desc: '3時間7分の米国内線。到着後は空港内でそのままバッジ受取へ直行します。',
           points: [
-            'ダラス（CST）からラスベガス（PST）へさらに2時間の時差があります。',
-            'LAS Terminal 1 到着後は、ホテルへ向かう前に空港内の re:Invent バッジ受取窓口（23:59まで）へ寄るのが最優先です。'
+            'ダラス（CST）からラスベガス（PST）へさらに2時間の時差があります（日本との時差 −17時間）。',
+            'LAS Terminal 1 到着後は、まずスーツケースを Baggage Claim で受け取り、そのまま同エリア内の re:Invent バッジ受取窓口（日曜23:59まで）へ寄るのが最優先です。',
+            'タクシーは Baggage Claim 東側「Door 1–4」の外（定額 Zone 3 = $30.25＋税3%＋カード手数料＋チップ）。Uber/Lyft は路肩不可で「Door 2 近くのエレベーター → 2階連絡橋 → 駐車場2階（Level 2）」まで歩きます。'
           ],
-          prep: '到着直後にパスポートとバッジ受取コードを出せる状態にする',
+          techNotes: [
+            { k: '到着夜の移動選び（タクシー vs 配車）', v: '22時台＋60Lスーツケースなら、Door 1–4 出てすぐ乗れるタクシー（定額Zone 3・合計約$38–42）が最短で迷いません。' }
+          ],
+          prep: 'パスポート・バッジ受取コード・タクシー住所カード',
           showCard: 'badge',
-          nextMove: '最優先：空港内で re:Invent バッジを受け取ってからタクシーへ'
+          nextMove: '最優先：LAS T1 でバッジ受取 → タクシー乗場 Door 1–4 へ（タップで詳細）',
+          transitGuide: 'linq-deep'
         },
         {
           id: 's-1129-badge', day: '11-29', code: 'BADGE', dur: '80m',
@@ -2654,9 +2842,12 @@
           type: 'conflict', tag: '到着夜最優先', flag: '23:59締切',
           desc: 'パスポート＋受取コード必須。タクシー定額 Zone 3 $30.25目安または配車 $15〜35。',
           points: [
-            '日曜夜のうちに空港でバッジを受け取っておくと、月曜朝の巨大な行列を回避できます。',
-            '空港から The LINQ まではタクシー定額 Zone 3（$30.25目安・カード +$3・税チップ別・10〜20分）または Uber/Lyft（$15〜35）。',
-            'ホテルチェックイン後はパスポート原本を室内金庫へ入れ、明日 09:00 の Japan Support Desk に備えて休めます（22:30頃ホテル着見込み）。'
+            '日曜夜のうちに空港でバッジを受け取ることで、月曜朝の Venetian レジストレーション長蛇の列（最大45〜60分）を完全にスキップできます。',
+            'タクシー定額ゾーン表（ネバダ州公式）：Zone 1 $22.25（Tropicana以南）／ Zone 2 $26.25（Flamingo迄）／ Zone 3 $30.25（Flamingo以北〜STRAT、The LINQ該当）。',
+            'ホテル着（22:30頃見込み）後は、チェックイン時にクレジットカードのデポジット（一時押さえ・帰国後解除）が求められます。パスポート原本は室内金庫へ入れ、明日09:00の Japan Desk に備えます。'
+          ],
+          techNotes: [
+            { k: 'LAS T1 タクシー / 配車の正確な乗場', v: 'タクシー：Baggage Claim 東側 Door 1–4 外 ／ Uber・Lyft：Door 2 付近エレベーターで Level 2 へ上がり連絡橋を渡った Parking Garage Level 2' }
           ],
           prep: 'パスポート・バッジ受取コード・タクシー英語住所カード',
           showCard: 'taxi',
@@ -2673,14 +2864,19 @@
           type: 'event', tag: '必須前提', flag: '先着順',
           desc: '招待メールを提示して 12/01 夜のチケットを受け取ります。LINQから徒歩10〜12分。',
           points: [
-            '12/01（火）夜の Japan Night は事前チケット引換が必須（先着順）のため、月曜 09:00 の開場直後に取りに行くのが確実です。',
-            'Japan Support Desk は月〜木 09:00–17:00、金 09:00–12:00 開設。日本語スタッフに現地動線やEXPOツアーも相談できます。',
-            '受取後は Caesars Forum 方面へ歩きつつ、早めの昼食かコーヒー休憩を取ると12:00のセッションに余裕をもって入れます。'
+            '12/01（火）夜の Japan Night は事前チケット引換（先着順）が必須のため、月曜 09:00 開設直後に取りに行くのが確実です。',
+            'ついでに 12/01（火）11時台の「日本人向け EXPO パートナーツアー（先着15名・リストバンド必須）」の申込方法・集合場所も日本語スタッフへ確認しておきます。',
+            'Venetian と Caesars Forum は屋外へ出ずに屋内連絡通路で直結しています（館内徒歩15〜20分）。早めの昼食を挟んで11:40頃に Forum 入りすると完璧です。'
+          ],
+          techNotes: [
+            { k: 're:Invent 鉄則：10分前ルール', v: '予約済み（Reserved）の席は開始10分前までしか保持されません。10分前にウォークアップ列へ開放されるため、必ず開始15分前には部屋入口でバッジスキャンを済ませます。' },
+            { k: 'Venetian ↔ Caesars Forum 屋内直結', v: 'Venetian の Expo エリアから専用連絡橋・屋内通路で Caesars Forum へ雨風・寒さゼロで移動できます（徒歩15〜20分見込み）。' }
           ],
           prep: 'Japan Night 招待メール・re:Invent バッジ',
           showCard: 'badge',
           mapQ: 'The+Venetian+Las+Vegas',
-          nextMove: 'Venetian → Caesars Forum：徒歩約10〜15分（昼食も確保）'
+          nextMove: 'Venetian → Caesars Forum：屋内連絡通路で直結 15〜20分（タップで詳細）',
+          transitVenue: 'forum'
         },
         {
           id: 's-1130-aim301', day: '11-30', code: 'AIM301-R', dur: '60m',
@@ -2688,20 +2884,25 @@
           title: 'Application Archeology: Digging up lost knowledge with Kiro',
           venueShort: "Caesars Forum · L1 Forum 120",
           venue: "Caesars Forum · Level 1 | Forum 120 | Content Hub | Builders' Session 1",
-          type: 'confirmed', tag: '予約済', flag: '💻 PC持参',
+          type: 'confirmed', tag: '予約済', flag: '💻 PC必須',
           sessionType: "Builders' session", level: '300 – Advanced',
           services: ['Kiro'], topics: ['Business Agents', 'Developer Tools'], features: ['Hands-on'],
           speakers: ['Fiona McCann', 'Deric Martinez', 'Ben Turnbull', 'Sofia Kendall', 'Sulaman Khan'],
           desc: 'Kiro の Steering ファイル・MCP・サブエージェントで属人化したコード知見を掘り起こす実践枠。',
           points: [
-            'メンバー離職などで失われがちなコードベース・Runbook・連携仕様の文脈を、Kiro を使って体系化するハンズオン形式です。',
-            'チームの規約を Steering ファイル化し、MCP サーバーでドキュメントや API の文脈を取り込み、コード更新に追従する構成図・ナレッジベースをサブエージェントで生成します。',
-            '終了直後の 13:00 MGM Grand（DVT214-S・Anthropic Claude Code）は距離的に開始へ間に合わないため見送り推奨です。'
+            'Builders’ Session は1テーブル6〜8名＋AWSエキスパート1名の超少人数ハンズオン形式です。開始10分前（11:50）に予約席が開放されるため、11:45頃までの到着が必須です。',
+            'AWS Workshop Studio から一時サンドボックスアカウントが自動配布されるため、自分のPCと最新ブラウザ（Chrome等）＋充電器があれば即参加できます。',
+            '終了直後の 13:00 MGM Grand（DVT214-S・Anthropic）はモノレール含め間に合わないため見送り、Wynn 方面へ余裕をもって移動します。'
+          ],
+          techNotes: [
+            { k: 'Kiro Steering Files (.kiro/steering/)', v: 'プロジェクト固有の規約・技術スタック・ドメイン知識を Markdown で永続定義し、AIエージェントが毎回外さない行動指針にする仕組み' },
+            { k: 'MCP + サブエージェント', v: 'Model Context Protocol で外部ドキュメントやAPI文脈を取り込み、コード変更に追従する構成図・ナレッジベースを自動生成します' }
           ],
           abstract: "Every organization bleeds knowledge when people leave. For mission-driven teams, a single departure can erase years of context from codebases, runbooks, and integrations. In this builder session, use Kiro — AWS's AI-powered development environment — to reverse that loss. Configure steering files that encode your team's conventions, connect MCP servers to pull context from docs and APIs, and deploy subagents that generate living architecture diagrams and knowledge bases as your code evolves. Walk away with a Kiro workspace that turns any new hire into a productive contributor from day one — no more tribal knowledge walking out the door.",
-          prep: 'ノートPC（満充電）・バッジ',
+          prep: 'ノートPC（満充電）＋ACアダプタ・最新ブラウザ・11:45迄に着席',
           mapQ: 'Caesars+Forum+Las+Vegas',
-          nextMove: 'Forum → Wynn / Encore：車約10分・シャトルまたは徒歩20〜25分'
+          nextMove: 'Forum → Wynn / Encore：車約10分・シャトルまたは徒歩20〜25分（タップで詳細）',
+          transitVenue: 'wynn'
         },
         {
           id: 's-1130-aim288', day: '11-30', code: 'AIM288-S', dur: '30m+',
@@ -2714,12 +2915,16 @@
           services: ['Amazon Bedrock'], topics: ['Artificial Intelligence', 'Developer Tools'], features: ['AWS Partners', 'Lecture-style'],
           desc: '15:00の予約枠と同じ Cristal 2 エリアのため、前半30分だけ覗いて移動できます。',
           points: [
-            '複数コーディングエージェントを並列稼働させるオーケストレーション層（Grok Bot）のライブデモです。',
-            '直後の 15:00 ARC310-R が同じ Cristal 2 の Content Hub にあるため、途中退席しやすい後方席に座っておくと安心です。'
+            '複数コーディングエージェントを並列稼働させる際、エンジニアが毎回の実行ループに巻き込まれずに済むオーケストレーション層（Grok Bot）のライブデモです。',
+            '直後の 15:00 ARC310-R が同じ Cristal 2 内にあるため、**14:48頃には退席して 10分前ルール（14:50）前に ARC310-R の入口をスキャン**できるよう後方通路側へ座ります。'
+          ],
+          techNotes: [
+            { k: '見どころ', v: '専用VM・ブラウザ上で認証済みツールアクセスを保ちつつクラウドエージェントをオンデマンド起動する本番ワークフロー' }
           ],
           abstract: "Running multiple coding agents in parallel can increase throughput, but only if technical leads and engineers avoid being pulled into every agent’s execution loop. Join this session to learn how Grok Bot is an orchestration layer for technical knowledge work, coordinating workflows while saving time and mitigating costs. Through live demos, see Grok Bot operate from its own VM and browser, maintain authenticated tool access, monitor usage, and provision cloud agents on demand. We’ll be joined by a customer in production as well as SpaceXAI engineers as they share the workflows they run today.",
           mapQ: 'Wynn+Las+Vegas',
-          nextMove: '同エリア（Wynn/Encore Cristal 2）内で移動'
+          nextMove: '同エリア（Cristal 2）内で移動：14:50前に ARC310-R スキャン必須',
+          transitVenue: 'wynn'
         },
         {
           id: 's-1130-arc310', day: '11-30', code: 'ARC310-R', dur: '60m',
@@ -2733,15 +2938,20 @@
           speakers: ['Kevin Hakanson', 'Swapnil Singh', 'Ibrahim Cesar', 'Murithi Gitonga', 'Aaron Castellanos'],
           desc: 'AIコーディングエージェントに Well-Architected スキルを組み込み、コミット前に設計ギャップを検出。',
           points: [
-            '公式概要に「Bring your laptop to participate」と明記されている PC 必須のハンズオンです。',
-            'オープンソースの Well-Architected スキルを設定し、耐障害性・セキュリティ・運用の抜け漏れを数分で検出したうえで、自社規約のカスタムスキルも作成します。',
-            '終了後は北隣の Resorts World へすぐ移動できます（夜のイベント用にパスポート原本携帯を忘れずに）。'
+            '公式概要に「Bring your laptop to participate」と明記された PC 必須のハンズオンです（14:50迄にバッジスキャン必須）。',
+            'AIコーディングエージェントは1日に何十回も設計判断を下すため、マイルストーン単位のレビューでは追いつかない課題を解決します。',
+            'オープンソースの Well-Architected スキルを組み込んで耐障害性・セキュリティ・運用の抜け漏れを数分で検出し、自社規約をエンコードしたカスタムスキルまで作成して持ち帰れます。'
+          ],
+          techNotes: [
+            { k: '持ち帰れる成果物', v: '毎コミットごとに自動実行できる Well-Architected 設計レビューループ＋チーム独自基準のカスタムスキル雛形' },
+            { k: '終了後の夜イベント準備', v: '16:00 終了後すぐ北隣の Resorts World（Sony Happy Hour）へ向かう場合、朝ホテルを出る時点でパスポート原本をセキュリティポーチに入れておくのが必須です。' }
           ],
           abstract: "Architecture reviews happen at milestones: a design review here, an operational readiness check there. But AI coding agents make architectural decisions dozens of times a day, and governance that runs at milestone pace can't keep up. In this session, you will configure open-source Well-Architected skills in your coding agent, run a full Well-Architected review and catch resilience, security, and operational gaps in minutes. Then author a custom skill that encodes your team's standards and trade-offs. You leave with a review loop that runs every commit. Bring your laptop to participate.",
-          prep: 'ノートPC必須・パスポート原本（夜の21+イベント用）',
+          prep: 'ノートPC必須・パスポート原本（夜の21+イベント用）・名刺',
           mapQ: 'Wynn+Las+Vegas',
           nextMove: 'Wynn → Resorts World：北へ車5〜10分（パスポート原本携帯確認！）',
-          warnMove: true
+          warnMove: true,
+          transitVenue: 'rw'
         },
         {
           id: 's-1130-sony', day: '11-30', code: 'CHOICE', dur: '2h',
@@ -2752,14 +2962,19 @@
           type: 'conflict', tag: '二択・未決', flag: '🪪 旅券原本',
           desc: 'ソニーグループ社員対象の交流会（推奨）。同時刻 Venetian の AIM289-S と二択です。',
           points: [
-            'Wynn（16:00終）から Resorts World はすぐ北隣で動線が非常にスムーズです。',
-            '対抗の AIM289-S（Venetian Level 2 Ballroom F Purple Theater・SpaceXSI による AI SDLC 講演）はブレイクアウト枠のため、現地交流の価値が高い Sony Happy Hour が推奨です。',
-            '飲酒あり・21歳以上確認が入る可能性があるため、パスポート原本をセキュリティポーチで携帯してください。服装はきれいめカジュアルが安心です。'
+            '16:00 に Wynn で ARC310-R が終わるため、北隣の Resorts World は車で5〜10分と最高の動線です（対抗の AIM289-S は南へ戻って Venetian）。',
+            'Breakout 講演（AIM289-S）はスライドや録画・ブログで後日追えますが、ソニーグループ社員＋AWS担当者が集まるクローズド交流会は現地でしか得られません。',
+            'バー／ラウンジ会場のため 21+ 年齢確認でパスポート原本提示を求められる可能性があります。セキュリティポーチで肌身離さず携行してください。'
+          ],
+          techNotes: [
+            { k: '対抗枠 AIM289-S の内容', v: 'Venetian L2 Ballroom F Purple Theater（SpaceXSI）。AIがコード大半を書く時代のレビュー・テスト設計、Grok API / Grok Voice 本番事例。' },
+            { k: '服装＆チップ', v: 'きれいめカジュアル＋レザースニーカー推奨。無料ドリンクでもバーテンダーへ $1–2/杯 渡すとスマートです。' }
           ],
           abstract: "Alternative AIM289-S: This 201 technical deep dive covers the AI Software Development Lifecycle featuring the Grok product family. SpaceXAI experts and customers in production will demo proven patterns, covering which parts of the SDLC to delegate to agents first, how to structure review and testing when agents write most of the code.",
-          prep: 'パスポート原本・名刺・きれいめの服装',
+          prep: 'パスポート原本・名刺・きれいめ服装・$1札数枚',
           mapQ: 'Resorts+World+Las+Vegas',
-          nextMove: 'Resorts World → Vanderpump：南下して車約10分（LINQ近く）'
+          nextMove: 'Resorts World → Vanderpump：南下して車約10分（LINQ近く）',
+          transitVenue: 'vanderpump'
         },
         {
           id: 's-1130-apjc', day: '11-30', code: 'ESAP26', dur: '5h',
@@ -2771,9 +2986,12 @@
           sessionType: 'Ancillary (Invited)',
           desc: 'API上で招待確定（300分）。21歳以上・バッジ必須。LINQ すぐ近くのため帰りも楽です。',
           points: [
-            'APJC 地域の参加者・パートナー・AWS リーダーが集まる公式キックオフパーティーです。',
+            'APJC（アジア太平洋・日本・中国）の参加者・パートナー・AWS リーダーが集う公式キックオフパーティーです。',
             '会場の The Vanderpump Hotel は The LINQ から徒歩 5〜8 分のため、終盤までいても安心して歩いて帰れます。',
-            '屋外ルーフトップ会場は夜の冷え込み（5〜10°C前後）が強いため、羽織るアウターを持参してください。'
+            '11月末〜12月初旬のラスベガス夜間は砂漠気候で 5〜10°C 前後まで冷え込みます。屋外ルーフトップなので軽量ダウンやジャケットが必須です。'
+          ],
+          techNotes: [
+            { k: '翌朝 12/01 に向けた撤収目安', v: '翌朝 08:30 から Venetian で CEO Keynote（KEY002）があるため、21:30〜22:00 頃に切り上げてパスポートをホテル金庫へ戻すと体調を崩しません。' }
           ],
           abstract: "You're invited to the AWS re:Invent APJC Kickoff Party. Celebrate the remarkable growth and innovation happening across the APJC region while networking with peers, partners, and AWS leaders. This is your chance to exchange ideas, explore collaboration opportunities, and be part of a community shaping the future of cloud in APJC.",
           prep: 're:Invent バッジ・パスポート原本（21+）・防寒アウター・名刺',
@@ -2791,13 +3009,17 @@
           sessionType: 'Keynote', speakers: ['Matt Garman', 'Barbara Karuth-Zelle', 'Tony Xu'],
           desc: 'AWS CEO Matt Garman による基調講演。同会場で直後の BIZ111-S・EXPO へ直結します。',
           points: [
-            're:Invent 最大の新サービス発表が集中するメイン基調講演です（120分）。',
-            '前方席を狙う場合は 30〜45 分前の入場が目安ですが、オーバーフロー会場やライブ配信もあります。',
-            '終わったらそのまま Venetian Level 2 の Hall B（EXPO会場）へ移動できます。'
+            're:Invent 2026 最大の発表イベント（120分）。AIインフラ・推論・データ・エージェント基盤・AWS製ソフトウェアエージェントの大型発表が集中します。',
+            'メイン会場（Ballroom E）で前方席を狙うなら 07:45 頃には到着したいところ（LINQ 07:30 発）。混んでいてもオーバーフロー会場やライブ配信があります。',
+            '終了後 10:30〜11:00 は同フロア（Venetian Level 2）の Hall B（EXPO）へそのまま移動できる完璧な動線です。'
+          ],
+          techNotes: [
+            { k: 'メモのコツ（社内共有用）', v: '細部は 12/03 の JPN101（日本語ラップアップ）で総復習できるため、ここでは「SIE / ゲーム開発 / AI開発に直結する発表名」だけ箇条書きで拾うと楽です。' }
           ],
           abstract: "Join AWS CEO Matt Garman for the re:Invent 2026 CEO Keynote as he shares the latest innovations powering the agentic era. From AI infrastructure and inference to data, agent platforms, and the software agents AWS is building, see how AWS gives you the depth, breadth, and integration to build what's next with new announcements and stories from customers already doing it.",
           mapQ: 'The+Venetian+Las+Vegas',
-          nextMove: '同会場（Venetian Level 2）で Hall B Expo へ移動'
+          nextMove: '同フロア（Venetian Level 2）で Hall B Expo へ移動',
+          transitVenue: 'venetian'
         },
         {
           id: 's-1201-biz111', day: '12-01', code: 'BIZ111-S', dur: '20m',
@@ -2810,12 +3032,16 @@
           topics: ['Business Agents'], features: ['AWS Partners', 'Lecture-style'], speakers: ['Josh Milas'],
           desc: 'Slack Code Channels・Slack Agent Kit・MCP 連携を20分でキャッチアップ。',
           points: [
-            'Claude Code・Devin・Cursor などのエージェントとチームがリアルタイム協働する「Code Channels」や Slackbot MCP Client の最新機能を紹介します。',
+            'Slack を「人間とAIエージェントが共同構築するマルチプレイヤー作業OS」へ進化させる新開発プラットフォームの20分凝縮セッションです。',
             '20分で終わるため、そのまま同じ Hall B 内の日本人向け EXPO ツアーへ合流しやすい枠です。'
+          ],
+          techNotes: [
+            { k: '注目キーワード4点', v: '①Code Channels（Claude Code / Devin / Cursor とリアルタイム協働） ②Slack Agent Kit ③双方向 MCP / Slackbot MCP Client ④Real-Time Search (RTS) によるライブ文脈グラウンディング' }
           ],
           abstract: "Slack is becoming a multiplayer work operating system, where humans and AI agents build together, not just chat. This session shows AWS developers how to ship on the modern Slack Platform: Code Channels, a new space where agents like Claude Code, Devin, and Cursor collaborate with teams in real time; the Slack Agent Kit for building first-class agents; deep bidirectional MCP support, including the Slackbot MCP Client; Real-Time Search (RTS) for grounding agents in live workspace context; and Block Kit for rich, interactive UI.",
           mapQ: 'The+Venetian+Las+Vegas',
-          nextMove: '同会場（Venetian Hall B）で EXPO ツアー集合へ'
+          nextMove: '同会場（Venetian Hall B）で EXPO ツアー集合へ',
+          transitVenue: 'venetian'
         },
         {
           id: 's-1201-expo', day: '12-01', code: 'EXPO JP', dur: '60m',
@@ -2826,13 +3052,17 @@
           type: 'event', tag: '要申込・先着',
           desc: '約50〜60分・先着15名・リストバンド必須。12/01 11時台が最も組みやすい枠です。',
           points: [
-            '巨大な EXPO 会場の見どころブースを日本語ガイド付きで効率よく回れるツアーです。',
-            '11/30 に Japan Support Desk へ寄った際に集合場所・リストバンド配布条件を確認しておくと確実です。',
-            '終了後は昼食を挟んで Caesars Palace へ移動し、14:00 の GameDay に備えます。'
+            'サッカー場数面分の巨大 EXPO 会場を、日本語ガイド付きで主要ブースを厳選して回れるツアーです。',
+            '11/30 朝に Japan Support Desk（L1 Casanova 607）へ寄った際、リストバンド受取場所・集合地点を確認しておきます。',
+            '終了後は 12:30〜13:45 で昼食＋Caesars Palace への移動（徒歩12〜15分＋館内移動10分）を余裕をもってこなせます。'
+          ],
+          techNotes: [
+            { k: 'EXPO バッジスキャン注意', v: 'ブースでバッジをスキャンさせると Swag（Tシャツ・ステッカー等）がもらえますが、後日営業メールが届きます。本当に興味ある企業だけスキャンさせるのがコツです。' }
           ],
           prep: 'リストバンド（要事前申込／Japan Desk 確認）',
           mapQ: 'The+Venetian+Las+Vegas',
-          nextMove: 'Venetian → Caesars Palace：徒歩約12〜15分（昼食挟む）'
+          nextMove: 'Venetian → Caesars Palace：歩道橋経由で徒歩15分＋館内10分（タップで詳細）',
+          transitVenue: 'palace'
         },
         {
           id: 's-1201-ghj301', day: '12-01', code: 'GHJ301-S', dur: '3h',
@@ -2845,14 +3075,19 @@
           topics: ['Artificial Intelligence', 'Developer Tools'], features: ['AWS Partners', 'Hands-on'], speakers: ['Lillian Pham'],
           desc: 'Bedrock AgentCore・モデル評価・New Relic 可観測性を駆使する3時間のチーム演習。',
           points: [
-            '1人参加でも現地でチーム編成して競い合う実践型イベントです。re:Invent ならではの体験枠なので最優先で楽しめます。',
-            'Amazon Bedrock・Bedrock AgentCore・プロンプト設計・モデル評価・ML パイプライン監視（New Relic 連携）を本番さながらの環境で攻略します。',
-            '3時間と長丁場のため、ノートPCのフル充電＋充電器＋飲み物を持参してください。終了後は一度 LINQ へ戻って荷物を置いてから Japan Night へ向かえます。'
+            '1人参加でも現地で即席チーム（通常4名）を組み、障害対応・スコア競争を行う re:Invent 名物の実践ゲームイベントです。開始10分前（13:50）までに必ずスキャン入場してください。',
+            'Caesars Palace はカジノフロアが巨大で「Emperors Level（会議フロア）」まで館内だけで10分かかります。13:30 には Caesars Palace へ入るのが安全です。',
+            '17:00 終了後は The LINQ まで徒歩8〜10分。部屋へ一度戻って PC を置き、少し休んでから 18:15 頃に Wynn（Japan Night）へ向かえます。'
+          ],
+          techNotes: [
+            { k: '演習で扱う技術スタック', v: 'Amazon Bedrock / Amazon Bedrock AgentCore / 基盤モデル評価 / プロンプト設計 / New Relic による AI パイプライン可観測性（レイテンシ・トークン・エラー監視）' },
+            { k: '3時間戦うための装備', v: 'ノートPC満充電＋ACアダプタ（電源タップはテーブル共有の場合あり）・水筒・軽い上着（冷房強め）' }
           ],
           abstract: "Join us for an immersive, collaborative learning exercise to build practical skills in deploying and monitoring AI-powered applications on AWS. Dive into a live environment where you'll engineer production-ready AI systems and ensure reliability through comprehensive observability. Leverage Amazon Bedrock, Amazon Bedrock Agentcore, foundation models, AI agents, prompt engineering, model evaluation, and ML pipeline monitoring as you build and operate AI workloads end-to-end. This session features integrated use cases with New Relic.",
-          prep: 'ノートPC＋ACアダプタ・飲み物・バッジ',
+          prep: 'ノートPC＋ACアダプタ・水筒・13:45迄に着席',
           mapQ: 'Caesars+Palace+Las+Vegas',
-          nextMove: 'LINQで一息 → Wynn Event Pavilion：車約10分（Japan Night チケット持参！）'
+          nextMove: 'LINQでPC置いて一息 → Wynn Event Pavilion：車約10分（タップで詳細）',
+          transitVenue: 'wynn'
         },
         {
           id: 's-1201-jpnight', day: '12-01', code: 'JP NIGHT', dur: '2h',
@@ -2863,10 +3098,11 @@
           type: 'event', tag: '参加決定済', flag: '🎫 チケット必須',
           desc: '日本人参加者向けの大規模ネットワーキングパーティー。11/30受取のチケット必須。',
           points: [
-            '11/30（月）に Japan Support Desk で受け取った参加チケットと re:Invent バッジを忘れずに持参します。',
-            'The LINQ から Wynn までは配車アプリ・タクシーで約10分（歩くと20〜25分）。GameDay 後に一度ホテルへ寄って PC を置いて身軽で行けます。'
+            '11/30（月）に Japan Support Desk で受け取った「参加チケット」＋「re:Invent バッジ」の2点が必須です（忘れると入場不可）。',
+            'The LINQ から Wynn は車で約10分（歩くと20〜25分）。GameDay 後にホテルへPCを置いて手ぶら＋名刺で行くと快適に交流できます。',
+            '名刺に加えて LinkedIn の QR コードをすぐ出せるようにしておくと、他社エンジニアや AWS 社員と一瞬で繋がれます。'
           ],
-          prep: 'Japan Night 参加チケット・バッジ・名刺・防寒着',
+          prep: 'Japan Night 参加チケット・バッジ・名刺・LinkedIn QR・防寒着',
           mapQ: 'Wynn+Las+Vegas'
         },
 
@@ -2881,12 +3117,13 @@
           sessionType: 'Featured experience',
           desc: 'API公式日程は12/02（水）06:30〜。直後08:30の DVT340 と重なるため見送り推奨。',
           points: [
-            'Allegiant Stadium 外周を6周（3.1マイル）走る無料ファンラン（Lululemon 協賛）。',
-            '08:30 終了で Caesars Forum の DVT340（08:30開始）と完全に被るため、基本は見送って睡眠と朝ごはんを優先するのが現実的です。'
+            'Allegiant Stadium 外周を6周（3.1マイル = 約5km）走る無料ファンラン（Lululemon 協賛・Venetian の Attendee Experience Desk で要登録）。',
+            '08:30 終了＋スタジアムからの帰還時間があるため、08:30 Caesars Forum の DVT340 とは完全衝突します。睡眠と朝ごはん優先で見送り推奨です。'
           ],
           abstract: "Get ready for a 5K unlike any other. Conquer 3.1 miles in six high energy laps around the perimeter of Allegiant Stadium alongside the global AWS community. Completely free and open to all paces.",
           mapQ: 'Allegiant+Stadium+Las+Vegas',
-          nextMove: 'LINQ → Caesars Forum：徒歩約7分'
+          nextMove: 'LINQ → Caesars Forum：LINQ Promenade経由で徒歩約7分',
+          transitVenue: 'forum'
         },
         {
           id: 's-1202-dvt340', day: '12-02', code: 'DVT340', dur: '60m',
@@ -2900,12 +3137,17 @@
           speakers: ['Anil Maktala', 'Kenneth Sanchez'],
           desc: '大規模コードベースでAIエージェントの設計ドリフトを防ぐ Kiro のアプローチを議論。',
           points: [
-            '大規模コードベースでコンテキストが溢れてエージェントが意図しない実装をする課題に対し、Kiro がニューロシンボリック手法で要件の曖昧さ・矛盾をコード生成前に取り除く仕組みを解説します。',
-            'Chalk talk（ホワイトボード形式の対話セッション）なので、現場での疑問を直接質問するチャンスです。LINQ から徒歩7分と朝一に最適です。'
+            'Chalk Talk はスライド最小限・ホワイトボード＆質疑応答メインの少人数ディスカッション形式です。開始10分前（08:20）までにスキャン入場してください。',
+            'The LINQ から Caesars Forum は徒歩7分と最も近い会場なので、08:00 にホテルを出れば Nook Express でコーヒーを買っても間に合います。'
+          ],
+          techNotes: [
+            { k: '技術テーマ：ニューロシンボリック要件検証', v: '大規模コードベースでAIがコンテキスト溢れ・設計ドリフトを起こす前に、要件の曖昧さや矛盾をコード生成前の段階で形式的に取り除く Kiro の手法を学びます。' }
           ],
           abstract: "Your AI agent writes code fast, but when you unleash it on a large codebase, context can fill up quickly and the agent can make questionable implementation choices. Learn how Kiro uses neurosymbolic techniques to understand what you want to build, removing ambiguity, contradictions, and gaps in your requirements before any code is generated. Then, learn simple practices you can use to keep your agent implementation surgical, and detect drift before it spreads all over your codebase.",
+          prep: 'バッジ・08:20迄にスキャン入場',
           mapQ: 'Caesars+Forum+Las+Vegas',
-          nextMove: 'Forum → Caesars Palace：徒歩約10分（30分バッファあり）'
+          nextMove: 'Forum → Caesars Palace：歩道橋渡って徒歩10分＋館内移動（タップで詳細）',
+          transitVenue: 'palace'
         },
         {
           id: 's-1202-tnc333', day: '12-02', code: 'TNC333-R1', dur: '90m',
@@ -2919,14 +3161,18 @@
           speakers: ['Sam Shalil SHALIL', 'Bruno Marcondes'],
           desc: 'EARS形式の仕様書→設計→タスク実行→Hook自動検証まで通す90分の Kiro Lab。',
           points: [
-            '1つの自然言語プロンプトから構造化要件（EARS形式ユーザーストーリー）・技術設計・実行タスクを生成して動く MVP を作る SimuLearn ラボです。',
-            '保存時にデータファイルを自動検証する Kiro Hook の構築まで体験します。',
-            '終了後 12:30 までは 60 分あるため、Forum へ戻りつつしっかり昼食が取れます。'
+            '09:30 に Forum を出てすぐ Caesars Palace へ向かえば、10分前ルール（09:50）前に Emperors Level へ到着できます。',
+            '11:30 終了後は次の OPN307-R（12:30 Caesars Forum）まで60分あるため、途中で LINQ Promenade の Gordon Ramsay Fish & Chips や In-N-Out でサクッと昼食が取れます。'
+          ],
+          techNotes: [
+            { k: 'Kiro Specs の3ファイル構造', v: '.kiro/specs/{feature}/ 配下に ①requirements.md（EARS記法：「〜のとき、システムは〜する」で曖昧さ排除） ②design.md（技術設計） ③tasks.md（順序付きタスク）を生成して MVP を実装します。' },
+            { k: 'Kiro Hooks', v: 'ファイル保存などのイベント発火でAIエージェントがデータ検証・規約チェックを自動実行する仕組みを実践します。' }
           ],
           abstract: "Kiro, the Agentic IDE, transforms a single natural language prompt into structured requirements, a technical design, and an executable implementation plan. In this SimuLearn session, you build a city event management application by guiding Kiro through its spec-driven workflow: generating EARS-format user stories, reviewing architecture decisions, and executing a sequenced task list that produces a working MVP. You also configure a Kiro Hook that automatically validates data files on save.",
-          prep: 'ノートPC・バッジ',
+          prep: 'ノートPC・バッジ・09:50迄にスキャン入場',
           mapQ: 'Caesars+Palace+Las+Vegas',
-          nextMove: 'Caesars Palace → Caesars Forum：徒歩約10分（昼食の余裕60分あり）'
+          nextMove: 'Caesars Palace → Caesars Forum：徒歩10分（60分バッファ・昼食に最適）',
+          transitVenue: 'forum'
         },
         {
           id: 's-1202-opn307', day: '12-02', code: 'OPN307-R', dur: '2h',
@@ -2934,20 +3180,25 @@
           title: 'Build multi-agent workflows with Strands Agents SDK',
           venueShort: 'Caesars Forum · L1 Academy 412',
           venue: 'Caesars Forum · Level 1 | Academy 412',
-          type: 'confirmed', tag: '予約済・2h', flag: '💻 PC持参',
+          type: 'confirmed', tag: '予約済・2h', flag: '💻 PC必須',
           sessionType: 'Workshop', level: '300 – Advanced',
           topics: ['Artificial Intelligence', 'Developer Tools'], features: ['Hands-on'],
           speakers: ['Daniel Lorch', 'Arun Kumar Selvaraj'],
           desc: 'Strands Agents SDK＋MCP＋エージェント間委譲＋ステートフルメモリを実装する2時間Workshop。',
           points: [
-            '11/23 の API 同期で予約確定を確認した 120 分のハンズオンワークショップです。',
-            '役割別の専門エージェントを作り、MCP 経由のツール接続・エージェント間委譲・会話メモリを実装して End-to-End でデプロイ検証します。',
-            '同時刻 13:00 の MGM Grand 当日枠（DAT453・Aurora 新発表 400レベル）とは重複しますが、こちらは確保済みの体験型ワークショップなので優先度が高いです。'
+            '11/23 の API 同期で予約確定を確認した 120 分の本格ハンズオンです（12:20迄にスキャン入場）。Workshop Studio で環境提供されます。',
+            '同時刻 13:00 の MGM Grand 当日枠（DAT453・Aurora 新発表 400レベル）とは重複しますが、こちらは確保済みの実装ワークショップなので最優先です。',
+            '14:30 に終わった後、もし夜にショー案1（Sphere 17:00）へ行くなら、この時点で一度 The LINQ へ歩いて戻りノートPCとリュックを置いて身軽になるのが最も安全です（Sphere は 15×15×5cm 超のバッグ持込厳禁！）。'
+          ],
+          techNotes: [
+            { k: 'Strands Agents SDK とは', v: 'AWS発のオープンソース軽量 Python / TypeScript SDK。「モデル・ツール・プロンプト」だけで自律エージェントを数行で実装でき、MCP にネイティブ対応します。' },
+            { k: '実装する4要素', v: '①専門役割を持つ複数エージェント ②MCP経由の外部ツール接続 ③エージェント間委譲（Delegation） ④ステートフル会話メモリ → End-to-End デプロイ検証' }
           ],
           abstract: "In this hands-on workshop, build a multi-agent system using the Strands Agents open source SDK. You will create specialized agents with distinct roles, connect them via MCP for tool access, implement agent-to-agent delegation patterns, and add memory for stateful conversations. Deploy and test your multi-agent workflow end-to-end. Walk away with working code and reusable patterns for orchestrating collaborative AI agents using open source tooling.",
-          prep: 'ノートPC＋ACアダプタ・バッジ',
+          prep: 'ノートPC＋ACアダプタ・バッジ・12:20迄に着席',
           mapQ: 'Caesars+Forum+Las+Vegas',
-          nextMove: '同会場（Caesars Forum Level 1）内で移動（30分余裕あり）'
+          nextMove: 'ショー案1なら一度LINQへPC置きに戻るのが鉄則！（タップでSphere規定確認）',
+          transitGuide: 'shows-plan1'
         },
         {
           id: 's-1202-com324', day: '12-02', code: 'COM324-R', dur: '60m',
@@ -2962,13 +3213,18 @@
           speakers: ['Pablo Ezequiel Inchausti', 'David Marcelo Petrocelli'],
           desc: 'F1ピットクルー発想のマルチエージェント運用。ショー案1（Sphere 17:00）選択時は早退/欠席を検討。',
           points: [
-            'Bedrock AgentCore・Strands Agents・MCP・GitHub・Jira・IaC を組み合わせ、セキュリティ・コスト・信頼性・可観測性の専門エージェントが運用課題を自動でタスク化するライブデモです。',
-            '【重要】ショー案1（Sphere 17:00開演）を選ぶ場合、開場45分前（16:15）からアトリウム体験があり遅刻入場不可のため、この枠は15:45頃に早退するか欠席してホテルへPCを置きに帰ると安全です。'
+            '直前の OPN307-R（Strands Agents SDK）から本番運用（Bedrock AgentCore）へ綺麗に繋がるライブコード解説枠です。',
+            '【重要】ショー案1（Sphere 17:00開演）を選ぶ場合、Sphere は**リュック持込厳禁（6×6×2インチ上限・現地クロークなし）**かつ**16:15開場・遅刻不可**です。14:30に一度LINQへPCを置きに戻ってから、手ぶらで15:00に少し覗いて15:45早退するか、思い切って欠席して16:00に Venetian 屋内連絡橋から Sphere へ向かうのが確実です。'
+          ],
+          techNotes: [
+            { k: 'Amazon Bedrock AgentCore とは', v: 'Strands 等で作ったエージェントをサーバーレス／マイクロVMで本番運用する基盤（Runtime / Memory / Identity / Gateway / Observability）。' },
+            { k: 'ピットクルー構成', v: 'Security / Cost / Reliability / Observability の専門エージェントが CloudWatch・EventBridge 経由で検知した事象を GitHub・Jira・IaC タスクへ自動変換します。' }
           ],
           abstract: "AI can generate code at racing speed, but production workloads still require continuous attention to security, reliability, cost, and operational risks. In this Code Talk, we build a multi-agent architecture on AWS inspired by a Formula 1 pit crew. Using Amazon Bedrock AgentCore, Strands Agents, MCP, GitHub, Jira, and Infrastructure as Code, we evolve from a single agent to a team of specialized agents for security, cost optimization, reliability, and observability.",
           mapQ: 'Caesars+Forum+Las+Vegas',
-          nextMove: 'Sphere（Venetian東側）→ 終演後 MGM Grand へ（または Venetian 16:30 Expo Happy Hour）',
-          warnMove: true
+          nextMove: 'Sphere（Venetian屋内橋10分・PC/リュック厳禁！）→ MGM Grand（タップで詳細）',
+          warnMove: true,
+          transitGuide: 'shows-plan1'
         },
         {
           id: 's-1202-shows', day: '12-02', code: 'SHOWS', dur: '5h',
@@ -2979,11 +3235,15 @@
           type: 'optional', tag: '未購入・推奨',
           desc: 'Sphere『オズの魔法使い』（75分）後、MGM Grand で『KÀ』（90分）をはしごする案。',
           points: [
-            'Sphere 17:00 回は 16:15 開場・遅刻入場不可。終演は 18:15 頃のため、軽食＋移動を含めても 20:30 の MGM Grand『KÀ』へ無理なく繋がります。',
-            '目安価格：Sphere $104〜（中央200番台 $139〜）、KÀ $87.88〜（約7割売済のため早め判断が吉）。',
-            '同時間帯 16:30〜18:00 の AWS010（Happy Hour in Expo・Venetian）とは重複します。VEGAS タブの「未決の2大プラン」で仮選択を残せます。'
+            '16:05頃 Venetian 内の「Sphere Bridge」案内表示から屋内連絡橋（徒歩約10分・渋滞ゼロ）で Sphere へ入場 → 16:15 開場のアトリウム（Auraロボット体験）を楽しんで 17:00 開演（遅刻入場不可）。',
+            '18:15 終演後、LINQ 周辺または MGM Grand 内で軽食 → モノレール（Harrah’s & The LINQ 駅 → MGM Grand 駅・乗車7–10分・オンライン $5.75）で南下し 20:00 開場・20:30『KÀ』開演（90分・休憩なし）。',
+            '帰りもモノレールは火〜木 02:00 まで運行しているため、22:00 終演後に渋滞なしで The LINQ へ戻れます（24時間パス $13.95 または単券2回 $11.50）。'
           ],
-          prep: 'デジタルチケット・小さいバッグ（Sphereは大きいリュック持込不可に注意）',
+          techNotes: [
+            { k: 'Sphere 必須チェック（バッグ＆座席）', v: 'バッグ上限 6×6×2インチ（約15×15×5cm）・透明バッグでも超えるとNG・クロークなし。座席は 205–207 / 305–307 中央推奨（100番台の18列目以降は天井見切れ注意）。' },
+            { k: 'KÀ 必須チェック（座席＆バッグ）', v: 'おすすめは Section 102（J〜M列）または Section 202 前列（最前列は首が疲れる）。バッグ上限 14×14×6インチ（大きい荷物は MGM ロビーのベルデスクで無料預け可）。' }
+          ],
+          prep: 'デジタルチケット・スマホ＋財布のみの手ぶらスタイル（リュック厳禁）',
           mapQ: 'Sphere+Las+Vegas'
         },
 
@@ -2998,12 +3258,14 @@
           sessionType: 'EBC Meeting Rooms (Invited)',
           desc: 'API同期で招待確定を確認した45分の EBC ミーティング（Games）。終了後は同館で昼食→JPN101へ。',
           points: [
-            'Executive Briefing Center（EBC）の招待枠です。Level 4 の Zeno 4704 は通常セッションエリアより上階のため、10〜15分前には Venetian に着いて案内表示を確認すると安心です。',
-            '12:45 終了後はそのまま Venetian 館内（Urth Caffé や Grand Lux Cafe など）で昼食をとり、14:30 開場の JPN101 へ直結できる理想的な流れです。'
+            '午前中が空いているため、LINQ Promenade の Favorite Bistro や Maxie’s でゆっくり朝食をとってから向かえます。',
+            'Executive Briefing Center（EBC）の Level 4「Zeno 4704」は一般セッション階（Level 1–2）より上の専用会議フロアです。館内移動に10〜15分見込み、11:45 には Venetian エレベーター付近へ着くと安心です。',
+            '12:45 終了後は同館内の Grand Lux Cafe（Venetian カジノフロア／Palazzo 劇場横の2店舗あり）等で昼食をとり、14:30 開場の JPN101 へ直結します。'
           ],
-          prep: 'バッジ・名刺',
+          prep: 'バッジ・名刺・11:45 Venetian着目標',
           mapQ: 'The+Venetian+Las+Vegas',
-          nextMove: '同会場（Venetian）で昼食 → 14:30 開場の Level 2 Theatre へ'
+          nextMove: '同会場（Venetian）で昼食 → 14:30 開場の Level 2 Theatre へ',
+          transitVenue: 'venetian'
         },
         {
           id: 's-1203-jpn101', day: '12-03', code: 'JPN101', dur: '2h',
@@ -3017,12 +3279,16 @@
           desc: '日本語による重要発表総まとめ（120分）。帰国後の社内報告づくりにそのまま役立ちます。',
           points: [
             '11/23 の API 同期でハート（お気に入り）登録完了を確認済みです。',
-            '全キーノート・主要アップデートを日本語で体系立てて振り返るため、帰国後の社内共有メモを一気に整理できます。',
-            '同時刻の COM325-R1 はまだ予約が残っているため、出発前にポータルでキャンセルを済ませてください。'
+            '日本から来た参加者が集結する人気枠のため、14:30 の開場に合わせて入場すると良席でゆっくり聴けます。',
+            '帰国後の社内報告にそのまま転用できるレベルで、全キーノートと新サービスを日本語で体系整理してくれます。'
+          ],
+          techNotes: [
+            { k: '同時刻 COM325-R1 の整理', v: '同じ 15:00 の COM325-R1 は不参加決定済みですが、API上ではまだ予約が残っています（出発前にポータルでキャンセル推奨）。' }
           ],
           abstract: "This session will be delivered in Japanese and provides a comprehensive recap of the major announcements and strategic updates from the keynote sessions throughout the event. Experienced speakers will summarize the most impactful innovations and key messages from AWS leadership and help you prepare to share what you learned at re:Invent with your teams when you return to the office.",
           mapQ: 'The+Venetian+Las+Vegas',
-          nextMove: '同時刻 COM325-R1 は予約残存中（下記・要キャンセル）'
+          nextMove: '同時刻 COM325-R1 は予約残存中（下記・要キャンセル）',
+          transitGuide: 'api-sync'
         },
         {
           id: 's-1203-com325', day: '12-03', code: 'COM325-R1', dur: '60m',
@@ -3036,11 +3302,12 @@
           speakers: ['Håkon Eriksen Drange'],
           desc: 'JPN101優先で不参加決定済みですが、API上に予約が残存中。ポータルからキャンセルしてください。',
           points: [
-            '同じ GenAI ワークロードを Bedrock AgentCore / Step Functions / Lambda durable functions の3通りで比較するライブコーディング枠です。',
-            'JPN101 を優先して不参加の方針ですが、11/23 21:31 時点の API ではまだ予約枠を保持した状態です。ポータルでキャンセルすると他の参加者に席を譲れます。'
+            '同じ GenAI ワークロードを ①Amazon Bedrock AgentCore ②AWS Step Functions ③AWS Lambda durable functions の3通りで実装比較し、レイテンシ・コスト・デバッグ容易性の判断軸を示す枠です。',
+            'JPN101 を優先して不参加決定済みですが、11/23 21:31 時点の API ではまだ予約が残存しています。ポータルからキャンセルして空席を返してください。'
           ],
           abstract: "Orchestration mode matters more for end user experience than just model choice. In this live-coding session, I build the same GenAI workload three ways: Amazon Bedrock AgentCore, AWS Step Functions, and AWS Lambda durable functions - and show what each costs in latency, dollars, and debuggability on a production content platform.",
-          nextMove: 'Venetian → Allegiant Stadium：公式専用シャトル（18:15頃〜）'
+          nextMove: 'Venetian → Allegiant Stadium：公式専用シャトル（18:15頃〜）',
+          transitVenue: 'allegiant'
         },
         {
           id: 's-1203-replay', day: '12-03', code: 'RE:PLAY', dur: '4h',
@@ -3051,11 +3318,11 @@
           type: 'conflict', tag: '要RSVP確認', flag: '18:30確定',
           desc: 'API公式データで 18:30–22:30（240分）が確定。ポータルで RSVP 状況を確認してください。',
           points: [
-            'フルパスに料金込みですが、11/23 時点の schedule.json には未反映のためポータル側で RSVP が必要か確認してください。',
-            '会場の Allegiant Stadium へは各主要ホテルから公式専用シャトルが出ます。大きなバッグは制限されるため最小限の身軽スタイル（バッジ・スマホ・防寒着・念のためID）が安全です。',
-            '翌朝 12/04 は 08:00 頃にフーバーダム出発＆チェックアウトのため、深追いしすぎず 21:30〜22:00 頃には戻ると翌日が楽です。'
+            'フルパス込みの公式フェスティバルですが、schedule.json に未反映のためポータルで RSVP 要否を確認してください。',
+            'NFL 会場 Allegiant Stadium への入場は厳しいクリアバッグ／小型ポーチ規定が適用されます。リュックはホテルへ置き、バッジ・スマホ・防寒着・念のためIDだけの身軽装備で行きます。',
+            '翌朝 12/04 は 07:15 チェックアウト＆08:00 フーバーダム出発のため、この日の夜に荷造りを9割終えてから出かけるか、21:30 頃にはシャトルで帰還すると翌朝が圧倒的に楽です。'
           ],
-          prep: 'バッジ・防寒着・小さいポーチ（翌朝パッキングも夜のうちに！）',
+          prep: 'バッジ・防寒着・小さいポーチ（リュックNG・翌朝荷造りも先に！）',
           mapQ: 'Allegiant+Stadium+Las+Vegas'
         },
 
@@ -3069,14 +3336,19 @@
           type: 'optional', tag: '6名・進行中', flag: '15:00帰着目安',
           desc: '6名合計 ¥82,866（1人 ¥13,811）。朝チェックアウト＆ベルデスク荷物預けを済ませて出発。',
           points: [
-            '11/23 に予約進行方針を決定（送信・決済はまだ未実行）。残確認は①代表電話番号 ②The LINQ 送迎可否 ③成立後72時間前（12/01頃）のリコンファームです。',
-            '出発前にチェックアウトを済ませ、60Lスーツケースはベルデスクへ預けます（チップ $1–2/個）。',
-            'レビュー実態の帰着は 14:30〜15:00。帰着後にお土産最終購入・スーツケース整理をして 17:15 にホテルを出発します。'
+            '11/23 に予約進行方針を決定（送信・決済は未実行）。残確認：①代表電話番号 ②The LINQ 送迎可否 ③成立後72時間前（12/01頃）のリコンファーム必須。',
+            '出発前にチェックアウトし、60Lスーツケースはベルデスクへ預けます（チップ $1–2/個）。フーバーダムには公共ロッカーがなく、大きな荷物や大型リュックは連邦保安検査で持込厳禁です。',
+            'レビュー実態の帰着は 14:30〜15:00。帰着後にベルデスクから荷物を引き取り、最終パッキングを済ませて 17:15 ホテル発を守ります。'
           ],
-          prep: 'サングラス・防寒着・ガイド用チップ現金（$5–10目安）',
+          techNotes: [
+            { k: '連邦保安検査の持込禁止物', v: 'スーツケース・大型リュック・ナイフ/マルチツール全般・開封済み飲料や外部食品はNG（未開封ペットボトル水は可）。小さいデイバッグ＋上着で参加します。' },
+            { k: '見どころ3選', v: '①岩盤内エレベーターで数百フィート降下 ②直径約9m（30ft）導水鉄管（Penstock）の振動を体感＋ネバダ発電機ホール ③高さ約270m（890–900ft）のメモリアルブリッジ歩道からのダム正面パノラマ' }
+          ],
+          prep: '小型バッグ・防寒着（橋の上は強風）・サングラス・ガイド用現金チップ（$5–10）',
           mapQ: 'Hoover+Dam',
-          nextMove: '重要：14:30〜15:00帰着 → 17:15 ホテル発（荷物締切 18:32）',
-          warnMove: true
+          nextMove: '重要：14:30〜15:00帰着 → 17:15 ホテル発厳守（タップで詳細タイムライン）',
+          warnMove: true,
+          transitGuide: 'hoover'
         },
         {
           id: 's-1204-depart', day: '12-04', code: 'CHECK-IN', dur: '75m',
@@ -3087,11 +3359,11 @@
           type: 'conflict', tag: '荷物締切 18:32', flag: '時間厳守',
           desc: '荷物預け締切は出発60分前（18:32）。金曜夕方の渋滞を見込み17:15にホテルを出ます。',
           points: [
-            '金曜夕方のストリップ周辺は渋滞しやすいため、17:15 出発を厳守してください。',
-            'LAS で預けたスーツケースは羽田（HND）までスルーチェックインされます（タグが「HND」になっていることをカウンターで目視確認）。',
-            '買い忘れたお土産（Ethel M Chocolates など）は保安検査後の LAS 空港内ショップでも買えます。'
+            '金曜夕方のラスベガス・ストリップは週末観光客の到着ラッシュで非常に混むため、17:15 ホテル発を厳守します。',
+            'LAS 空港の AA カウンターで荷物を預ける際、タグに「HND」までスルー印字されていることを目視確認します（LAX で荷物受取不要）。',
+            '買い忘れたお土産（地元老舗の Ethel M Chocolates 等）は保安検査後の LAS ターミナル内ショップでも購入できます。'
           ],
-          prep: 'パスポート・スーツケース・液体100ml以下確認・Visit Japan Web 確認',
+          prep: 'パスポート・スーツケース（23kg以下目安）・液体100ml以下確認・Visit Japan Web',
           mapQ: 'Harry+Reid+International+Airport+Terminal+1',
           nextMove: 'LAS T1 保安検査 → 搭乗ゲートへ'
         },
@@ -3104,10 +3376,10 @@
           type: 'confirmed', tag: 'フライト',
           desc: '1時間21分。預け荷物は羽田までスルーのため、LAX での荷物受取は不要です。',
           points: [
-            'LAX 到着後は 3時間17分の乗継時間があります。預け荷物は羽田直行のため身軽に動けます。',
-            '出国審査はありません。AA169 国際線ゲート（通常 Tom Bradley International Terminal 付近）へ移動し、深夜便に備えて水分・歯磨き・軽食を済ませます。'
+            'LAX 到着後は 3時間17分の乗継時間があります。アメリカ出国審査はなく、荷物も羽田まで直行するため身軽に国際線ゲート（通常 Tom Bradley International Terminal / Terminal 4 連絡通路経由）へ移動できます。',
+            '深夜 00:10 発の長時間フライトに備えて、LAX で水分補給・歯磨き・軽い夕食を済ませておくと機内でぐっすり眠れます。'
           ],
-          nextMove: 'LAX 乗継 3時間17分（荷物受取不要）'
+          nextMove: 'LAX 乗継 3時間17分（荷物受取不要・出国審査なし）'
         },
         {
           id: 's-1204-aa169', day: '12-04', code: 'AA169', dur: '11h55m',
@@ -3120,8 +3392,8 @@
           desc: '11時間55分の深夜便。Visit Japan Web のQRコードを事前にオフライン保存しておきます。',
           points: [
             '12/05 00:10 PST 発 → 日付変更線を越えて 12/06（日）05:05 JST 羽田T3着です。',
-            '乾燥対策のマスク・のど飴・リップ、折りたたみスリッパを手元に置いて休めます。',
-            'Visit Japan Web の税関申告 QR コードをスクショ保存しておくと早朝入国が一瞬で終わります。'
+            '折りたたみスリッパ・マスク・のど飴・リップを手元に置いて休みます。',
+            'Visit Japan Web の税関申告 QR コードを事前にスクショ保存しておけば、早朝の羽田到着でも一瞬で税関通過できます。'
           ],
           prep: 'Visit Japan Web QRスクショ・折りたたみスリッパ・乾燥対策'
         },
@@ -3137,7 +3409,7 @@
           desc: '<span data-vault="home_ret_desc" data-mask="Visit Japan Web 通過後、06:15羽田発が目安です。">Visit Japan Web 通過後、06:15羽田発が目安です。</span>',
           points: [
             '免税範囲（個人使用品合計20万円以下・酒3本・たばこ200本）を超える購入品があれば税関で申告します。',
-            '帰国後は経費精算用の領収書（ホテル・タクシー・空港移動など）をまとめて保管します。'
+            '帰国後は経費精算用の領収書（ホテル明細・タクシー・空港移動等）をまとめて保管し、JPN101 のメモを元に社内報告を整理します。'
           ]
         }
       ];
@@ -3159,13 +3431,25 @@
         ddBody.scrollTop = 0;
       }
 
-      // Close detail sheet before opening show card from inside sheet
+      // Handle interactive buttons INSIDE the detail sheet (Show Card, Guide, or Venue)
       detailDialog.addEventListener('click', (e) => {
         const sc = e.target.closest('[data-sheet-showcard]');
-        if (!sc) return;
-        const key = sc.dataset.sheetShowcard;
-        detailDialog.close();
-        openShowCard(key);
+        if (sc) {
+          const key = sc.dataset.sheetShowcard;
+          detailDialog.close();
+          openShowCard(key);
+          return;
+        }
+        const sg = e.target.closest('[data-sheet-guide]');
+        if (sg && GUIDES[sg.dataset.sheetGuide]) {
+          openDetailSheet(GUIDES[sg.dataset.sheetGuide]);
+          return;
+        }
+        const sv = e.target.closest('[data-sheet-venue]');
+        if (sv) {
+          const v = VENUES.find((x) => x.id === sv.dataset.sheetVenue);
+          if (v) openVenueDetail(v);
+        }
       });
 
       function openSessionDetail(item) {
@@ -3200,13 +3484,24 @@
         parts.push(`<div class="fact-grid">${facts.join('')}</div>`);
 
         if (item.points && item.points.length) {
-          parts.push(`<div><div class="sheet-sec-h">この予定のポイント</div><ul class="sheet-list">${item.points.map((p) => `<li>${p}</li>`).join('')}</ul></div>`);
+          parts.push(`<div><div class="sheet-sec-h">現地で役立つ詳細ポイント</div><ul class="sheet-list">${item.points.map((p) => `<li>${p}</li>`).join('')}</ul></div>`);
         } else if (item.desc) {
           parts.push(`<div class="sheet-callout">${item.desc}</div>`);
         }
 
+        if (item.techNotes && item.techNotes.length) {
+          parts.push(`<div><div class="sheet-sec-h">深掘り解説・予習ノート</div><div class="sheet-kv-list">${item.techNotes.map((n) => `<div class="sheet-kv"><div class="sheet-kv-title"><span>${n.k}</span></div><div class="sheet-kv-desc">${n.v}</div></div>`).join('')}</div></div>`);
+        }
+
         if (item.nextMove) {
-          parts.push(`<div class="sheet-callout ${item.warnMove ? 'is-warn' : ''}"><strong>次の移動・接続：</strong><br>${item.nextMove}</div>`);
+          const cleanMove = item.nextMove.replace(/（タップで詳細[^）]*）/g, '');
+          if (item.transitGuide) {
+            parts.push(`<button type="button" class="sheet-callout ${item.warnMove ? 'is-warn' : ''}" data-sheet-guide="${item.transitGuide}" style="width:100%;text-align:left;display:flex;align-items:center;justify-content:space-between;gap:10px;"><span><strong>次の移動・接続：</strong><br>${cleanMove}</span><span class="chev" aria-hidden="true">›</span></button>`);
+          } else if (item.transitVenue) {
+            parts.push(`<button type="button" class="sheet-callout ${item.warnMove ? 'is-warn' : ''}" data-sheet-venue="${item.transitVenue}" style="width:100%;text-align:left;display:flex;align-items:center;justify-content:space-between;gap:10px;"><span><strong>次の移動・接続：</strong><br>${cleanMove}</span><span class="chev" aria-hidden="true">›</span></button>`);
+          } else {
+            parts.push(`<div class="sheet-callout ${item.warnMove ? 'is-warn' : ''}"><strong>次の移動・接続：</strong><br>${cleanMove}</div>`);
+          }
         }
 
         if (tags.length) {
@@ -3373,9 +3668,16 @@
         timelineFeedEl.innerHTML = list.map((it, idx) => {
           const r = fmtRange(it.start, it.end, activeTz, activeDay);
           const pillCls = it.type === 'confirmed' ? 'p-confirmed' : it.type === 'event' ? 'p-event' : it.type === 'conflict' ? 'p-conflict' : '';
-          const connector = it.nextMove && idx < list.length - 1
-            ? `<div class="transit-link ${it.warnMove ? 'is-warn' : ''}">↓ ${it.nextMove}</div>`
-            : `<div style="height: 10px;"></div>`;
+          let connector = '<div style="height: 10px;"></div>';
+          if (it.nextMove && idx < list.length - 1) {
+            if (it.transitGuide) {
+              connector = `<button type="button" class="transit-link ${it.warnMove ? 'is-warn' : ''}" data-guide="${it.transitGuide}"><span>↓ ${it.nextMove}</span><span class="chev" aria-hidden="true">›</span></button>`;
+            } else if (it.transitVenue) {
+              connector = `<button type="button" class="transit-link ${it.warnMove ? 'is-warn' : ''}" data-transit-venue="${it.transitVenue}"><span>↓ ${it.nextMove}</span><span class="chev" aria-hidden="true">›</span></button>`;
+            } else {
+              connector = `<button type="button" class="transit-link ${it.warnMove ? 'is-warn' : ''}" data-sid="${it.id}"><span>↓ ${it.nextMove}</span><span class="chev" aria-hidden="true">›</span></button>`;
+            }
+          }
           return `
             <button type="button" class="t-card type-${it.type} ${it.cancelled ? 'is-cancelled' : ''}" data-sid="${it.id}" aria-label="${it.title} の詳細を開く">
               <div class="t-time-col">
@@ -3403,6 +3705,12 @@
       }
 
       timelineFeedEl.addEventListener('click', (e) => {
+        const tv = e.target.closest('[data-transit-venue]');
+        if (tv) {
+          const v = VENUES.find((x) => x.id === tv.dataset.transitVenue);
+          if (v) openVenueDetail(v);
+          return;
+        }
         const card = e.target.closest('[data-sid]');
         if (!card) return;
         const item = SCHEDULE.find((s) => s.id === card.dataset.sid);
@@ -3449,74 +3757,112 @@
         });
       });
 
-      // Decision Pin Memory
+      // Decision Pin Memory (Dedicated right-side pin button so tapping card text opens deep details!)
       let savedDecisions = {};
       try { savedDecisions = JSON.parse(localStorage.getItem('lv26_decisions') || '{}'); } catch (_) {}
       function syncDecisions() {
         document.querySelectorAll('[data-decision]').forEach((grp) => {
           const key = grp.dataset.decision;
           const picked = savedDecisions[key];
-          grp.querySelectorAll('[data-choice]').forEach((card) => {
-            const on = card.dataset.choice === picked;
-            card.classList.toggle('is-picked', on);
-            card.querySelector('.picked-badge').hidden = !on;
+          grp.querySelectorAll('.choice-row').forEach((row) => {
+            const on = row.dataset.choice === picked;
+            row.classList.toggle('is-picked', on);
+            const pin = row.querySelector('[data-pin]');
+            if (pin) {
+              pin.setAttribute('aria-pressed', String(on));
+              pin.innerHTML = on ? '<span>★</span><span class="pin-lbl">選択中</span>' : '<span>☆</span><span class="pin-lbl">仮選択</span>';
+            }
           });
         });
       }
       document.querySelectorAll('[data-decision]').forEach((grp) => {
         grp.addEventListener('click', (e) => {
-          const card = e.target.closest('[data-choice]');
-          if (!card) return;
+          const pin = e.target.closest('[data-pin]');
+          if (!pin) return;
           const key = grp.dataset.decision;
-          savedDecisions[key] = savedDecisions[key] === card.dataset.choice ? null : card.dataset.choice;
+          const val = pin.dataset.pin;
+          savedDecisions[key] = savedDecisions[key] === val ? null : val;
           try { localStorage.setItem('lv26_decisions', JSON.stringify(savedDecisions)); } catch (_) {}
           syncDecisions();
         });
       });
       syncDecisions();
 
-      // Food Spots (Tappable for Rich Detail Dialog)
+      // Food Spots (Deep Researched Real Menu & USD Prices)
       const FOODS = [
         {
           id: 'nook', name: 'Nook Express（LINQ館内・24h）', time: '0m', note: '早朝のコーヒー・朝食サンドを秒で買える拠点ショップ',
-          budget: '$8〜$16（カウンター・チップ0〜10%）', hours: '24時間営業', bestFor: '12/02 08:30前・12/04 フーバーダム出発前の朝',
-          tips: ['ホテル内エレベーターを降りてすぐのため、時間が読めない朝の最強バックアップです。', 'ペットボトルの水はストリップ内では割高なので、近くの CVS / Walgreens でまとめ買いすると節約できます。'],
+          budget: '$8〜$16（カウンター・チップ0〜10%）', hours: '24時間営業（The LINQ ロビー階）', bestFor: '12/02 08:30前・12/04 フーバーダム出発前の朝',
+          menu: [
+            { name: 'ドリップコーヒー / ラテ', price: '$6〜$9', desc: 'ホテルのエレベーターを降りてそのまま買える最短ルート' },
+            { name: 'クロワッサン・ベーグルサンド', price: '$10〜$15', desc: '着席不要でテイクアウトして歩きながら食べられる' }
+          ],
+          tips: ['時間が読めない早朝（12/02 08:30 DVT340・12/04 07:30チェックアウト）の最強バックアップです。', '水ペットボトルはホテル館内だと1本$5〜$7するため、近くの Walgreens / CVS で1.5L水を買って部屋へ置いておくと大幅に節約できます。'],
           q: 'Nook+Express+The+LINQ+Las+Vegas'
         },
         {
-          id: 'innout', name: 'In-N-Out Burger（LINQ Promenade）', time: '2m', note: '西海岸名物バーガー。並んでも回転が速く手頃',
-          budget: '$10〜$15（カウンター・チップ不要）', hours: '10:30〜深夜（目安）', bestFor: '昼食・夜食のサク飯',
-          tips: ['定番は「Double-Double」。裏メニューの「Animal Style（グリルドオニオン＆特製ソース追加）」も人気です。', 'ラスベガスの物価高のなかで圧倒的にコスパが良く、行列でも10〜15分で回ることが多いです。'],
-          q: 'In-N-Out+Burger+LINQ+Promenade+Las+Vegas'
+          id: 'innout', name: 'In-N-Out Burger（LINQ Promenade）', time: '2m', note: '西海岸名物バーガー。並んでも回転が速く圧倒的コスパ',
+          budget: '$8〜$13（カウンター・チップ不要）', hours: '日〜木 10:30–01:00 ／ 金土 10:30–01:30', bestFor: '昼食・夜のサク飯・お土産グッズ購入',
+          menu: [
+            { name: 'Double-Double（定番ダブル）', price: '~$5.90 / コンボ ~$10.45', desc: 'ストリップ物価の半額以下で焼きたてバーガーが食べられる鉄板' },
+            { name: '裏メニュー：Animal Style', price: '無料〜追加少額', desc: '「Animal Style, please」で特製ソース＋グリルドオニオン＋マスタード焼きに変更。フライも Animal Style Fries 可' },
+            { name: '併設 Company Store', price: 'グッズ各種', desc: 'LINQ店（3545 S Las Vegas Blvd, Suite L24）は公式グッズショップ併設で限定Tシャツや小物も買えます' }
+          ],
+          tips: ['常に人が並んでいますが調理ラインが爆速のため、見た目の行列より早く 10〜15 分で買えることが多いです。', '14:00〜16:30 の中途半端な時間帯はさらに空いています。'],
+          q: 'In-N-Out+Burger+3545+S+Las+Vegas+Blvd'
         },
         {
-          id: 'fish', name: 'Gordon Ramsay Fish & Chips', time: '2m', note: 'カウンター形式で揚げたて。短時間の昼食に最適',
-          budget: '$18〜$26（カウンター・チップ不要〜任意）', hours: '11:00〜深夜（目安）', bestFor: 'セッション合間の45分ランチ',
-          tips: ['有名シェフ Gordon Ramsay のカジュアル店。フィッシュ＆チップス＋タルタル系ソースの組み合わせが定番です。', '着席レストランより圧倒的に早く食べ終われるため、11/30 や 12/02 の合間に使いやすいです。'],
+          id: 'fish', name: 'Gordon Ramsay Fish & Chips', time: '2m', note: 'カウンター形式で揚げたて。6種の特製ソースが名物',
+          budget: '$19〜$28（カウンター・チップ不要〜任意）', hours: '11:00〜深夜（LINQ Promenade 中央）', bestFor: '11/30・12/02 セッション合間の45分ランチ',
+          menu: [
+            { name: 'Fish Box（タラ3本＋チップス）', price: '~$21.99', desc: 'カリッと揚がった看板メニュー。選べるソースが2種付属（追加 +$0.99）' },
+            { name: 'Chicken / Shrimp / Lobster Box', price: '$18.99〜$22.99', desc: '裏メニュー「G Spot」で Fish＋Chicken＋Shrimp 全部盛りも可' },
+            { name: 'Dirty Chips 変更（トリュフ等）', price: '+$5.99', desc: 'トリュフパルメザン or ハラペーニョチョリソーへアップグレード' }
+          ],
+          tips: ['選べる6種ソース：Gordon’s Tartar（王道）／ Curry & Mango（人気No.1甘辛）／ Sriracha Aïoli（辛口）／ Southwest Ranch ／ Dijon Mayo ／ Cocktail Sauce。', 'カウンター注文＋立食／外ベンチ形式のため、着席店より圧倒的に短時間で食べ終われます。'],
           q: 'Gordon+Ramsay+Fish+Chips+LINQ+Las+Vegas'
         },
         {
           id: 'bistro', name: "Favorite Bistro / Maxie's", time: '3m', note: 'しっかり座って食べる朝・ブランチの定番2軒',
-          budget: '$25〜$40＋チップ18%', hours: '朝〜夜（Maxie’s は朝強い）', bestFor: '時間に余裕のある朝・仲間とのブランチ',
-          tips: ['どちらも LINQ Promenade 沿いで徒歩3分圏内。テーブルサービスのため税引前18%チップを見込みます。', '12/03（木）は午前が空いているため、ゆっくり朝食をとるのにぴったりです。'],
-          q: 'Maxies+Las+Vegas+LINQ'
+          budget: '$20〜$35＋チップ18%', hours: '朝〜夜（テラス席あり・LINQ Promenade）', bestFor: '12/03 午前のゆったり朝食・仲間とのブランチ',
+          menu: [
+            { name: 'Favorite Bistro：Steak & Eggs', price: '~$18.95', desc: 'ストリップ沿いでは破格の朝食スペシャル。Croque Monsieur (~$19.95) も人気' },
+            { name: 'Maxie’s：Country Fried Steak / Burrito', price: '$20〜$25', desc: 'ボリューム満点の王道アメリカン朝食。綿菓子パンケーキやシリアルシェイクも名物' },
+            { name: 'Maxie’s：Crispy Chicken Sandwich', price: '~$18.95', desc: 'フライ付きで昼食にも使いやすい' }
+          ],
+          tips: ['どちらも LINQ 出てすぐ徒歩3分。着席レストランのため会計時は税引前 18% チップを目安にします。', 'Favorite Bistro のテラス席は High Roller を眺めながら気持ちよく朝食をとれます。'],
+          q: 'The+Favorite+Bistro+LINQ+Las+Vegas'
         },
         {
-          id: 'yard', name: 'Flour & Barley / Yard House', time: '4m', note: '窯焼きピザ＆クラフトビール。セッション帰りの1杯に',
-          budget: '$30〜$55＋チップ18%', hours: '昼〜深夜', bestFor: '夜に仲間と軽く飲む・食事する場面',
-          tips: ['Yard House は生ビール100種以上＆メニュー豊富でグループでも入りやすい定番店。', 'LINQ 徒歩4分なので飲んだあとすぐ部屋に戻れます。'],
+          id: 'yard', name: 'Flour & Barley / Yard House', time: '4m', note: '生ビール100種超＆ハッピーアワー半額前菜が狙い目',
+          budget: '$25〜$50＋チップ18%', hours: '昼〜深夜（LINQ Promenade 奥・High Roller前）', bestFor: 'セッション帰りの1杯・仲間との夕食',
+          menu: [
+            { name: 'Yard House：Poke Nachos / Lettuce Wraps', price: '$14〜$18（HH半額対象）', desc: 'アジア系フレーバーの定番おつまみ。日本人の口に非常に合います' },
+            { name: 'Yard House：ドラフトビール 100種超', price: 'ハーフヤード有', desc: '迷ったらサーバーに「Can I sample〜?」で無料試飲してから注文できます' },
+            { name: 'Flour & Barley：窯焼きピザ', price: '$20〜$28', desc: '少し静かにピザ＋クラフトビールを楽しみたい夜に最適' }
+          ],
+          tips: ['【節約テク】Yard House は月〜金午後＆日〜水深夜にハッピーアワーがあり、対象アペタイザーが半額になります（現地店舗で当日の対象時間を確認）。', 'LINQ 徒歩4分なので飲んだあとすぐ部屋へ戻れて安全です。'],
           q: 'Yard+House+LINQ+Promenade+Las+Vegas'
         },
         {
-          id: 'urth', name: 'Urth Caffé / Grand Lux Cafe（Venetian）', time: '10m', note: '12/01・12/03のVenetian滞在日に便利なカフェ＆大箱',
-          budget: '$20〜$40', hours: '朝〜夜（Grand Lux は24h枠あり）', bestFor: '12/01 Keynote後・12/03 EBC〜JPN101の合間',
-          tips: ['12/03 は 12:45 に EBC46788 が終わり、14:30 開場の JPN101 まで同館内で過ごせるため Venetian 内の食事がベストです。', 're:Invent 期間中の昼時は混むため、12:45 終了直後にすぐ向かうとスムーズです。'],
+          id: 'grandlux', name: 'Grand Lux Cafe（Venetian / Palazzo）', time: '10m', note: 'Cheesecake Factory 姉妹店。Venetian館内2店舗で大箱',
+          budget: '$20〜$38＋チップ18%', hours: '朝〜深夜（Venetian店は深夜/24h枠あり）', bestFor: '12/01 Keynote後・12/03 EBC〜JPN101の合間',
+          menu: [
+            { name: 'Chicken Madeira / サラダ・パスタ類', price: '$18〜$32', desc: '1皿がアメリカサイズで非常に大きいため、複数人ならシェアもおすすめ' },
+            { name: '出来立てベニエ / チョコレートケーキ', price: '$10〜$16', desc: '注文後に焼き上げる名物デザート。甘いものが欲しい午後に最適' },
+            { name: '補足：Urth Caffé について', price: 'Wynn 館内', desc: 'ヘルシーなオーガニックカフェ Urth Caffé は Venetian ではなく Wynn 側にあるため、11/30 の Wynn 滞在時に使えます（Spanish Latte ~$7–8）' }
+          ],
+          tips: ['Venetian 館内（カジノフロア）と Palazzo 側（劇場近く）の2店舗あります。12/03 は 12:45 に EBC が終わるので即向かうとランチ行列を避けやすいです。'],
           q: 'Grand+Lux+Cafe+Venetian+Las+Vegas'
         },
         {
-          id: 'americano', name: 'Café Americano（Caesars Palace・24h）', time: '8m', note: 'GameDay後や夜遅めの食事でも開いているダイナー',
-          budget: '$25〜$45＋チップ18%', hours: '24時間営業', bestFor: '12/01 GameDay 後・深夜の食事難民回避',
-          tips: ['Caesars Palace ロビー付近の24時間ダイナー。到着が遅れた夜や、イベント後の小腹満たしに覚えておくと心強いです。'],
+          id: 'americano', name: 'Café Americano（Caesars Palace・24h）', time: '8m', note: 'GameDay後や深夜の食事難民を救う24時間ダイナー',
+          budget: '$24〜$42＋チップ18%', hours: '24時間営業（Caesars Palace ロビー付近）', bestFor: '12/01 GameDay 後・夜遅くの食事',
+          menu: [
+            { name: 'バーガー・ロコモコ・オムレツ・パスタ', price: '$20〜$32', desc: '24時間いつでも温かい食事が食べられる安心のロビーダイナー' },
+            { name: '軽食代替：Pronto by Giada（Caesars内）', price: '$8〜$18', desc: '急ぎのコーヒーやパニーニだけ買いたいときは Caesars 内の Pronto も便利' }
+          ],
+          tips: ['Caesars Palace は LINQ から歩道橋を渡ってすぐ。GameDay 終了後（17:00）や到着が遅くなった夜の切り札として覚えておくと便利です。'],
           q: 'Cafe+Americano+Caesars+Palace+Las+Vegas'
         }
       ];
@@ -3539,11 +3885,17 @@
           bodyHtml: `
             <div class="fact-grid">
               <div class="fact-box is-full"><span class="fact-lbl">予算・チップ目安</span><span class="fact-val is-gold">${f.budget}</span></div>
-              <div class="fact-box is-full"><span class="fact-lbl">営業時間目安</span><span class="fact-val">${f.hours}</span></div>
+              <div class="fact-box is-full"><span class="fact-lbl">営業時間・場所</span><span class="fact-val">${f.hours}</span></div>
               <div class="fact-box is-full"><span class="fact-lbl">おすすめのタイミング</span><span class="fact-val is-mint">${f.bestFor}</span></div>
             </div>
             <div>
-              <div class="sheet-sec-h">現地で役立つメモ</div>
+              <div class="sheet-sec-h">定番メニュー＆目安価格（USD）</div>
+              <div class="sheet-kv-list">
+                ${f.menu.map((m) => `<div class="sheet-kv"><div class="sheet-kv-title"><span>${m.name}</span><span class="sheet-kv-price">${m.price}</span></div><div class="sheet-kv-desc">${m.desc}</div></div>`).join('')}
+              </div>
+            </div>
+            <div>
+              <div class="sheet-sec-h">注文＆節約のコツ</div>
               <ul class="sheet-list">${f.tips.map((t) => `<li>${t}</li>`).join('')}</ul>
             </div>
             <div class="sheet-actions">
@@ -3556,19 +3908,29 @@
       // Souvenirs (Tappable)
       const SOUVENIRS = [
         {
-          id: 'corp', name: '会社向け（大人数・小分け個包装）', time: '配り用', note: 'カジノチップ型チョコ、「Welcome to Fabulous Las Vegas」小物',
-          where: 'Walgreens / CVS / LINQ Promenade 土産店 / LAS空港',
-          tips: ['アメリカの菓子は大袋が多く個包装が少ないため、「Individually Wrapped」表記を探します。', 'カジノチップ型の個包装チョコや Ghirardelli（ギラデリ）の個包装スクエアは配りやすくハズレがありません。']
+          id: 'corp', name: '会社向け（大人数・小分け個包装）', time: '配り用', note: 'カジノチップ型チョコ・Ghirardelli 個包装・「Welcome to Las Vegas」小物',
+          where: 'Walgreens / CVS（ストリップ沿い複数店） ／ LINQ Promenade 土産店 ／ LAS空港',
+          tips: [
+            'アメリカ菓子は大袋が多く個包装が少ないため、パッケージの「Individually Wrapped」表記を確認します。',
+            'Ghirardelli（ギラデリ）の個包装スクエア大袋（Walgreens 等で $8〜$15 程度）やカジノチップ型チョコは軽くて配りやすく定番です。',
+            'Walgreens / CVS はホテル土産店より安く、飲料水やリップ等の買い出しと同時に済ませられます。'
+          ]
         },
         {
-          id: 'ethel', name: '家族・目上向け：Ethel M Chocolates', time: '定番', note: 'ラスベガス地元の老舗。LAS空港内にも店舗あり',
-          where: 'LAS 空港内ショップ（T1 保安検査後あり）・ストリップ周辺',
-          tips: ['ラスベガス発祥のプレミアムチョコブランド。見た目も上品で家族・目上の人向けの本命です。', '空港で買えばスーツケースを圧迫せず、帰国直前まで温度変化も最小限にできます。']
+          id: 'ethel', name: '家族・目上向け：Ethel M Chocolates', time: '定番', note: 'ラスベガス地元の老舗プレミアムチョコ。LAS空港 T1 保安検査後にも店舗あり',
+          where: 'LAS 空港内ショップ（T1 保安検査通過後あり）・ストリップ周辺店',
+          tips: [
+            'M&M’s の創業家がラスベガスで立ち上げた地元発祥の高級チョコブランド。保存料不使用で味・見た目ともに別格です。',
+            '12/04 に LAS 空港の保安検査を通ったあとで買えば、スーツケースの重さ・容量を圧迫せず溶ける心配も最小限にできます。'
+          ]
         },
         {
-          id: 'friends', name: "友人向け：M&M's World / Trader Joe's", time: '手軽', note: '限定チョコやアメリカらしいスナック類',
-          where: "M&M's World（MGM Grand 近く・4階建て）／ Trader Joe's（市街地）",
-          tips: ['12/02 に MGM Grand へ『KÀ』を観に行くなら、すぐ隣の M&M’s World や Coca-Cola Store に寄れる好動線です。', '往路の60Lスーツケースは2〜3割の空きを残しておくと帰りも楽に収まります。']
+          id: 'friends', name: "友人向け：M&M's World / In-N-Out グッズ", time: '手軽', note: '限定チョコ・Coca-Cola Store・LINQ の In-N-Out 公式ショップ',
+          where: "M&M's World（MGM Grand 隣・4階建て）／ In-N-Out Company Store（LINQ Promenade）",
+          tips: [
+            '12/02 に MGM Grand へ『KÀ』を観に行くなら、すぐ隣の M&M’s World や Coca-Cola Store へ立ち寄れる最高の動線です。',
+            'ホテルから徒歩2分の In-N-Out（LINQ店）は公式グッズショップ併設で、ラスベガス限定Tシャツやステッカーが手に入ります。'
+          ]
         }
       ];
       document.getElementById('souvenirList').innerHTML = SOUVENIRS.map((s) => `
@@ -3590,24 +3952,96 @@
               <div class="fact-box is-full"><span class="fact-lbl">主な買える場所</span><span class="fact-val is-gold">${s.where}</span></div>
             </div>
             <div>
-              <div class="sheet-sec-h">選び方・買うタイミング</div>
+              <div class="sheet-sec-h">選び方・買うタイミングのコツ</div>
               <ul class="sheet-list">${s.tips.map((t) => `<li>${t}</li>`).join('')}</ul>
+            </div>
+            <div class="sheet-actions">
+              <button type="button" class="sheet-btn-secondary" data-sheet-guide="duty-free">免税枠・スーツケース余白ルールを見る</button>
             </div>
           `
         });
       });
 
-      // Venue Map List (Tappable for Route Tips + Related Sessions + Map)
+      // Venue Map List (Deep Indoor Shortcuts & Buffer Times)
       const VENUES = [
-        { id: 'forum', name: 'Caesars Forum', time: '徒歩 7分', note: '11/30 AIM301-R、12/02 DVT340・OPN307-R・COM324-R', route: 'LINQ Promenade を High Roller 方面へ直進し、専用歩道橋を渡るとすぐ到着します。', sessions: ['11/30 12:00 AIM301-R（Level 1 Forum 120）', '12/02 08:30 DVT340（Level 1 Academy 417）', '12/02 12:30 OPN307-R（Level 1 Academy 412）', '12/02 15:00 COM324-R（Level 1 Forum 120）'], q: 'Caesars+Forum+Las+Vegas' },
-        { id: 'vanderpump', name: 'The Vanderpump Hotel', time: '徒歩 5–8分', note: '11/30 18:30 APJC Kick Off Party（招待確定済）', route: 'LINQ からすぐ南側エリア。パーティ後も徒歩で安全に戻れる近さです。', sessions: ['11/30 18:30 ESAP26 APJC Kick Off Party（Soleia Rooftop & Pool）'], q: 'The+Vanderpump+Hotel+Las+Vegas' },
-        { id: 'palace', name: 'Caesars Palace', time: '徒歩 8–10分', note: '12/01 GameDay 3h、12/02 TNC333-R1', route: 'ストリップ大通りを歩道橋で西側へ渡ってすぐ。館内が広いため、Emperors Level の案内表示を見て移動に＋10分見込むと安全です。', sessions: ['12/01 14:00 GHJ301-S GameDay（Emperors Level Palace Ballroom III）', '12/02 10:00 TNC333-R1（Emperors Level Augustus Ballroom V）'], q: 'Caesars+Palace+Las+Vegas' },
-        { id: 'venetian', name: 'The Venetian', time: '徒歩 10–12分', note: 'Japan Desk (L1 607)・EXPO・Keynote・EBC・JPN101', route: 'ストリップ東側を北へ直進。Harrah’s を抜けてすぐ。re:Invent の中心ハブで館内移動だけで10分かかります。', sessions: ['11/30 09:00 Japan Support Desk（L1 Casanova 607）', '12/01 08:30 KEY002 / 11:00 BIZ111-S / EXPO', '12/03 12:00 EBC46788（L4 Zeno 4704）', '12/03 15:00 JPN101（L2 Venetian Theatre）'], q: 'The+Venetian+Las+Vegas' },
-        { id: 'mgm', name: 'MGM Grand', time: 'モノレール 15–20分', note: '12/02 ショー『KÀ』候補（DAT453 会場）', route: 'Harrah’s & The LINQ 駅（ホテル裏側）からモノレール1本で南端 MGM Grand 駅へ直通。渋滞知らずです。', sessions: ['12/02 20:30 シルク・ドゥ・ソレイユ『KÀ』（案1）'], q: 'MGM+Grand+Las+Vegas' },
-        { id: 'wynn', name: 'Wynn / Encore', time: '車 10分', note: '11/30 ARC310-R、12/01 Japan Night（徒歩20–25分）', route: 'Venetian のさらに北側。歩くと20〜25分かかるため、時間がない時や夜の Japan Night は配車アプリ／シャトルが楽です。', sessions: ['11/30 14:30 AIM288-S / 15:00 ARC310-R（Cristal 2）', '12/01 19:00 Japan Night（Wynn Event Pavilion）'], q: 'Wynn+Las+Vegas' },
-        { id: 'rw', name: 'Resorts World', time: '車 10分', note: '11/30 16:00 AWS & Sony Happy Hour', route: 'Wynn のすぐ北西。11/30 は 16:00 に Wynn でセッションが終わるため、そのまま北へ車で5〜10分で着きます。', sessions: ['11/30 16:00 AWS & Sony Happy Hour（Eight Cigar Lounge）'], q: 'Resorts+World+Las+Vegas' },
-        { id: 'allegiant', name: 'Allegiant Stadium', time: 'シャトル 15–20分', note: '12/03 夜 re:Play（公式クロージング）', route: 're:Play 専用シャトルバスが主要ホテルから運行されます。帰りは混み合うため少し早めに動くか防寒対策をしておきます。', sessions: ['12/03 18:30–22:30 re:Play 公式パーティー'], q: 'Allegiant+Stadium+Las+Vegas' }
+        {
+          id: 'forum', name: 'Caesars Forum', time: '徒歩 7分', indoor: '館内徒歩 +5分（計12分目安）',
+          note: '11/30 AIM301-R、12/02 DVT340・OPN307-R・COM324-R',
+          route: 'The LINQ から最も近い最重要会場。LINQ Promenade を High Roller（観覧車）方面へ直進し、奥の専用歩道橋を渡るとすぐ入口です。The Venetian の Expo エリアとも広い屋内通路で直結しています（Venetian↔Forum は館内徒歩15〜20分）。',
+          sessions: ['11/30 12:00 AIM301-R（Level 1 Forum 120）', '12/02 08:30 DVT340（Level 1 Academy 417）', '12/02 12:30 OPN307-R（Level 1 Academy 412）', '12/02 15:00 COM324-R（Level 1 Forum 120）'],
+          q: 'Caesars+Forum+Las+Vegas'
+        },
+        {
+          id: 'vanderpump', name: 'The Vanderpump Hotel', time: '徒歩 5–8分', indoor: 'LINQすぐ南側・夜も安心',
+          note: '11/30 18:30 APJC Kick Off Party（招待確定済）',
+          route: 'The LINQ から南へすぐの近距離エリア。11/30 夜の APJC Kick Off Party（Soleia Rooftop & Pool）終了後も徒歩数分でホテルへ戻れます。屋外プール会場は冷えるので上着持参。',
+          sessions: ['11/30 18:30–23:30 ESAP26 APJC Kick Off Party（Soleia Rooftop & Pool）'],
+          q: 'The+Vanderpump+Hotel+Las+Vegas'
+        },
+        {
+          id: 'palace', name: 'Caesars Palace', time: '徒歩 8–10分', indoor: '館内徒歩 +10分（計20分見込み）',
+          note: '12/01 GameDay 3h、12/02 TNC333-R1',
+          route: 'ストリップ大通りを歩道橋で西側へ渡ってすぐ正面ですが、ラスベガス特有の「蜃気楼効果（近く見えて館内が巨大）」の代表格です。カジノフロアを抜けて Emperors Level（会議フロア）まで館内だけで10分かかるため、開始25〜30分前にホテルを出るのが鉄則です。',
+          sessions: ['12/01 14:00 GHJ301-S GameDay（Emperors Level Palace Ballroom III）', '12/02 10:00 TNC333-R1（Emperors Level Augustus Ballroom V）'],
+          q: 'Caesars+Palace+Las+Vegas'
+        },
+        {
+          id: 'venetian', name: 'The Venetian', time: '徒歩 10–12分', indoor: '館内徒歩 +10〜15分（計25分見込み）',
+          note: 'Japan Desk (L1 607)・EXPO・Keynote・EBC・JPN101・Sphere連絡橋',
+          route: 're:Invent の中心ハブ。LINQ から東側歩道を北へ直進し Harrah’s を抜けてすぐ。①EXPO（Level 2 Hall B）と Caesars Forum は屋内直結 ②Grand Canal Shoppes / Expo 側から「Sphere Bridge」案内表示で Sphere へ完全屋内10分移動 ③EBC（Level 4 Zeno 4704）は専用エレベーターで上階へ。',
+          sessions: ['11/30 09:00 Japan Support Desk（L1 Casanova 607）', '12/01 08:30 KEY002 / 11:00 BIZ111-S / EXPO', '12/03 12:00 EBC46788（L4 Zeno 4704）', '12/03 15:00 JPN101（L2 Venetian Theatre）'],
+          q: 'The+Venetian+Las+Vegas'
+        },
+        {
+          id: 'mgm', name: 'MGM Grand', time: 'モノレール 15–20分', indoor: '乗車7–10分＋駅徒歩10分',
+          note: '12/02 ショー『KÀ』候補（DAT453 会場）',
+          route: 'ストリップ大通りの渋滞を避けるならモノレール一択。The LINQ カジノ奥（東側裏手）の「Harrah’s & The LINQ 駅」から南端 MGM Grand 駅まで乗車7〜10分（4〜8分間隔）。オンラインeTicket $5.75（駅窓口$6.25）／24時間パス $13.95。火〜木は深夜02:00まで運行しているため『KÀ』終演後も安心です。',
+          sessions: ['12/02 20:30 シルク・ドゥ・ソレイユ『KÀ』（KÀ Theatre・案1）'],
+          q: 'MGM+Grand+Las+Vegas'
+        },
+        {
+          id: 'wynn', name: 'Wynn / Encore', time: '車 10分', indoor: '徒歩20–25分＋館内10分',
+          note: '11/30 ARC310-R、12/01 Japan Night',
+          route: 'Venetian のさらに北側。徒歩だと20〜25分＋館内10分かかるため、11/30 の Caesars Forum からの移動や 12/01 夜の Japan Night は re:Invent 公式シャトルまたは配車アプリ（Uber/Lyft）が快適です。館内にヘルシーカフェ Urth Caffé があります。',
+          sessions: ['11/30 14:30 AIM288-S / 15:00 ARC310-R（Upper Conv. Promenade Cristal 2）', '12/01 19:00 Japan Night（Wynn Event Pavilion）'],
+          q: 'Wynn+Las+Vegas'
+        },
+        {
+          id: 'rw', name: 'Resorts World', time: '車 10分', indoor: 'Wynnから北へ車5–10分',
+          note: '11/30 16:00 AWS & Sony Happy Hour',
+          route: 'Wynn / Encore のすぐ北西。11/30 は 16:00 に Wynn で ARC310-R が終わるため、そのまま北隣へ配車アプリ／タクシーで5〜10分で着く好動線です。帰りは Vanderpump（LINQ近く）へ車で約10分。',
+          sessions: ['11/30 16:00–18:00 AWS & Sony Happy Hour（Eight Cigar Lounge）'],
+          q: 'Resorts+World+Las+Vegas'
+        },
+        {
+          id: 'allegiant', name: 'Allegiant Stadium', time: 'シャトル 15–20分', indoor: '公式専用シャトル利用',
+          note: '12/03 夜 re:Play（公式クロージング）',
+          route: 'NFL ラスベガス・レイダース本拠地。re:Play 当日は各主要ホテルから公式専用シャトルが連続運行されます。巨大スタジアムのためクリアバッグ／小型ポーチ規制に注意し、帰りの混雑を避けるなら 21:30 頃の早め撤収が快適です。',
+          sessions: ['12/03 18:30–22:30 re:Play 公式パーティー'],
+          q: 'Allegiant+Stadium+Las+Vegas'
+        }
       ];
+      function openVenueDetail(v) {
+        openDetailSheet({
+          kicker: `VENUE ACCESS · THE LINQ から ${v.time}`,
+          title: v.name,
+          bodyHtml: `
+            <div class="fact-grid">
+              <div class="fact-box"><span class="fact-lbl">LINQ からの目安</span><span class="fact-val is-gold">${v.time}</span></div>
+              <div class="fact-box"><span class="fact-lbl">館内移動・補足</span><span class="fact-val is-mint">${v.indoor}</span></div>
+            </div>
+            <div class="sheet-callout"><strong>現地ショートカット＆行き方：</strong><br>${v.route}</div>
+            <div>
+              <div class="sheet-sec-h">この会場での予定</div>
+              <ul class="sheet-list">${v.sessions.map((s) => `<li>${s}</li>`).join('')}</ul>
+            </div>
+            <div class="sheet-actions">
+              <a class="sheet-btn-primary" href="https://maps.google.com/?q=${v.q}" target="_blank" rel="noopener">Google マップでルートを開く ↗</a>
+              <button type="button" class="sheet-btn-secondary" data-sheet-guide="campus-nav">re:Invent 会場移動＆10分前ルール全体ガイド</button>
+            </div>
+          `
+        });
+      }
       document.getElementById('venueMapList').innerHTML = VENUES.map((v) => `
         <button type="button" class="venue-row-btn" data-venue="${v.id}">
           <div><span class="venue-name">${v.name}</span><span class="venue-note">${v.note}</span></div>
@@ -3618,121 +4052,168 @@
         const b = e.target.closest('[data-venue]');
         if (!b) return;
         const v = VENUES.find((x) => x.id === b.dataset.venue);
-        if (!v) return;
-        openDetailSheet({
-          kicker: `VENUE ACCESS · THE LINQ から ${v.time}`,
-          title: v.name,
-          bodyHtml: `
-            <div class="sheet-callout"><strong>行き方のコツ：</strong><br>${v.route}</div>
-            <div>
-              <div class="sheet-sec-h">この会場での予定</div>
-              <ul class="sheet-list">${v.sessions.map((s) => `<li>${s}</li>`).join('')}</ul>
-            </div>
-            <div class="sheet-actions">
-              <a class="sheet-btn-primary" href="https://maps.google.com/?q=${v.q}" target="_blank" rel="noopener">Google マップでルートを開く ↗</a>
-            </div>
-          `
-        });
+        if (v) openVenueDetail(v);
       });
 
-      // 12 Verified YouTube Videos + Rich Offline Study Guides
+      // 12 Verified YouTube Videos + Deep Researched Field Dossiers
       const YT_THUMBS = {"-yBb9gMtSUU":"./media/yt_-yBb9gMtSUU.jpg","jkn02rqkF90":"./media/yt_jkn02rqkF90.jpg","wPlOaAKHco0":"./media/yt_wPlOaAKHco0.jpg","Vz70ZUoDSy4":"./media/yt_Vz70ZUoDSy4.jpg","01DJCxLuzAQ":"./media/yt_01DJCxLuzAQ.jpg","_OVGi0rLzAc":"./media/yt__OVGi0rLzAc.jpg","zcNR6cDJeHU":"./media/yt_zcNR6cDJeHU.jpg","U0s144AKnaU":"./media/yt_U0s144AKnaU.jpg","Y0n7IMd3mWM":"./media/yt_Y0n7IMd3mWM.jpg","05THTK74xb0":"./media/yt_05THTK74xb0.jpg","LKG6KZxP9JU":"./media/yt_LKG6KZxP9JU.jpg","P87lXNx2ycI":"./media/yt_P87lXNx2ycI.jpg"};
       const VIDEOS = [
         {
           id: '-yBb9gMtSUU', cat: 'transit', lang: '日本語', ch: "M's Travel & Recreation",
           title: 'ダラス国際空港到着から入国審査と乗り継ぎ便ゲートまでの移動',
           hook: 'DFW到着→荷物再預け→Skylinkの実写導線',
-          why: '11/29 の初アメリカ入国・乗継 2h58m の不安を一気に消せる最優先動画です。',
-          when: '出発前（〜11/28）に1回視聴推奨',
-          pts: ['AA国際線はターミナルD着。降機後は「Arrivals / Connecting Flights」の表示に従います。', 'ラスベガス直行タグが付いていても、ダラスの税関ホールで一度スーツケースを受け取り、出口の「Connecting Bags」へ再預けするのが米国ルールです。', '保安検査を抜けた先にある高架列車「Skylink」は2〜3分間隔で走っており、他ターミナルへ数分で移動できます。']
+          why: '11/29 の初アメリカ入国・DFW乗継（2h58m）の迷いポイントを実写で事前予習できる最優先動画です。',
+          when: '出発前（〜11/28）に必ず1回視聴',
+          yourTrip: '11/29 AA176（17:20 CST DFW Terminal D着）→ AA1797（20:18 CST発）。初回ESTAのため MPC 不可・通常 Visitors レーン利用。',
+          steps: [
+            { k: '① Terminal D 降機 → 入国審査（CBP）', v: '「Arrivals / Immigration」表示へ進み、初回ESTAなので通常の「Visitors」レーンへ並びます。滞在先（The LINQ）と目的（AWS re:Invent）を回答。' },
+            { k: '② 下階で荷物受取 → 税関通過', v: 'ラスベガス行きのタグが付いていても、必ずターンテーブルでスーツケースを一度ピックアップして税関出口を通ります。' },
+            { k: '③ 出口直後の AA Baggage Recheck へ再預け', v: '税関を出た目の前に American Airlines の再預けカウンターがあり、スキャンするだけで LAS 便へ自動で積まれます。' },
+            { k: '④ 上階 TSA 保安検査 → Skylink でゲートへ', v: '再保安検査（PC・液体物ルール注意）を抜けたら、高架列車 Skylink（2分間隔・内外2方向ループ・全ターミナルA〜Eへ最大9分）で出発ゲートへ移動します。' }
+          ]
         },
         {
           id: 'jkn02rqkF90', cat: 'transit', lang: '日本語', ch: 'Far West Life / アメリカガイドMasa',
           title: 'ラスベガス空港で旅行者が注意すべきこと（タクシー・Uber・T1）',
           hook: 'タクシー定額Zone 3とUber乗り場の違い',
-          why: '11/29 21:25 LAS T1 到着夜に迷わずバッジ受取→ホテル直行するための予習です。',
+          why: '11/29 21:25 LAS T1 到着夜、空港内のバッジ受取〜ホテル移動まで迷わず最短で抜けるための動画です。',
           when: '出発前（〜11/28）に視聴推奨',
-          pts: ['タクシーは行き先ごとのゾーン定額制（The LINQ は Zone 3・$30.25目安＋カード$3＋税チップ）。ぼったくり防止のため定額表を把握しておきます。', 'Uber / Lyft の配車乗り場はターミナルから駐車場棟（Parking Garage）へ少し歩くため、荷物が多い夜や急ぐ時はタクシーの方が早い場合があります。', '日曜夜は 23:59 まで空港内で re:Invent バッジを受け取れるため、外へ出る前に済ませるのが鉄則です。']
+          yourTrip: '11/29 21:25 LAS T1着 → 23:59締切のバッジ受取を先に済ませ → The LINQ（Zone 3）へ移動。',
+          steps: [
+            { k: '① まず空港内で re:Invent バッジ受取', v: 'Baggage Claim エリア内の特設窓口（日曜 23:59 まで）へパスポート＋受取コードを持って直行します。' },
+            { k: '② タクシー乗場（最短・定額制）', v: 'Baggage Claim 東側「Door 1–4」の外。ネバダ州公式ゾーン定額で The LINQ は Zone 3（基本 $30.25 ＋ 税3% ＋ カード手数料 ＋ チップ15%）。メーター詐欺の心配なし。' },
+            { k: '③ Uber / Lyft 乗場（路肩ピックアップ不可）', v: 'Door 2 付近のエレベーターで Level 2 へ上がり、連絡橋を渡って「Parking Garage Level 2」の専用エリアまで歩きます。60L荷物＋夜22時台ならタクシーが楽。' }
+          ]
         },
         {
           id: 'wPlOaAKHco0', cat: 'transit', lang: '日本語', ch: 'Far West Life / アメリカガイドMasa',
           title: 'ラスベガスのモノレールの乗り方と注意すべき点',
           hook: 'LINQ駅→MGM Grand直通の乗り場と券買い方',
-          why: '12/02 に MGM Grand（『KÀ』など）へ移動する際、ストリップ渋滞を完全回避できます。',
-          when: '出発前または12/02朝',
-          pts: ['駅はストリップ大通り側ではなくホテルの裏手（東側）にあるため、カジノ奥から看板「Monorail」をたどります。', 'Harrah’s & The LINQ 駅から南端の MGM Grand 駅まで15〜20分で直通します。', '紙の切符よりスマホのデジタル乗車券（Apple Wallet対応）を買っておくと改札がスムーズです。']
+          why: '12/02 に MGM Grand（『KÀ』等）へ移動する際、ストリップの渋滞を完全回避できる実戦知識が入ります。',
+          when: '出発前または 12/02 朝',
+          yourTrip: '12/02 夜の MGM Grand『KÀ』往復（Harrah’s & The LINQ 駅 ↔ MGM Grand 駅）。',
+          steps: [
+            { k: '① 駅の場所（ホテル裏手＝東側）', v: 'ストリップ大通り側ではなく、The LINQ / Harrah’s のカジノ奥を東側へ抜けた先に駅があります。「Monorail」看板を目印に歩きます。' },
+            { k: '② 料金＆運行時間（オンライン購入がお得）', v: '片道 $5.75（駅窓口 $6.25）／ 24時間パス $13.95（窓口 $15.50）。4〜8分間隔・MGM Grand まで乗車7〜10分。運行は月 07:00–24:00、火〜木 07:00–02:00、金〜日 07:00–03:00。' },
+            { k: '③ Apple Wallet 連携', v: '公式サイトでスマホ eTicket を購入しておけば、改札にiPhoneをかざすだけで通過でき券売機の列を避けられます。' }
+          ]
         },
         {
           id: 'Vz70ZUoDSy4', cat: 'reinvent', lang: '英語', ch: 'Dash0',
           title: 'AWS re:Invent 2026 Survival Guide: Tips from Two AWS Heroes',
-          hook: '1日2万歩・会場間30分・体験枠優先の鉄則',
-          why: 'AWS Hero 2名による最新2026年版サバイバル術。初参加のペース配分が掴めます。',
+          hook: '1日2万歩・10分前ルール・体験枠優先の鉄則',
+          why: 'AWS Hero 2名による最新2026年版サバイバル術。初参加で陥りがちな体力切れ・移動ミスを防げます。',
           when: '出発前（〜11/28）',
-          pts: ['会場が巨大で1日2万歩ペースになるため、新品の靴は避け、最も履き慣れたスニーカーを主軸にします。', 'ホテル名だけでは遠く、館内移動を含めて会場間は最低30〜45分見積もるのが安全です。', '座学の Breakout は後日 YouTube で公開されるため、現地では GameDay・Builders’ Session・Workshop・交流を優先するのが王道です。']
+          yourTrip: '11/30〜12/03 のセッション本番（特に予約確定済みの Builders’ Session / GameDay / Workshop）。',
+          steps: [
+            { k: '① 予約席「10分前ルール」厳守', v: '予約済みセッションでも、開始10分前に未着の席はすべてウォークアップ待機列へ開放されます。必ず開始15〜20分前に入口スキャンを済ませます。' },
+            { k: '② 1日2万歩＆ラスベガス蜃気楼対策', v: '地図上で隣に見えても館内徒歩だけで10〜15分かかります。新品の靴は絶対避け、履き慣れたスニーカー＋会場間30〜45分バッファを基本にします。' },
+            { k: '③ 現地は体験型＆交流に全振り', v: 'Breakout（講義）は後日YouTube公開されるため、予約した Kiro Builders’ Session・GameDay・Strands Workshop・夜パーティーを最優先するのが王道です。' }
+          ]
         },
         {
           id: '01DJCxLuzAQ', cat: 'reinvent', lang: '英語', ch: 'AWS Made Easy Livestream',
           title: 'AWS re:Invent — Top tips for first-timers',
           hook: '日曜夜バッジ受取・乾燥対策・廊下トラック',
-          why: '初参加者がやりがちな失敗（体調崩し・朝の行列・詰め込みすぎ）を事前に防げます。',
+          why: '初参加者がやりがちな失敗（朝の行列ロス・砂漠の乾燥による喉痛・充電切れ）をまるごと回避できます。',
           when: 'パッキング前（〜11/27）',
-          pts: ['日曜夜に空港でバッジを受け取ることで、月曜朝の最大60分待ち行列をスキップできます。', 'ラスベガスの強烈な乾燥＋会場の冷房対策として、脱ぎ着できる重ね着・マイ水筒・リップ・のど飴が効きます。', 'セッションだけでなく廊下での立ち話（Hallway Track）や夜パーティーでの出会いが最大の収穫になりやすいです。']
+          yourTrip: '11/29 夜 LAS T1 バッジ受取〜12/04 までの体調管理と装備設計。',
+          steps: [
+            { k: '① 日曜夜に空港でバッジ確保', v: '11/29 21:25着のその足で LAS T1 窓口へ寄ることで、翌朝の Venetian 大行列を回避し 09:00 の Japan Desk へ一番乗りできます。' },
+            { k: '② 砂漠の乾燥＋強烈な室内冷房', v: '外は乾燥（湿度20%前後）＆朝晩5〜10°C、会場内は冷房強め。脱ぎ着できるレイヤー＋マイ水筒（会場に給水機あり）＋リップ・目薬・のど飴が必須です。' },
+            { k: '③ Workshop Studio の準備', v: 'Hands-on 枠は AWS 側で一時アカウントが配布されますが、電源タップが足りない席もあるためノートPC満充電＋充電器＋モバイルバッテリーを常備します。' }
+          ]
         },
         {
           id: '_OVGi0rLzAc', cat: 'reinvent', lang: '日本語', ch: 'クラメソチャンネル',
           title: 'AWS re:Invent 現地レポート（展示・セッション・新サービス）',
           hook: 'EXPO熱量・日本語サポート・社内共有のコツ',
-          why: '日本人エンジニア目線で現地の空気感・Venetian EXPO の規模感がリアルにわかります。',
+          why: '日本人エンジニア目線で Venetian EXPO の規模感や日本向けサポートの使い方がリアルに掴めます。',
           when: '出発前（〜11/28）',
-          pts: ['Venetian の巨大 EXPO 会場や Swag 配布の雰囲気を事前に見ておくと現地で気後れしません。', 'Japan Support Desk や日本人向け EXPO ツアーをどう活用すると効率的かが分かります。', '帰国後の社内共有に向けて、Keynote と最終日の JPN101 で要点を拾う流れが整理できます。']
+          yourTrip: '11/30 Japan Desk (L1 607) → 12/01 EXPOツアー → 12/03 JPN101 の日本人動線フル活用。',
+          steps: [
+            { k: '① Venetian Hall B EXPO の歩き方', v: '巨大展示会場を闇雲に歩くと体力を消耗します。12/01 の「日本人向け EXPO パートナーツアー」で全体像と注目ブースを60分で押さえるのが効率的です。' },
+            { k: '② Japan Support Desk（Casanova 607）活用', v: '日本語で現地導線・イベント情報を相談でき、12/01 Japan Night のチケット引換拠点にもなっています。' },
+            { k: '③ 帰国後の社内報告フォーマット', v: '12/01 CEO Keynote で気になった発表をメモし、12/03 JPN101 で日本語総括を回収する2段構えで報告資料が最速で完成します。' }
+          ]
         },
         {
           id: 'zcNR6cDJeHU', cat: 'shows', lang: '英語', ch: 'Yellow Productions',
           title: 'Wizard of Oz Las Vegas Sphere Experience: REVIEW & FULL WALKTHROUGH',
-          hook: '45分前入場・遅刻不可・200番台座席レビュー',
-          why: 'Sphere チケット購入前に座席エリア選びと遅刻ルールを視覚的に確認できる決定版です。',
-          when: 'チケット購入前',
-          pts: ['開演45分前からアトリウムでのロボット・インタラクティブ体験が始まり、開演後の途中入場はできません。', '風・香り・振動の4D演出と 18K 巨大ドーム映像の組み合わせで、映画というより体験型アトラクションです。', '中央の 200〜300 番台が視界バランス最良。400番台は傾斜が非常に急なため高所が苦手な場合は避けると無難です。']
+          hook: '45分前入場・100番台見切れ・バッグ制限レビュー',
+          why: 'Sphere チケット購入前に「絶対に外せない座席選び」と「厳しすぎるバッグ規定」を把握できる決定版です。',
+          when: 'チケット購入前（必須）',
+          yourTrip: '12/02（案1・17:00回）または 12/04（案3・11:00回）の座席決定＆入場準備。',
+          steps: [
+            { k: '① バッグ上限 6×6×2インチ（約15×15×5cm）', v: 'リュック・大きい透明バッグも全面NGで現地クロークも期待できません。必ず先に The LINQ へ PC・リュックを置き、スマホと財布だけで向かいます。' },
+            { k: '② 座席選び：100番台18列目以降は絶対回避', v: '100番台の後方（18〜23列目〜、特に24列目以降）は上階バルコニーの庇（オーバーハング）でドーム天井が隠れ音響も低下します。最良は 205–207 / 305–307 中央！' },
+            { k: '③ Venetian 屋内連絡橋から45分前入場', v: 'Venetian Expo 側の「Sphere Bridge」から完全屋内10分で専用保安検査へ直結。開演45分前からアトリウム（Auraロボット体験）があり、開演後の遅刻入場は不可です。' }
+          ]
         },
         {
           id: 'U0s144AKnaU', cat: 'shows', lang: '英語', ch: 'Jared Owen',
           title: "What's inside of the Sphere? (Las Vegas)",
-          hook: '球体LED＆16万スピーカーの3D技術解剖',
-          why: 'エンジニア視点で Sphere の構造を知ってから観ると感動が何倍にも跳ね上がります。',
+          hook: '16K球体LED＆16万スピーカーの3D技術解剖',
+          why: 'エンジニア視点で Sphere の物理構造と音響・振動技術を知ってから入ると感動が何倍にも跳ね上がります。',
           when: '移動中・機内前などいつでも',
-          pts: ['外装 Exosphere と内装 16K/18K LED スクリーンの構造を 3D CG でわかりやすく分解しています。', '16万個以上のスピーカーによるビームフォーミング音響（エリアごとに違う音を届ける技術）の仕組みが見どころです。', '座席のハプティック（振動）や風・香り装置の配置まで解説されています。']
+          yourTrip: 'Sphere 鑑賞前の技術予習（SIE エンジニア目線で最高に面白い1本）。',
+          steps: [
+            { k: '① 内装 16K 曲面LEDスクリーン', v: '世界最大級の解像度・視野角を覆う球面LEDの構造と、外装 Exosphere（約120万LEDパック）の仕組みを3D分解。' },
+            { k: '② 16万個超のビームフォーミング音響', v: 'LEDパネルの背後に167,000個超のスピーカーを隠し、ピンポイントで座席エリアごとに異なる音を届けられる空間音響アーキテクチャを解説。' },
+            { k: '③ 4Dハプティック座席＆環境制御', v: '竜巻シーン等で座席が物理振動するインフラサウンド・ハプティックや、風・香り・温度変化の仕掛けが分かります。' }
+          ]
         },
         {
           id: 'Y0n7IMd3mWM', cat: 'shows', lang: '公式映像', ch: 'Cirque du Soleil',
           title: 'KÀ Official Trailer | Cirque du Soleil',
-          hook: '垂直に立つ巨大油圧ステージの迫力プレビュー',
-          why: '12/02 に Sphere と同日はしごするか判断するための公式ハイライト映像です。',
-          when: 'ショー案1の検討時',
-          pts: ['MGM Grand 専用劇場で上演される90分・休憩なしのバトルアクション大作です。', '舞台全体が360度回転し垂直の壁に立ち上がる巨大油圧ステージが圧巻です。', '最前列は見上げ続ける姿勢になるため、全体を見渡せる中央やや後方の席が人気です。']
+          hook: '360度回転し垂直に立つ巨大油圧ステージの迫力',
+          why: '12/02 に Sphere と同日はしごするか判断し、ベスト座席（102中段 / 202前列）を選ぶための公式映像です。',
+          when: 'ショー案1の購入判断時',
+          yourTrip: '12/02（水）20:30〜22:00 MGM Grand KÀ Theatre（90分・休憩なし）。',
+          steps: [
+            { k: '① 巨大油圧ステージ「Sand Cliff Deck」', v: '床全体が360度回転し90度垂直の絶壁に立ち上がる、ラスベガスでも唯一無二の機構を使ったバトルアクション大作です。' },
+            { k: '② 座席選び：最前列はNG、102中段か202前列', v: '最前列（101〜103前3列）は垂直ステージを見上げ続けて首が疲れます。全体演出と迫力を両立できる Section 102（J〜M列）またはコスパ抜群の Section 202 前列がおすすめ。' },
+            { k: '③ 入場・バッグ規定（Sphereより緩い）', v: '30分前開場・90分休憩なし。バッグは 14×14×6インチ迄OKで、超える荷物も MGM ロビーのベルデスクで無料預け可能です。' }
+          ]
         },
         {
           id: '05THTK74xb0', cat: 'shows', lang: '英語', ch: 'Bret',
           title: 'Hoover Dam Power Plant Tour | Full Walkthrough from Las Vegas',
-          hook: '岩盤エレベーター・巨大発電機・橋からの絶景',
-          why: '12/04 のフーバーダム6名ツアー（Gray Line 発電所込み）で何が見られるか予習できます。',
-          when: '出発前または12/03夜',
-          pts: ['エレベーターで岩盤の奥へ降り、コロラド川の水力で回る巨大なタービン発電機ホールを間近に見学します。', 'メモリアルブリッジ（歩道）からダム正面を見下ろすアングルが最高の写真スポットです。', 'ラスベガス往復＋見学でドアツードア約6〜7時間。12/04 は 14:30〜15:00 帰着見込みのためフライト逆算が重要です。']
+          hook: '岩盤エレベーター・巨大導水鉄管・橋からの絶景',
+          why: '12/04 のフーバーダム6名ツアー（Gray Line 発電所込み）で見られる工程とセキュリティ規定を事前に掴めます。',
+          when: '出発前または 12/03 夜',
+          yourTrip: '12/04（金）08:00頃発 → 14:30〜15:00帰着目安 → 17:15 ホテル発（AA651 19:32発）。',
+          steps: [
+            { k: '① 連邦保安検査（荷物・禁止物注意）', v: 'スーツケース・大型リュック・ナイフ/マルチツール・開封済み飲食物は持込禁止（未開封ペットボトル水は可）。現地に公共ロッカーがないため、必ず朝 The LINQ ベルデスクへ荷物を預けて出発します。' },
+            { k: '② 発電所内部の見どころ', v: '歴史ある岩盤内エレベーターで数百フィート地下へ降り、建設当時のトンネルを歩いて直径約9m（30ft）導水鉄管の振動とネバダ側発電機ホールを間近に見学します。' },
+            { k: '③ メモリアルブリッジ歩道からのパノラマ', v: 'コロラド川の上空約270m（890–900ft）に架かる歩道（無料）からダム正面を一望。風が非常に強くストリップより肌寒いため防寒アウター必須です。' }
+          ]
         },
         {
           id: 'LKG6KZxP9JU', cat: 'linq', lang: '英語', ch: 'Gear Horizon',
           title: 'THE LINQ Promenade Las Vegas 2026 | FULL Walkthrough',
-          hook: 'ホテル目の前の全店舗・High Roller周辺を下見',
-          why: '拠点 The LINQ の目の前の街並みを事前に歩いておくと、初日からホーム感覚で動けます。',
+          hook: 'ホテル目の前の全店舗・High Roller・Forum連絡口',
+          why: '拠点 The LINQ の目の前の通りを事前にバーチャル散歩しておくと、到着初日から迷わず動けます。',
           when: '出発前（〜11/28）',
-          pts: ['ホテル正面を出てすぐ広がる歩行者天国（LINQ Promenade）の全飲食店・ショップを一気に見渡せます。', '観覧車 High Roller や Caesars Forum 側へ抜ける位置関係が直感的に頭に入ります。', '夜のライトアップの雰囲気と、1人でも入りやすい店の感覚がわかります。']
+          yourTrip: '全日程の拠点（LINQ → Caesars Forum 徒歩7分ルート・毎日の食事動線）。',
+          steps: [
+            { k: '① 朝の最短ルート（Forum 方面）', v: 'LINQ 正面を出て Promenade を観覧車 High Roller 側へ直進し、突き当たりの歩道橋を渡るとすぐ Caesars Forum へ到達します。' },
+            { k: '② モノレール駅の位置確認', v: '通り側ではなくホテル裏手（東側）のカジノ奥に「Harrah’s & The LINQ 駅」があり、MGM Grand への直通拠点になります。' },
+            { k: '③ 夜の治安と賑わい', v: '深夜まで明るく人通りが多いため、イベント帰りでも安心して食事やコンビニ買い出しができます。' }
+          ]
         },
         {
           id: 'P87lXNx2ycI', cat: 'linq', lang: '英語', ch: 'Nu Yawk',
           title: 'Restaurant Guide For Visitors To The LINQ & LINQ Promenade',
-          hook: 'In-N-Out・Fish&Chips・朝食店の選び方比較',
-          why: '「今日どこで食べよう？」を現地で迷わず即決できるグルメ比較ガイドです。',
+          hook: 'In-N-Out・Fish&Chips・朝食店・ハッピーアワー比較',
+          why: '滞在中の「今すぐ食べたい」「仲間と飲みたい」「安く済ませたい」を10秒で即決できるグルメ比較です。',
           when: '出発前または現地滞在中',
-          pts: ['In-N-Out や Gordon Ramsay Fish & Chips など、短時間・コスパ重視で食べられる定番店を比較しています。', 'Favorite Bistro や Maxie’s など、座ってしっかり食べる朝食・ブランチ店の特徴が分かります。', '昼夜の混雑ピークとテイクアウトの使い分けが参考になります。']
+          yourTrip: '11/30〜12/04 の朝・昼・夜の食事選び（VEGAS → グルメ詳細に実価格を収録済）。',
+          steps: [
+            { k: '① サク飯・コスパ最強の2軒（チップ不要）', v: 'In-N-Out Burger（Double-Double ~$5.90・10:30–01:00）と Gordon Ramsay Fish & Chips（~$21.99・6種ソースから2種選択）。' },
+            { k: '② しっかり座る朝食・ブランチ2軒', v: 'Favorite Bistro（Steak & Eggs ~$18.95）と Maxie’s（アメリカン朝食 $20〜25）。12/03 午前など余裕がある日に最適。' },
+            { k: '③ 夜の1杯＆ハッピーアワー攻略', v: 'Yard House（生ビール100種超・ハッピーアワー対象前菜半額）や Flour & Barley（窯焼きピザ）。' }
+          ]
         }
       ];
 
@@ -3753,7 +4234,7 @@
                 <div class="yt-t">${v.title}</div>
                 <div class="yt-hook">${v.hook}</div>
               </div>
-              <div class="yt-foot"><span>解説を読む・観る</span><span>›</span></div>
+              <div class="yt-foot"><span>詳細ガイドを読む・観る</span><span>›</span></div>
             </div>
           </button>
         `).join('');
@@ -3780,10 +4261,13 @@
             <div class="fact-grid">
               <div class="fact-box is-full"><span class="fact-lbl">この動画を観る理由</span><span class="fact-val">${v.why}</span></div>
               <div class="fact-box is-full"><span class="fact-lbl">おすすめの視聴タイミング</span><span class="fact-val is-gold">${v.when}</span></div>
+              <div class="fact-box is-full"><span class="fact-lbl">あなたの旅程との接続</span><span class="fact-val is-mint">${v.yourTrip}</span></div>
             </div>
             <div>
-              <div class="sheet-sec-h">オフライン要約（動画を開けなくても要点把握）</div>
-              <ul class="sheet-list">${v.pts.map((p) => `<li>${p}</li>`).join('')}</ul>
+              <div class="sheet-sec-h">深掘りオフラインガイド（現地データ補強済）</div>
+              <div class="sheet-kv-list">
+                ${v.steps.map((s) => `<div class="sheet-kv"><div class="sheet-kv-title"><span>${s.k}</span></div><div class="sheet-kv-desc">${s.v}</div></div>`).join('')}
+              </div>
             </div>
             <div class="sheet-actions">
               <a class="sheet-btn-primary" href="https://www.youtube.com/watch?v=${v.id}" target="_blank" rel="noopener">YouTube アプリ / ブラウザで観る ↗</a>
@@ -3797,6 +4281,81 @@
          9. RICH REFERENCE & DECISION GUIDE DIALOGS (data-guide)
          ====================================================================== */
       const GUIDES = {
+        'dfw-deep': {
+          kicker: 'AIRPORT WALKTHROUGH · DFW TERMINAL D',
+          title: 'ダラス（DFW）入国審査＆乗継 6ステップ完全ガイド',
+          bodyHtml: `
+            <div class="fact-grid">
+              <div class="fact-box"><span class="fact-lbl">乗継時間</span><span class="fact-val is-gold num">2時間58分（17:20→20:18）</span></div>
+              <div class="fact-box"><span class="fact-lbl">初回ESTA注意</span><span class="fact-val is-warn">MPC不可・通常レーン</span></div>
+            </div>
+            <div class="sheet-callout is-warn">
+              <strong>最重要：米国には国際線スルー乗継がありません</strong><br>
+              羽田で預けたスーツケースに「LAS」タグが付いていても、DFW で必ず一度ピックアップして税関を通過し、出口で再預けする必要があります。
+            </div>
+            <div>
+              <div class="sheet-sec-h">到着から出発ゲートまでの6ステップ</div>
+              <ol class="sheet-steps">
+                <li><strong>Terminal D 降機 → 入国審査（CBP）：</strong>初回渡米のため MPC は使わず「Visitors / ESTA」レーンへ。目的（AWS re:Invent）、勤務先（SIE）、滞在先（The LINQ）を回答。</li>
+                <li><strong>下階でスーツケース受取：</strong>入国審査後、国際線 Baggage Claim で自分の60Lスーツケースを必ず回収します。</li>
+                <li><strong>税関（Customs）通過：</strong>申告物（免税超過・肉類・果物等）がなければそのまま出口へ進みます。</li>
+                <li><strong>AA Baggage Recheck（再預け）：</strong>税関出口のすぐ目の前に American Airlines の再預けベルトがあります。タグをスキャンしてもらうだけで LAS 便へ載ります。</li>
+                <li><strong>上階 TSA 保安検査：</strong>再預け後、エスカレーターで上階へ上がり米国内線向けの TSA 保安検査を受けます（液体100ml以下・PCルールに注意）。</li>
+                <li><strong>高架列車 Skylink で出発ゲートへ：</strong>制限エリア内を2分間隔で走る無料高速列車（時計回り／反時計回りあり）。ターミナル A〜E 間どこでも最大9分で着きます。</li>
+              </ol>
+            </div>
+            <div class="sheet-actions">
+              <button type="button" class="sheet-btn-primary" data-sheet-showcard="immigration">DFW入国審査でそのまま見せる英語カードを開く</button>
+            </div>
+          `
+        },
+        'linq-deep': {
+          kicker: 'ARRIVAL & BASE GUIDE · LAS T1 → THE LINQ',
+          title: 'LAS空港乗場・The LINQ 滞在＆モノレール攻略',
+          bodyHtml: `
+            <div class="fact-grid">
+              <div class="fact-box"><span class="fact-lbl">タクシー定額 Zone 3</span><span class="fact-val is-gold">$30.25＋税3%＋手数料＋チップ</span></div>
+              <div class="fact-box"><span class="fact-lbl">モノレール（LINQ駅）</span><span class="fact-val is-mint">オンライン $5.75 / 24h $13.95</span></div>
+            </div>
+            <div>
+              <div class="sheet-sec-h">LAS Terminal 1 からの正確な移動導線</div>
+              <div class="sheet-kv-list">
+                <div class="sheet-kv"><div class="sheet-kv-title"><span>① バッジ受取（最優先・23:59締切）</span></div><div class="sheet-kv-desc">Baggage Claim エリア内の AWS re:Invent 窓口へ直行（パスポート＋受取コード）。これで翌朝の最大60分行列をスキップできます。</div></div>
+                <div class="sheet-kv"><div class="sheet-kv-title"><span>② タクシー乗場（夜・大荷物なら最速）</span><span class="sheet-kv-price">Door 1–4 外</span></div><div class="sheet-kv-desc">Baggage Claim 東側 Door 1–4 出てすぐ。Zone 3 定額制（Flamingo以北〜STRAT）のためぼったくりリスクなし。カード払いは +$3 前後。</div></div>
+                <div class="sheet-kv"><div class="sheet-kv-title"><span>③ Uber / Lyft 乗場（路肩不可）</span><span class="sheet-kv-price">Garage Level 2</span></div><div class="sheet-kv-desc">Door 2 近くのエレベーターで Level 2 へ上がり、連絡橋を渡って駐車場棟2階の専用ピックアップゾーンへ移動します（$15〜35変動）。</div></div>
+              </div>
+            </div>
+            <div>
+              <div class="sheet-sec-h">The LINQ 滞在＆モノレール豆知識</div>
+              <ul class="sheet-list">
+                <li>チェックイン時はデポジット用にクレジットカード提示が必要です（帰国後解除）。</li>
+                <li>飲料水はホテル内だと高いため、近くの Walgreens / CVS でまとめ買いしておきます。</li>
+                <li>ホテル裏手（東側）の「Harrah’s & The LINQ 駅」から MGM Grand 駅まで乗車7〜10分（火〜木は深夜02:00迄運行）。</li>
+              </ul>
+            </div>
+            <div class="sheet-actions">
+              <button type="button" class="sheet-btn-primary" data-sheet-showcard="taxi">タクシー運転手に見せる The LINQ 英語住所カード</button>
+            </div>
+          `
+        },
+        'badge-deep': {
+          kicker: 'RE:INVENT SURVIVAL RULES · 2026',
+          title: '10分前ルール・Workshop Studio・Japan Desk 完全整理',
+          bodyHtml: `
+            <div class="sheet-callout is-warn">
+              <strong>絶対厳守：予約席の「10分前ルール」</strong><br>
+              予約確定（Reserved）の席は開始10分前までしか保持されません。10分前にウォークアップ列へ開放されるため、必ず開始15〜20分前に部屋入口でバッジスキャンを済ませます。
+            </div>
+            <div class="sheet-kv-list">
+              <div class="sheet-kv"><div class="sheet-kv-title"><span>Workshop Studio（ハンズオン環境）</span><span class="sheet-kv-price">PC必須</span></div><div class="sheet-kv-desc">Builders’ Session・Lab・Workshop・GameDay では AWS 側が一時サンドボックスアカウントを提供します。自分のノートPC（最新ブラウザ＋満充電＋ACアダプタ）だけ持参すれば即参加できます。</div></div>
+              <div class="sheet-kv"><div class="sheet-kv-title"><span>Japan Support Desk（Venetian L1 Casanova 607）</span><span class="sheet-kv-price">月〜木 9–17時</span></div><div class="sheet-kv-desc">11/30 09:00 に招待メール提示で 12/01 Japan Night 参加チケット（先着順）を入手します。同時に 12/01 EXPO ツアーの集合場所も確認しておきます（金曜 9–12時）。</div></div>
+              <div class="sheet-kv"><div class="sheet-kv-title"><span>Venetian ↔ Caesars Forum 屋内連絡通路</span><span class="sheet-kv-price">徒歩15–20分</span></div><div class="sheet-kv-desc">両会場は屋外へ出ずに専用屋内通路で直結しています。ただし館内自体が広大なため、移動バッファは最低30分見るのが鉄則です。</div></div>
+            </div>
+            <div class="sheet-actions">
+              <button type="button" class="sheet-btn-primary" data-sheet-showcard="badge">空港バッジ受取・Japan Desk 英語確認カード</button>
+            </div>
+          `
+        },
         'api-sync': {
           kicker: 'AWS EVENTS API · 2026-11-23 21:31 SYNC',
           title: 'API 同期ステータス＆残アクション',
@@ -3817,44 +4376,76 @@
                 <li>GHJ308-S-R / GHJ308-S-R1（Agentic AI Jam · Nvidia）— 現在満席（unavailable）</li>
                 <li>GHJ312（DevOps & Modernization Jam）— 現在満席（unavailable）</li>
                 <li>GHJ311（All-in Builder Showdown）— 現在満席（unavailable）</li>
-                <li>当日キャンセル待ちやウォークアップ枠を狙う場合のみ現地確認。</li>
+                <li>当日キャンセル待ちや開始10分前のウォークアップ解放を狙う場合のみ現地確認。</li>
               </ul>
             </div>
           `
         },
         'shows': {
           kicker: 'DECISION GUIDE · SPHERE & KÀ',
-          title: 'ショー比較：案1（12/02はしご） vs 案3（12/04朝）',
+          title: 'Sphere ＆ KÀ 完全攻略（座席・バッグ規定・比較）',
           bodyHtml: `
             <div class="fact-grid">
               <div class="fact-box"><span class="fact-lbl">Sphere 目安価格</span><span class="fact-val is-gold">$104〜（中央200番台 $139〜）</span></div>
               <div class="fact-box"><span class="fact-lbl">KÀ 目安価格</span><span class="fact-val is-gold">$87.88〜（約7割売済）</span></div>
             </div>
+            <div class="sheet-callout is-warn">
+              <strong>Sphere 最大の落とし穴2点（購入・入場前に必読）：</strong><br>
+              ① <strong>バッグ上限 6×6×2インチ（約15×15×5cm）</strong>：リュック・大型透明バッグも厳禁でクロークなし！必ずホテルへPCを置いて手ぶらで向かいます。<br>
+              ② <strong>100番台の18列目以降は天井見切れ</strong>：24列目以降は公式に視界制限（Overhang）扱いになり音響も劣化。<strong>205–207 / 305–307 中央</strong>がベスト！
+            </div>
+            <div class="sheet-kv-list">
+              <div class="sheet-kv"><div class="sheet-kv-title"><span>Sphere 入場ショートカット</span><span class="sheet-kv-price">Venetian 連絡橋</span></div><div class="sheet-kv-desc">Venetian Expo 側の「Sphere Bridge」案内から完全屋内徒歩10分で専用保安検査へ直結。Sands Ave の大渋滞を完全回避できます。開場45分前からアトリウム体験あり・遅刻入場不可。</div></div>
+              <div class="sheet-kv"><div class="sheet-kv-title"><span>KÀ（MGM）推奨席・バッグ</span><span class="sheet-kv-price">102中段 / 202前列</span></div><div class="sheet-kv-desc">最前列は垂直ステージを見上げ続けて首が疲れます。Section 102（J〜M列）または高コスパの Section 202 前列がおすすめ。バッグ上限 14×14×6インチ（超える場合は MGM ロビーのベルデスク無料預け可）。</div></div>
+              <div class="sheet-kv"><div class="sheet-kv-title"><span>代替ショー：Mystère（Treasure Island）</span><span class="sheet-kv-price">18:30 / 21:00</span></div><div class="sheet-kv-desc">KÀ が満席・高騰した場合の有力候補。在庫豊富で Venetian 対面の徒歩圏内。</div></div>
+            </div>
+            <p style="font-size: 12.5px; color: var(--muted);">※価格は11/17–20確認の Ticketmaster 1枚手数料込・税別目安。購入前に最終総額を確認してください。</p>
+          `
+        },
+        'shows-plan1': {
+          kicker: 'PLAN 1 (RECOMMENDED) · DEC 2 DOUBLE FEATURE',
+          title: '案1：12/02（水）Sphere 17:00 ＋ KÀ 20:30 分刻み攻略',
+          bodyHtml: `
+            <div class="fact-grid">
+              <div class="fact-box"><span class="fact-lbl">Sphere 17:00（75分）</span><span class="fact-val is-gold">$104〜（200番台 $139〜）</span></div>
+              <div class="fact-box"><span class="fact-lbl">KÀ 20:30（90分）</span><span class="fact-val is-gold">$87.88〜（MGM Grand）</span></div>
+              <div class="fact-box is-full"><span class="fact-lbl">メリット / 代償</span><span class="fact-val is-mint">12/04 フーバーダム6名と両立可 ／ COM324-R を欠席or早退</span></div>
+            </div>
+            <div>
+              <div class="sheet-sec-h">12/02（水）午後の安全タイムライン</div>
+              <ol class="sheet-steps">
+                <li><strong>14:30 OPN307-R 終了：</strong>Caesars Forum から一度 The LINQ へ徒歩7分で戻り、ノートPCとリュックを部屋へ置きます（Sphere は 15×15×5cm 超バッグ厳禁）。</li>
+                <li><strong>15:00–15:45（任意）：</strong>手ぶらで COM324-R を前半だけ聴くか、欠席して少し休憩。</li>
+                <li><strong>16:05 Venetian 屋内連絡橋へ：</strong>Venetian 内の「Sphere Bridge」を10分歩いて専用保安検査を通過 → 16:15 開場のアトリウム（Auraロボット）を体験。</li>
+                <li><strong>17:00–18:15 Sphere 鑑賞：</strong>遅刻入場不可。推奨席 205–207 / 305–307 中央。</li>
+                <li><strong>18:30–19:30 軽食＆モノレール移動：</strong>LINQ 周辺または MGM で軽食 → Harrah’s & The LINQ 駅からモノレール（$5.75・乗車7–10分）で MGM Grand へ。</li>
+                <li><strong>20:00 開場 → 20:30–22:00『KÀ』鑑賞：</strong>休憩なし90分。推奨席 Section 102（J–M列）or 202前列。終演後はモノレール（02:00迄運行）で快適に帰還。</li>
+              </ol>
+            </div>
+          `
+        },
+        'shows-plan3': {
+          kicker: 'PLAN 3 · DEC 4 MORNING SPHERE',
+          title: '案3：12/04（金）日中回 Sphere 11:00 の詳細とトレードオフ',
+          bodyHtml: `
+            <div class="fact-grid">
+              <div class="fact-box"><span class="fact-lbl">日時</span><span class="fact-val is-gold">12/04（金）11:00（75分）</span></div>
+              <div class="fact-box"><span class="fact-lbl">最大の代償</span><span class="fact-val is-warn">同日のフーバーダム6名不参加</span></div>
+            </div>
             <div class="sheet-callout">
-              <strong>案1（推奨）：12/02（水）に Sphere 17:00 ＋ KÀ 20:30</strong><br>
-              最終日のフーバーダム6名ツアーと両立できる唯一の現実解です。代償は 12/02 15:00 の COM324-R を欠席または 15:45 頃早退すること（16:30 Expo Happy Hour とも重複）。
+              <strong>案3を選ぶケース：</strong><br>
+              12/02 の COM324-R と Expo Happy Hour（AWS010）をフル参加し、最終日 12/04 はフーバーダムへ行かずにマイペースで Sphere＋お土産買い出しをして 17:15 に空港へ向かう選択肢です。
             </div>
-            <div>
-              <div class="sheet-sec-h">Sphere 入場＆座席の重要ルール</div>
-              <ul class="sheet-list">
-                <li>開場は開演45分前（16:15）。アトリウム体験があり、<strong>開演後の遅刻入場は不可</strong>です。</li>
-                <li>おすすめは 200〜300 番台中央。400番台は傾斜が非常に急なため注意。</li>
-                <li>大きなバックパックは持込制限があるため、先にホテルへノートPCを置いて向かうと安全です。</li>
-              </ul>
-            </div>
-            <div>
-              <div class="sheet-sec-h">別候補（Mystère）と案3の比較</div>
-              <ul class="sheet-list">
-                <li>案3（12/04 11:00 Sphere）は最終日のフーバーダム6名ツアーと完全に被るため、ダム優先なら案1が有力です。</li>
-                <li>『KÀ』が満席や価格高騰になった場合、Treasure Island の『Mystère』（18:30 / 21:00）は在庫が豊富で徒歩圏内の代替候補になります。</li>
-                <li>※価格は11/17–20確認の Ticketmaster 1枚手数料込・税別目安。購入前に総額を再確認してください。</li>
-              </ul>
-            </div>
+            <ul class="sheet-list">
+              <li>12/04 朝チェックアウト後、60LスーツケースとPCリュックは必ず The LINQ ベルデスクへ預けてから（チップ $1–2/個）手ぶらで Sphere へ向かいます。</li>
+              <li>12:15 終演のため、昼食・Ethel M 等のお土産調達・17:15 ホテル発まで非常に余裕が生まれます。</li>
+              <li>※現在フーバーダム6名ツアーが予約進行方針のため、ダムに参加するなら案1（12/02）が本線です。</li>
+            </ul>
           `
         },
         'hoover': {
           kicker: 'DECISION GUIDE · DEC 4 HOOVER DAM (6 PEOPLE)',
-          title: 'フーバーダム 6名ツアー詳細・残確認',
+          title: 'フーバーダム 6名ツアー完全ガイド（保安規定・残確認・逆算）',
           bodyHtml: `
             <div class="fact-grid">
               <div class="fact-box"><span class="fact-lbl">6名合計（税・手数料込）</span><span class="fact-val is-gold num">¥82,866</span></div>
@@ -3863,19 +4454,117 @@
               <div class="fact-box"><span class="fact-lbl">実態帰着 → ホテル発</span><span class="fact-val is-warn">14:30–15:00 → 17:15厳守</span></div>
             </div>
             <div class="sheet-callout is-warn">
-              <strong>予約確定前に残っている確認3点（送信・決済はまだ未実行）：</strong><br>
+              <strong>予約確定前に残っている確認3点（送信・決済は未実行）：</strong><br>
               ① 予約フォーム用の代表電話番号<br>
               ② The LINQ への送迎ピックアップ可否（近隣ホテル集合の場合は徒歩時間確認）<br>
-              ③ 成立後、<strong>72時間前（12/01頃）のリコンファーム電話・連絡が必須</strong>
+              ③ 成立後、<strong>72時間前（12/01頃）のリコンファーム連絡が必須</strong>
             </div>
             <div>
-              <div class="sheet-sec-h">12/04（金）当日の安全タイムライン</div>
-              <ul class="sheet-list">
-                <li>07:15頃：チェックアウト完了＆ベルデスクに60Lスーツケース預け（チップ $1–2/個）</li>
-                <li>08:00〜08:15頃：Gray Line お迎え → 発電所内部見学＆ダム観光</li>
-                <li>14:30〜15:00頃：ストリップ帰着（レビュー実態）→ 荷物受取・お土産最終調整</li>
-                <li>17:15厳守：ホテル発 → LAS T1（荷物預け締切 18:32 / AA651 19:32発）</li>
-              </ul>
+              <div class="sheet-sec-h">連邦セキュリティ規定＆当日の見どころ</div>
+              <div class="sheet-kv-list">
+                <div class="sheet-kv"><div class="sheet-kv-title"><span>持込厳禁（現地ロッカーなし！）</span></div><div class="sheet-kv-desc">スーツケース・大型リュック・ナイフ/マルチツール全般・外部食品/開封済み飲料はNG（未開封ペットボトル水は可）。朝必ずホテルのベルデスクに荷物を預けて小型バッグ＋上着で行きます。</div></div>
+                <div class="sheet-kv"><div class="sheet-kv-title"><span>発電所ツアー＆メモリアルブリッジ</span></div><div class="sheet-kv-desc">岩盤エレベーターで数百フィート地下へ降り、直径約9m（30ft）導水鉄管の振動と巨大発電機ホールを見学。橋（川面から約270m）は強風で寒いので防寒着＋サングラス推奨。</div></div>
+              </div>
+            </div>
+            <div>
+              <div class="sheet-sec-h">12/04（金）安全タイムライン</div>
+              <ol class="sheet-steps">
+                <li><strong>07:15頃：</strong>チェックアウト＆ベルデスクへ60Lスーツケース預け（チップ $1–2/個）。</li>
+                <li><strong>08:00〜08:15頃：</strong>Gray Line お迎え → 発電所＆ダム＆橋パノラマ見学。</li>
+                <li><strong>14:30〜15:00頃：</strong>ストリップ帰着（レビュー実態）→ 荷物受取・お土産詰め込み。</li>
+                <li><strong>17:15厳守：</strong>ホテル発 → LAS T1（荷物締切 18:32 / AA651 19:32発）。</li>
+              </ol>
+            </div>
+          `
+        },
+        'hoover-grayline': {
+          kicker: 'HOOVER DAM · GRAY LINE POWER PLANT TOUR (6 PEOPLE)',
+          title: '進行中：Gray Line 発電所ツアー込み（6名）詳細',
+          bodyHtml: `
+            <div class="fact-grid">
+              <div class="fact-box"><span class="fact-lbl">6名合計（税・手数料込）</span><span class="fact-val is-gold num">¥82,866</span></div>
+              <div class="fact-box"><span class="fact-lbl">1人あたり</span><span class="fact-val is-mint num">¥13,811</span></div>
+            </div>
+            <ul class="sheet-list">
+              <li><strong>含まれる内容：</strong>ストリップ送迎＋発電所内部ツアー（エレベーター降下・導水鉄管・ネバダ発電機ホール）＋ビジターセンター＋写真スポット。</li>
+              <li><strong>支払い・キャンセル条件：</strong>12/02 請求、12/03 09:00 まで無料キャンセル可（現時点で送信・請求はまだ未実行）。</li>
+              <li><strong>所要時間の実態：</strong>公式表記より長引きやすくレビュー実態は 14:30〜15:00 帰着。17:15 ホテル発まで約2時間15分の安全マージンがあります。</li>
+              <li><strong>必須アクション：</strong>①代表電話番号確認 ②LINQ送迎可否確認 ③予約成立後 72時間前（12/01頃）のリコンファーム。ガイドチップ現金 $5–10/人 目安。</li>
+            </ul>
+          `
+        },
+        'hoover-mini': {
+          kicker: 'ALTERNATIVE A · VIATOR MINI TOUR',
+          title: '代替A：Viator ミニツアー（発電所内部なし）',
+          bodyHtml: `
+            <div class="fact-grid">
+              <div class="fact-box"><span class="fact-lbl">1人あたり目安</span><span class="fact-val is-gold">$76目安（約¥12,100）</span></div>
+              <div class="fact-box"><span class="fact-lbl">6名合計目安</span><span class="fact-val">約$456目安（約¥72,500）</span></div>
+              <div class="fact-box is-full"><span class="fact-lbl">帰着目安</span><span class="fact-val is-mint">11:00頃ストリップ帰着（フライト余裕大）</span></div>
+            </div>
+            <ul class="sheet-list">
+              <li><strong>向いているケース：</strong>フライト前の時間余裕を最優先したい、あるいは Gray Line が満席／LINQ送迎不可だった場合の安全バックアップ。</li>
+              <li><strong>注意点：</strong>発電所内部ツアーとビジターセンターは含まれず、ダム外観・橋からの絶景中心の短時間観光になります。</li>
+            </ul>
+          `
+        },
+        'hoover-car': {
+          kicker: 'ALTERNATIVE B · ALAMO RENTAL CAR + USBR OFFICIAL',
+          title: '代替B：Alamo レンタカー（7–8人乗り）＋公式発電所',
+          bodyHtml: `
+            <div class="fact-grid">
+              <div class="fact-box"><span class="fact-lbl">車両レンタル（税・手数料込）</span><span class="fact-val is-gold">$97.70〜$105.71</span></div>
+              <div class="fact-box"><span class="fact-lbl">駐車＋公式発電所（6名）</span><span class="fact-val">駐車$10＋$25×6＝$160</span></div>
+              <div class="fact-box is-full"><span class="fact-lbl">6名合計目安（燃料別）</span><span class="fact-val is-mint">約$268〜$276（1人 約$45〜$46 ≒ ¥7,200前後）</span></div>
+            </div>
+            <ul class="sheet-list">
+              <li><strong>最大の利点：</strong>1人あたり最安かつ帰着時刻を完全に自分たちでコントロールできます。</li>
+              <li><strong>ネックになる条件：</strong>運転者の国際運転免許証（出発前に取得必須）・右ハンドル慣れ/左側通行の逆（右側通行）・米国の給油＆保険手配・当日朝に空港等で借受/返却する手間が必要です。</li>
+            </ul>
+          `
+        },
+        'dining-tips': {
+          kicker: 'LAS VEGAS DINING STRATEGY',
+          title: 'ラスベガス食事・チップ・節約の実戦ルール',
+          bodyHtml: `
+            <div class="sheet-kv-list">
+              <div class="sheet-kv"><div class="sheet-kv-title"><span>① カウンター店 vs 着席レストランのチップ差</span></div><div class="sheet-kv-desc">In-N-Out や Gordon Ramsay Fish & Chips などカウンター店はチップ 0%〜任意でOK。着席レストランは税引前金額の 18〜20% が標準です（会計端末で % を選ぶだけ）。</div></div>
+              <div class="sheet-kv"><div class="sheet-kv-title"><span>② 飲み物・水は Walgreens / CVS で調達</span></div><div class="sheet-kv-desc">ホテル内やカジノ内の水・軽食は2〜3倍の価格。ストリップ沿いのドラッグストアで水・のど飴・小分け土産をまとめて買うと劇的に安く済みます。</div></div>
+              <div class="sheet-kv"><div class="sheet-kv-title"><span>③ 1皿の量に注意＆ハッピーアワー活用</span></div><div class="sheet-kv-desc">Grand Lux Cafe や Maxie’s は日本の1.5〜2倍の量があります。Yard House は平日午後・深夜のハッピーアワーで前菜半額になるためコスパ抜群です。</div></div>
+              <div class="sheet-kv"><div class="sheet-kv-title"><span>④ クレジットカードは必ず「USD建て」選択</span></div><div class="sheet-kv-desc">決済端末で JPY（日本円）を選ぶと DCC 手数料で 5〜10% 割高になります。迷わず USD を選びます。</div></div>
+            </div>
+            <div class="sheet-actions">
+              <button type="button" class="sheet-btn-primary" data-sheet-showcard="usd">「ドル建て指定（USD）」大画面カードを開く</button>
+            </div>
+          `
+        },
+        'campus-nav': {
+          kicker: 'RE:INVENT CAMPUS NAVIGATION',
+          title: 're:Invent 会場移動・10分前ルール・モノレール攻略',
+          bodyHtml: `
+            <div class="sheet-callout is-warn">
+              <strong>「ラスベガス蜃気楼」に注意：</strong><br>
+              地図では隣のホテルに見えても、1ブロックが巨大でカジノ通過だけで10分かかります。会場間移動は必ず 30〜45 分の余裕を見込みます。
+            </div>
+            <div class="sheet-kv-list">
+              <div class="sheet-kv"><div class="sheet-kv-title"><span>予約席 10分前リリース規則</span></div><div class="sheet-kv-desc">予約済みセッションでも開始10分前にバッジスキャンしないと席が開放されます。人気枠は15分前到着を目標に。</div></div>
+              <div class="sheet-kv"><div class="sheet-kv-title"><span>屋内直結ルート2選</span></div><div class="sheet-kv-desc">① The Venetian（Expo）↔ Caesars Forum は広い屋内通路で直結（徒歩15〜20分）。<br>② The Venetian ↔ Sphere も「Sphere Bridge」で完全屋内直結（徒歩10分）。</div></div>
+              <div class="sheet-kv"><div class="sheet-kv-title"><span>モノレール（Harrah’s & LINQ 駅）</span><span class="sheet-kv-price">$5.75 / $13.95</span></div><div class="sheet-kv-desc">ホテル裏手（東側）から MGM Grand まで乗車7–10分・4–8分間隔。オンライン購入で片道 $5.75、24時間パス $13.95（火〜木は深夜02:00迄）。</div></div>
+            </div>
+          `
+        },
+        'packing-strategy': {
+          kicker: 'PACKING & DESERT CLIMATE · 60L SUITCASE',
+          title: '60Lパッキング・砂漠気候・機内持込＆バッグ規定まとめ',
+          bodyHtml: `
+            <div class="fact-grid">
+              <div class="fact-box"><span class="fact-lbl">11月末ベガス気温目安</span><span class="fact-val is-gold num">日中 15–18℃ / 朝晩 5–10℃</span></div>
+              <div class="fact-box"><span class="fact-lbl">スーツケース余白</span><span class="fact-val is-mint">往路は 2〜3割空きを残す</span></div>
+            </div>
+            <div class="sheet-kv-list">
+              <div class="sheet-kv"><div class="sheet-kv-title"><span>砂漠の極度乾燥＆冷房対策</span></div><div class="sheet-kv-desc">湿度20%前後の砂漠＋会場の強い冷房で喉と唇が一気にやられます。リップ・ハンド/保湿クリーム・目薬・のど飴・マスク・マイ水筒は1日目から毎日フル稼働します。</div></div>
+              <div class="sheet-kv"><div class="sheet-kv-title"><span>会場ごとのバッグ規定まとめ</span></div><ul class="sheet-list" style="margin-top:6px;font-size:13px;color:var(--muted);"><li><strong style="color:var(--ink);">Sphere：</strong>6×6×2インチ（約15×15×5cm）上限・リュック全面NG・クロークなし</li><li><strong style="color:var(--ink);">KÀ（MGM）：</strong>14×14×6インチ上限・MGMベルデスク無料預け可</li><li><strong style="color:var(--ink);">フーバーダム：</strong>大型リュック/スーツケース/ナイフ類厳禁・ロッカーなし</li><li><strong style="color:var(--ink);">re:Play（Allegiant）：</strong>クリアバッグ/小型ポーチ推奨</li></ul></div>
+              <div class="sheet-kv"><div class="sheet-kv-title"><span>機内持込 vs 預け荷物（60L）</span></div><div class="sheet-kv-desc">モバイルバッテリー・リチウム電池・PC・パスポート・現金・常備薬は必ず機内持込。化粧水等の液体類は100ml以下を1L透明ジッパー袋へ（それ以上は60L預け側へ）。</div></div>
             </div>
           `
         },
@@ -3888,48 +4577,38 @@
               <div class="fact-box"><span class="fact-lbl">小札内訳</span><span class="fact-val">$1×30 / $5×8 / $10×3 / $20×2</span></div>
             </div>
             <div>
-              <div class="sheet-sec-h">現金チップの現地相場</div>
-              <ul class="sheet-list">
-                <li>ホテル清掃：毎朝ベッドサイドに <strong>$2〜$5</strong></li>
-                <li>ベルデスク荷物預け：<strong>$1〜$2 / 個</strong>（12/04朝に使う）</li>
-                <li>バー（無料ドリンク含む）：<strong>$1〜$2 / 杯</strong></li>
-                <li>ツアーガイド（フーバーダム）：<strong>$5〜$10</strong></li>
-                <li>レストラン（着席）：税引前の <strong>18〜20%</strong>（カード決済時の画面入力でOK）</li>
-              </ul>
+              <div class="sheet-sec-h">場面別のチップ相場（現金 vs カード）</div>
+              <div class="sheet-kv-list">
+                <div class="sheet-kv"><div class="sheet-kv-title"><span>ホテル清掃（毎朝ベッドサイド）</span><span class="sheet-kv-price">$2〜$5 / 日</span></div><div class="sheet-kv-desc">現金 $1札・$5札で枕元や机の目立つ場所へ置きます。</div></div>
+                <div class="sheet-kv"><div class="sheet-kv-title"><span>ベルデスク荷物預け（12/04朝など）</span><span class="sheet-kv-price">$1〜$2 / 個</span></div><div class="sheet-kv-desc">引き取り時に現金で手渡します。60Lスーツケース＋リュックなら $3〜$5 渡すとスマート。</div></div>
+                <div class="sheet-kv"><div class="sheet-kv-title"><span>バー（パーティー無料ドリンク含む）</span><span class="sheet-kv-price">$1〜$2 / 杯</span></div><div class="sheet-kv-desc">Sony Happy Hour や APJC Party 等の無料バーでも $1札があると2杯目以降すぐ対応してもらえます。</div></div>
+                <div class="sheet-kv"><div class="sheet-kv-title"><span>フーバーダム ツアーガイド</span><span class="sheet-kv-price">$5〜$10 / 人</span></div><div class="sheet-kv-desc">降車時に現金で渡します（$5札・$10札を12/04まで温存）。</div></div>
+                <div class="sheet-kv"><div class="sheet-kv-title"><span>着席レストラン・配車・タクシー</span><span class="sheet-kv-price">15〜20%</span></div><div class="sheet-kv-desc">基本カード／アプリ上で % 指定でOK。レストランは税引前の 18〜20%、配車・タクシーは 15%。</div></div>
+              </div>
             </div>
             <div class="sheet-callout">
               <strong>両替2択（オンライン宅配4社は小札指定不可）：</strong><br>
-              ・<strong>推奨：店頭カウンターへ事前電話確認</strong>（小札在庫を確認して来店・約¥24,000〜24,300）<br>
+              ・<strong>推奨：店頭カウンターへ事前電話確認</strong>（$1札×30枚の在庫を確認して来店・約¥24,000〜24,300）<br>
               ・<strong>代替：Travelex オンライン</strong>（送料¥990・大きめの札は現地カフェ等で崩す）
             </div>
           `
         },
         'phrases': {
           kicker: 'ENGLISH SURVIVAL PHRASES',
-          title: '現地ですぐ使えるミニ英語フレーズ集',
+          title: '現地ですぐ使えるミニ英語フレーズ集（7場面）',
           bodyHtml: `
-            <div class="sheet-callout">
-              <strong>① DFW 入国審査（滞在目的）：</strong><br>
-              "I'm here for AWS re:Invent, a business conference, for 5 days."
-            </div>
-            <div class="sheet-callout">
-              <strong>② ホテルチェックイン：</strong><br>
-              <span data-vault="checkin_phrase" data-mask="ロック解除で氏名入りフレーズを表示">ロック解除で氏名入りフレーズを表示</span>
-            </div>
-            <div class="sheet-callout">
-              <strong>③ 配車アプリ（Uber/Lyft）本人確認：</strong><br>
-              <span data-vault="rideshare_phrase" data-mask="ロック解除で氏名入りフレーズを表示">ロック解除で氏名入りフレーズを表示</span>（乗る前にナンバープレート一致も確認）
-            </div>
-            <div class="sheet-callout">
-              <strong>④ レストラン会計・ドル建て指定：</strong><br>
-              "Could I get the check, please?" ／ "In US dollars, please."
-            </div>
-            <div class="sheet-callout">
-              <strong>⑤ ホテルで荷物預け（12/04 朝）：</strong><br>
-              "Could I leave my luggage here until 5 PM?"
+            <div class="sheet-kv-list">
+              <div class="sheet-kv"><div class="sheet-kv-title"><span>① DFW 入国審査（滞在目的）</span></div><div class="sheet-kv-desc" style="color:var(--gold);">"I'm here for AWS re:Invent, a business conference, for 5 days."</div></div>
+              <div class="sheet-kv"><div class="sheet-kv-title"><span>② ホテルチェックイン</span></div><div class="sheet-kv-desc" style="color:var(--gold);"><span data-vault="checkin_phrase" data-mask="ロック解除で氏名入りフレーズを表示">ロック解除で氏名入りフレーズを表示</span></div></div>
+              <div class="sheet-kv"><div class="sheet-kv-title"><span>③ 配車アプリ（Uber/Lyft）本人確認</span></div><div class="sheet-kv-desc" style="color:var(--gold);"><span data-vault="rideshare_phrase" data-mask="ロック解除で氏名入りフレーズを表示">ロック解除で氏名入りフレーズを表示</span> <span style="color:var(--muted);">（乗車前にナンバー一致も確認）</span></div></div>
+              <div class="sheet-kv"><div class="sheet-kv-title"><span>④ レストラン会計・ドル建て指定</span></div><div class="sheet-kv-desc" style="color:var(--gold);">"Could I get the check, please?" ／ "In US dollars, please."</div></div>
+              <div class="sheet-kv"><div class="sheet-kv-title"><span>⑤ ホテルで荷物預け（12/04 朝）</span></div><div class="sheet-kv-desc" style="color:var(--gold);">"Could I leave my luggage here until 5 PM?"</div></div>
+              <div class="sheet-kv"><div class="sheet-kv-title"><span>⑥ In-N-Out 裏メニュー注文</span></div><div class="sheet-kv-desc" style="color:var(--gold);">"A Double-Double combo, Animal Style, please."</div></div>
+              <div class="sheet-kv"><div class="sheet-kv-title"><span>⑦ re:Invent 会場スタッフへ部屋を聞く</span></div><div class="sheet-kv-desc" style="color:var(--gold);">"Excuse me, which way to Forum 120 / Level 4 Zeno?"</div></div>
             </div>
             <div class="sheet-actions">
               <button type="button" class="sheet-btn-primary" data-sheet-showcard="usd">「ドル建て指定」大画面カードを開く</button>
+              <button type="button" class="sheet-btn-secondary" data-sheet-showcard="immigration">DFW入国審査カードを開く</button>
             </div>
           `
         },
@@ -3986,7 +4665,7 @@
           bodyHtml: `
             <div>
               <div class="sheet-sec-h">セットアップ手順（初回1回だけオンラインで実行）</div>
-              <ol class="sheet-list" style="padding-left: 20px;">
+              <ol class="sheet-steps">
                 <li>iPhone 15 の <strong>Safari</strong> で公開URLを開きます。</li>
                 <li>右上の <strong>「解除」</strong> ボタンから個人パスコードを入力し、「この端末に復号状態を保存」をオンにしたまま復号します。</li>
                 <li>Safari 下部中央の共有ボタン（□↑）→ <strong>「ホーム画面に追加」</strong> をタップします。</li>
