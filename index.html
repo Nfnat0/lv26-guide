@@ -188,14 +188,16 @@
     .pill-btn {
       display: inline-flex;
       align-items: center;
-      gap: 5px;
-      padding: 7px 11px;
-      min-height: 36px;
+      gap: 4px;
+      padding: 6px 10px;
+      min-height: 34px;
       border-radius: 999px;
       background: var(--surface-2);
       color: var(--ink);
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 700;
+      white-space: nowrap;
+      flex-shrink: 0;
       transition: background-color 150ms ease, color 150ms ease;
     }
     .pill-btn[aria-pressed="true"] {
@@ -1262,7 +1264,7 @@
         <span class="pill-btn" id="offlinePill" style="background: rgba(46, 213, 144, 0.14); color: var(--mint); pointer-events: none; font-size: 12px;" title="オフライン動作状態">OFFLINE</span>
         <button type="button" class="pill-btn" id="vaultBtn" aria-pressed="false" aria-label="個人情報のロック解除・再ロック" style="background: var(--vermilion); color: #0E0E10;">
           <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="7" width="10" height="7" rx="1.5"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
-          <span id="vaultBtnText">ロック解除</span>
+          <span id="vaultBtnText">解除</span>
         </button>
       </div>
     </div>
@@ -1919,7 +1921,7 @@
             if (lvKey) {
               const cache = await caches.open(lvKey);
               const items = await cache.keys();
-              offlinePill.textContent = navigator.onLine ? 'OFFLINE READY' : 'OFFLINE MODE';
+              offlinePill.textContent = navigator.onLine ? 'OFFLINE OK' : 'OFFLINE';
               offlineMsg.textContent = `${isStandalone ? 'ホーム画面アプリ起動中・' : ''}端末キャッシュ完了（${items.length}ファイル保存済み）。このまま機内モードでも全画面・写真・サムネ・計算機・チェックリストが動作します。`;
               return;
             }
@@ -2028,7 +2030,7 @@
         vaultBtn.setAttribute('aria-pressed', String(unlocked));
         vaultBtn.style.background = unlocked ? 'var(--surface-2)' : 'var(--vermilion)';
         vaultBtn.style.color = unlocked ? 'var(--ink)' : '#0E0E10';
-        vaultBtnText.textContent = unlocked ? 'ロックする' : 'ロック解除';
+        vaultBtnText.textContent = unlocked ? 'ロック' : '解除';
         document.querySelectorAll('[data-vault]').forEach((el) => {
           const k = el.dataset.vault;
           el.textContent = unlocked && unlockedData[k] ? unlockedData[k] : (el.dataset.mask || '••••');
